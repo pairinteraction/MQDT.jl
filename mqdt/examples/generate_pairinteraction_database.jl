@@ -11,7 +11,7 @@ SP = :Yb174
 include("$(pwd())/mqdt/parameters/$(SP).jl")
 
 # calculate bound states
-n1, n2 = 35, 40 # above n ~ 105 will have cause problems with the current integrator for matrix elements
+n1, n2 = 35, 40 # above n ~ 105 will cause problems with the current integrator for matrix elements
 models = [
     MODEL_S0, MODEL_S1, 
     MODEL_P0, MODEL_P1, MODEL_P2, 
