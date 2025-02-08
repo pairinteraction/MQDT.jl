@@ -1,0 +1,92 @@
+using Pkg
+Pkg.activate(".")
+
+using LinearAlgebra
+using SparseArrays
+using CGcoefficient
+using DataFrames
+using LaTeXStrings
+using Plots
+pyplot()
+default(
+    dpi = 400,
+    fontfamily = "sans-serif",
+    titlefontsize = 12,
+    framestyle = :box, 
+    labels = false)
+
+include("$(pwd())/mqdt/src/mqdt.jl")
+using .mqdt
+
+# LS g-factors
+g_L(J, L, S) = (J*(J+1) + L*(L+1) - S*(S+1)) / (2*J*(J+1))
+g_J(J, L, S) = 2 * (J*(J+1) - L*(L+1) + S*(S+1)) / (2*J*(J+1)) + g_L(J, L, S)
+function g_F(F, I, J, L, S) 
+    g = 0
+    if J != 0
+        g = g_J(J, L, S) * (F*(F+1) - I*(I+1) + J*(J+1)) / (2*F*(F+1)) 
+    end
+    return g
+end
+
+# wigner3j symbols
+function wigner3j(k::Int, q::Int, f1::Number, m1::Number, f2::Number, m2::Number)
+    a = 0.
+    if abs(q) <= k && abs(m1) <= f1 && abs(m2) <= f2 && abs(f1-f2) <= k && m1-m2 == q
+        qn = Vector{Int64}(2*[f1, k, f2, -m1, q, m2])
+        a = (-1.)^(f1-m1) * f3j(qn...)
+    end
+    return a
+end
+
+# load Yb171 parameters and mqdt models
+include("$(pwd())/mqdt/parameters/Yb171.jl")
+
+# S series
+f = 0.5
+s_S05 = eigenstates(24, 129, MODEL_S05, PARA)
+b_S05 = basisarray([s_S05], [MODEL_S05])
+m_S05 = diag(matrix_element(PARA, b_S05))
+g_S05 = -2m_S05 / f * wigner3j(1, 0, f, f, f, f)
+
+f = 1.5
+s_S15 = eigenstates(24, 129, MODEL_S15, PARA)
+b_S15 = basisarray([s_S15], [MODEL_S15])
+m_S15 = diag(matrix_element(PARA, b_S15))
+g_S15 = -2m_S15 / f * wigner3j(1, 0, f, f, f, f)
+
+scatter(layout=(2,1), size=(400,500), legend=:topleft)
+scatter!(s_S05.n, mod.(-s_S05.nu[7,:], 1), title=L"$^{171}$Yb $S$ series", subplot=1, label="F=1/2")
+scatter!(s_S15.n, mod.(-s_S15.nu[1,:], 1), xlabel="ν", ylabel="μ", subplot=1, label="F=3/2")
+scatter!(s_S05.n, g_S05, subplot=2)
+scatter!(s_S15.n, g_S15, xlabel="ν", ylabel="g factor", subplot=2)
+hline!([g_F(1/2, 1/2, 0, 0, 0)], l=:dash, c=:grey, subplot=2)
+hline!([g_F(1/2, 1/2, 1, 0, 1)], l=:dash, c=:grey, subplot=2)
+hline!([g_F(3/2, 1/2, 1, 0, 1)], l=:dash, c=:grey, subplot=2)
+savefig("$(pwd())/mqdt/examples/Yb171_S_series.pdf")
+
+# P series
+f = 0.5
+s_P05 = eigenstates(10, 70, MODEL_P05, PARA)
+b_P05 = basisarray([s_P05], [MODEL_P05])
+m_P05 = diag(matrix_element(PARA, b_P05))
+g_P05 = -2m_P05 / f * wigner3j(1, 0, f, f, f, f)
+
+f = 1.5
+s_P15 = eigenstates(10, 70, MODEL_P15, PARA)
+b_P15 = basisarray([s_P15], [MODEL_P15])
+m_P15 = diag(matrix_element(PARA, b_P15))
+g_P15 = -2m_P15 / f * wigner3j(1, 0, f, f, f, f)
+
+scatter(layout=(2,2), size=(700,500))
+scatter!(s_P05.n, mod.(-s_P05.nu[1,:], 1), ylabel="μ", title="P F=1/2", subplot=1)
+scatter!(s_P05.n, g_P05, xlabel="ν", ylabel="g factor", subplot=3)
+scatter!(s_P15.n, mod.(-s_P15.nu[1,:], 1), ylabel="μ", title="P F=3/2", subplot=2)
+scatter!(s_P15.n, g_P15, xlabel="ν", ylabel="g factor", subplot=4)
+hline!([g_F(1/2, 1/2, 1, 1, 0)], l=:dash, c=:grey, subplot=3)
+hline!([g_F(1/2, 1/2, 1, 1, 1)], l=:dash, c=:grey, subplot=3)
+hline!([g_F(1/2, 1/2, 0, 1, 1)], l=:dash, c=:grey, subplot=3)
+hline!([g_F(3/2, 1/2, 1, 1, 0)], l=:dash, c=:grey, subplot=4, ylim=(0,2))
+hline!([g_F(3/2, 1/2, 1, 1, 1)], l=:dash, c=:grey, subplot=4)
+hline!([g_F(3/2, 1/2, 2, 1, 1)], l=:dash, c=:grey, subplot=4)
+savefig("$(pwd())/mqdt/examples/Yb171_P_series.pdf")
