@@ -11,18 +11,14 @@ SP = :Yb174
 include("$(pwd())/mqdt/parameters/$(SP).jl")
 
 # calculate bound states
-n1 = 35 
-n2 = 40 # above n ~ 105 will have cause problems with the current integrator for matrix elements
+n1, n2 = 35, 40 # above n ~ 105 will have cause problems with the current integrator for matrix elements
 models = [
     MODEL_S0, MODEL_S1, 
     MODEL_P0, MODEL_P1, MODEL_P2, 
     MODEL_D1, MODEL_D2, MODEL_D3
     ]
 c_states = eigenstates(1.5, 2.5, MODEL_G1, PARA) # clock states
-r_states = Vector{EigenStates}() # Rydberg states
-for i in eachindex(models)
-    push!(r_states, eigenstates(n1, n2, models[i], PARA)) 
-end
+r_states = [eigenstates(n1, n2, M, PARA) for M in models] # Rydberg states
 
 # generate state table
 c_basis = basisarray(c_states, MODEL_G1)
