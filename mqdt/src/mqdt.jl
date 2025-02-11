@@ -3,7 +3,6 @@ module mqdt
 using LinearAlgebra
 using Roots
 using SparseArrays
-using CGcoefficient
 using GSL
 using QuadGK
 using Memoize
