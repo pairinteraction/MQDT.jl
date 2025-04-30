@@ -12,10 +12,10 @@ Calls function from the Gnu Scientific Library package `GSL`.
 # Examples
 
 ```julia-repl
-mqdt.radialwavefunction(1000, 40, 1)
+MQDT.radialwavefunction(1000, 40, 1)
 -0.014041583633649013
 
-mqdt.radialwavefunction(1000, 40., 1)
+MQDT.radialwavefunction(1000, 40., 1)
 -0.014041583633649006
 ```
 """
@@ -65,7 +65,7 @@ Analytic overlap of two radial wave functions.
 # Examples
 
 ```julia-repl
-mqdt.radial_overlap(30, 31, 1, 2)
+MQDT.radial_overlap(30, 31, 1, 2)
 0.999865618490289
 ```
 """
@@ -92,7 +92,7 @@ Returns the result and the accuracy as a tuple.
 # Examples
 
 ```julia-repl
-mqdt.radial_moment(1, 30, 31, 1, 2)
+MQDT.radial_moment(1, 30, 31, 1, 2)
 (329.78054480806827, 2.2900528483368755e-6)
 ```
 """
@@ -118,7 +118,7 @@ Combines the functions `radial_overlap` and `radial_moment`.
 # Examples
 
 ```julia-repl
-mqdt.radial_integral(1, 30, 31, 1, 2)
+MQDT.radial_integral(1, 30, 31, 1, 2)
 (329.78054480806827, 2.2900528483368755e-6)
 ```
 """
@@ -140,7 +140,7 @@ Evaluates `radial_integral` over lists.
 # Examples
 
 ```julia-repl
-mqdt.radial_matrix(1, [30, 30], [31, 31], [1, 2], [2, 1])
+MQDT.radial_matrix(1, [30, 30], [31, 31], [1, 2], [2, 1])
 2×2 Matrix{Float64}:
   329.781  -302.282
  -302.278   276.085
@@ -216,8 +216,8 @@ Note that `fjQuantumNumbers` requires a list of arguments, while `fj_quantum_num
 # Examples
 
 ```julia-repl
-mqdt.fj_quantum_numbers([0.5, 0, 0.5, 1., 0.5, 0, 0.5, 1.5])
-Main.mqdt.fjQuantumNumbers(0.5, 0, 0.5, 1.0, 0.5, 0, 0.5, 1.5)
+MQDT.fj_quantum_numbers([0.5, 0, 0.5, 1., 0.5, 0, 0.5, 1.5])
+Main.MQDT.fjQuantumNumbers(0.5, 0, 0.5, 1.0, 0.5, 0, 0.5, 1.5)
 ```
 """
 function fj_quantum_numbers(C::Vector)
@@ -457,7 +457,7 @@ Auxiliary function to calculate reduced matrix elements for the magnetic moment 
 # Examples
 
 ```julia-repl
-mqdt.Λ(5)
+MQDT.Λ(5)
 18.16590212458495
 ```
 """
@@ -473,7 +473,7 @@ Auxiliary function to calculate angular overlaps (Robicheaux2018 Eq. 11)
 # Examples
 
 ```julia-repl
-mqdt.square_brakets([1, 2, 3])
+MQDT.square_brakets([1, 2, 3])
 10.246950765959598
 ```
 """

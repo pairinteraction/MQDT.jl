@@ -1,13 +1,3 @@
-# MQDT.jl
+# MQDT
 
-Runs on Julia v1.10.4
-
-Just git-clone, activate the environment, and import the module. 
-
-```bash
-using Pkg
-Pkg.activate(".")
-
-include("$(pwd())/mqdt/src/mqdt.jl")
-using .mqdt
-```
+[![Build Status](https://github.com/pairinteraction/MQDT.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/pairinteraction/MQDT.jl/actions/workflows/CI.yml?query=branch%3Amain)

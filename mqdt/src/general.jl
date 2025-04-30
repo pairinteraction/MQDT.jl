@@ -54,7 +54,7 @@ i.e. core and Rydberg angular momentum quantum numbers are coupled individually 
 # Examples
 
 ```julia-repl
-mqdt.lsChannels(
+MQDT.lsChannels(
     [0.5, 0.5],
     [0.5, 0.5],
     [0., 1.],
@@ -87,7 +87,7 @@ are coupled separately to give a total core AM (Jc) and total Rydberg AM (Jr).
 # Examples
 
 ```julia-repl
-mqdt.jjChannels(
+MQDT.jjChannels(
     [0.5, 0.5],
     [0, 0],
     [0.5, 0.5],
@@ -120,7 +120,7 @@ to give a core hyperfine configuration (Fc) which is coupled to the total Rydber
 # Examples
 
 ```julia-repl
-mqdt.fjChannels(
+MQDT.fjChannels(
     [0.5, 0.5, 0.5],
     [0, 0, 0],
     [0.5, 0.5, 0.5],
@@ -154,7 +154,7 @@ Can conveniently be constructed using from [`fjChannels`](@ref) using the [`fj_q
 # Examples
 
 ```julia-repl
-mqdt.fjQuantumNumbers(
+MQDT.fjQuantumNumbers(
     0.5,
     0,
     0.5,
@@ -298,7 +298,7 @@ MODEL_S0 = Model(
     ["12", "13", "14", "34", "35", "16"],
     [0.12654859 0; 0.30010744 0; 0.05703381 0; 0.11439805 0; 0.09864375 0; 0.14248210 0],
     [0 0 0; 0 0 0; 1 1 0],
-    mqdt.jjChannels([0.5, 0.5, 0.5], [0, 1, 1], [0.5, 0.5, 0.5], [0.5, 0.5, 0.5], [0, 1, 1], [0.5, 1.5, 0.5], [0, 0, 0]),
+    MQDT.jjChannels([0.5, 0.5, 0.5], [0, 1, 1], [0.5, 0.5, 0.5], [0.5, 0.5, 0.5], [0, 1, 1], [0.5, 1.5, 0.5], [0, 0, 0]),
     [1 0 0 0 0 0; 0 1 0 0 0 0; 0 0 -sqrt(2/3) 0 sqrt(1/3) 0; 0 0 0 1 0 0; 0 0 sqrt(1/3) 0 sqrt(2/3) 0; 0 0 0 0 0 1]
 )
 ```
