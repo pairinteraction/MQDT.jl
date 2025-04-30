@@ -1,4 +1,4 @@
-# jl-mqdt
+# MQDT.jl
 
 Runs on Julia v1.10.4
 
