@@ -611,13 +611,13 @@ end
 # --------------------------------------------------------
 
 """
-See also [`multipole_moment`](@ref), [`magnetic_dipole_moment`](@ref), [`special_quadrupol_moment`](@ref)
+See also [`multipole_moment`](@ref), [`magnetic_dipole_moment`](@ref), [`special_quadrupole_moment`](@ref)
 
     matrix_element(k::Int, B::BasisArray)
     matrix_element(B::BasisArray)
     matrix_element(A::Parameters, B::BasisArray)
 
-Iterates `multipole_moment`, `magnetic_dipole_moment`, and `special_quadrupol_moment` over a list of states passed as `BasisArray`
+Iterates `multipole_moment`, `magnetic_dipole_moment`, and `special_quadrupole_moment` over a list of states passed as `BasisArray`
 in order to calculate reduced elements.
 """
 function matrix_element(k::Int, B::BasisArray)

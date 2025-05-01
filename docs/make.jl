@@ -1,0 +1,23 @@
+using MQDT
+using Documenter
+
+DocMeta.setdocmeta!(MQDT, :DocTestSetup, :(using MQDT); recursive=true)
+
+makedocs(;
+    modules=[MQDT],
+    authors="Acme Corp",
+    sitename="MQDT.jl",
+    format=Documenter.HTML(;
+        canonical="https://my-username.github.io/MQDT.jl",
+        edit_link="main",
+        assets=String[],
+    ),
+    pages=[
+        "Home" => "index.md",
+    ],
+)
+
+deploydocs(;
+    repo="github.com/my-username/MQDT.jl",
+    devbranch="main",
+)
