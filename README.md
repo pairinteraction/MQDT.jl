@@ -2,6 +2,12 @@
 
 [![Build Status](https://github.com/atom-pairinteraction/MQDT.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/atom-pairinteraction/MQDT.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
+## Installing Julia
+
+```bash
+curl -fsSL https://install.julialang.org | sh
+```
+
 ## Running tests from within the repository
 
 ```bash
