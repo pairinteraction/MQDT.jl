@@ -4,7 +4,7 @@ CurrentModule = MQDT
 
 # MQDT
 
-Documentation for [MQDT](https://github.com/my-username/MQDT.jl).
+Documentation for [MQDT](https://github.com/pairinteraction/MQDT.jl).
 
 ```@index
 ```

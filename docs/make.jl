@@ -8,7 +8,7 @@ makedocs(;
     authors="Acme Corp",
     sitename="MQDT.jl",
     format=Documenter.HTML(;
-        canonical="https://my-username.github.io/MQDT.jl",
+        canonical="https://pairinteraction.github.io/MQDT.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -18,6 +18,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/my-username/MQDT.jl",
+    repo="github.com/pairinteraction/MQDT.jl",
     devbranch="main",
 )
