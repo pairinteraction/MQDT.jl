@@ -37,14 +37,14 @@ end
 
 # S series of Yb171
 f = 0.5
-s_S05 = MQDT.eigenstates(24, 129, MQDT.Yb171.MODEL_S05, MQDT.Yb171.PARA)
-b_S05 = MQDT.basisarray([s_S05], [MQDT.Yb171.MODEL_S05])
+s_S05 = MQDT.eigenstates(24, 129, MQDT.Yb171.RYDBERG_S05, MQDT.Yb171.PARA)
+b_S05 = MQDT.basisarray([s_S05], [MQDT.Yb171.RYDBERG_S05])
 m_S05 = diag(MQDT.matrix_element(MQDT.Yb171.PARA, b_S05))
 g_S05 = -2m_S05 / f * wigner3j(1, 0, f, f, f, f)
 
 f = 1.5
-s_S15 = MQDT.eigenstates(24, 129, MQDT.Yb171.MODEL_S15, MQDT.Yb171.PARA)
-b_S15 = MQDT.basisarray([s_S15], [MQDT.Yb171.MODEL_S15])
+s_S15 = MQDT.eigenstates(24, 129, MQDT.Yb171.RYDBERG_S15, MQDT.Yb171.PARA)
+b_S15 = MQDT.basisarray([s_S15], [MQDT.Yb171.RYDBERG_S15])
 m_S15 = diag(MQDT.matrix_element(MQDT.Yb171.PARA, b_S15))
 g_S15 = -2m_S15 / f * wigner3j(1, 0, f, f, f, f)
 
@@ -60,14 +60,14 @@ savefig("Yb171_S_series.pdf")
 
 # P series of Yb171
 f = 0.5
-s_P05 = MQDT.eigenstates(10, 70, MQDT.Yb171.MODEL_P05, MQDT.Yb171.PARA)
-b_P05 = MQDT.basisarray([s_P05], [MQDT.Yb171.MODEL_P05])
+s_P05 = MQDT.eigenstates(10, 70, MQDT.Yb171.RYDBERG_P05, MQDT.Yb171.PARA)
+b_P05 = MQDT.basisarray([s_P05], [MQDT.Yb171.RYDBERG_P05])
 m_P05 = diag(MQDT.matrix_element(MQDT.Yb171.PARA, b_P05))
 g_P05 = -2m_P05 / f * wigner3j(1, 0, f, f, f, f)
 
 f = 1.5
-s_P15 = MQDT.eigenstates(10, 70, MQDT.Yb171.MODEL_P15, MQDT.Yb171.PARA)
-b_P15 = MQDT.basisarray([s_P15], [MQDT.Yb171.MODEL_P15])
+s_P15 = MQDT.eigenstates(10, 70, MQDT.Yb171.RYDBERG_P15, MQDT.Yb171.PARA)
+b_P15 = MQDT.basisarray([s_P15], [MQDT.Yb171.RYDBERG_P15])
 m_P15 = diag(MQDT.matrix_element(MQDT.Yb171.PARA, b_P15))
 g_P15 = -2m_P15 / f * wigner3j(1, 0, f, f, f, f)
 

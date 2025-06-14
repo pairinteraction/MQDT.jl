@@ -33,6 +33,90 @@ struct Parameters
 end
 
 # --------------------------------------------------------
+# Quantum Number structs
+# --------------------------------------------------------
+
+"""
+See also [`lsQuantumNumbers`](@ref), [`jjQuantumNumbers`](@ref), [`fjQuantumNumbers`](@ref)
+
+Abstract type to store the quantum numbers of an MQDT channel representation. 
+"""
+abstract type QuantumNumbers end
+
+"""
+See also [`lsQuantumNumbers`](@ref), [`jjQuantumNumbers`](@ref)
+
+    fjQuantumNumbers(sc::Float64, lc::Int, Jc::Float64, Fc::Float64, lr::Int, Jr::Float64, F::Float64)
+
+Type to store the quantum numbers of a single MQDT channel in the "fj" (sometimes called "fragmentation") 
+coupling scheme, i.e. core angular momentum quantum numbers are coupled to the nuclear spin to give a 
+core hyperfine configuration (Fc) which is coupled to the total Rydberg angular momentum (Jr).
+"""
+struct fjQuantumNumbers <: QuantumNumbers
+    sc::Float64
+    lc::Int
+    Jc::Float64
+    Fc::Float64
+    lr::Int
+    Jr::Float64
+    F::Float64
+end
+
+"""
+See also [`lsQuantumNumbers`](@ref), [`fjQuantumNumbers`](@ref)
+
+    jjQuantumNumbers(lc::Int, Jc::Float64, lr::Int, Jr::Float64, J::Float64)
+
+Type to store the quantum numbers of a single MQDT channel in the "jj" coupling scheme, 
+i.e. core and Rydberg angular momentum (AM) quantum numbers are coupled separately to give a total core AM (Jc) and total Rydberg AM (Jr).
+"""
+struct jjQuantumNumbers <: QuantumNumbers
+    sc::Float64
+    lc::Int
+    Jc::Float64
+    lr::Int
+    Jr::Float64
+    J::Float64
+end
+
+"""
+See also [`jjQuantumNumbers`](@ref), [`fjQuantumNumbers`](@ref)
+
+    lsQuantumNumbers(S::Float64, lc::Int, lr::Int, L::Int, J::Float64)
+
+Type to store the quantum numbers of a single MQDT channel in the "LS" coupling scheme,
+i.e. core and Rydberg angular momentum quantum numbers are coupled individually to give a total spin (S) and total orbital angular momentum (L).
+"""
+struct lsQuantumNumbers <: QuantumNumbers
+    sc::Float64
+    S::Float64
+    lc::Int
+    lr::Int
+    L::Int
+    J::Float64
+end
+
+# --------------------------------------------------------
+# Base functions for QuantumNumbers structs
+# --------------------------------------------------------
+
+function Base.cat(T::lsQuantumNumbers)
+    return Vector{Float64}([T.sc, T.S, T.lc, T.lr, T.L, T.J])
+end
+
+function Base.cat(T::jjQuantumNumbers)
+    return Vector{Float64}([T.sc, T.lc, T.Jc, T.lr, T.Jr, T.J])
+end
+
+function Base.cat(T::fjQuantumNumbers)
+    return Vector{Float64}([T.sc, T.lc, T.Jc, T.Fc, T.lr, T.Jr, T.F])
+end
+
+function fj_quantum_numbers(T::jjQuantumNumbers)
+    return fjQuantumNumbers(T.sc, T.lc, T.Jc, T.Jc, T.lr, T.Jr, T.J)
+end
+
+# --------------------------------------------------------
 # Channel structs
 # --------------------------------------------------------
 
@@ -46,135 +130,38 @@ abstract type Channels end
 """
 See also [`jjChannels`](@ref), [`fjChannels`](@ref)
 
-    lsChannels(sc::Vector{Float64}, sr::Vector{Float64}, S::Vector{Float64}, lc::Vector{Int}, lr::Vector{Int}, L::Vector{Int}, J::Vector{Float64})
+    lsChannels(i::Vector{lsQuantumNumbers})
 
 Type to store the quantum numbers of an MQDT channel representation, here in the "LS" coupling scheme, 
 i.e. core and Rydberg angular momentum quantum numbers are coupled individually to give a total spin (S) and total orbital angular momentum (L).
-
-# Examples
-
-```julia-repl
-MQDT.lsChannels(
-    [0.5, 0.5],
-    [0.5, 0.5],
-    [0., 1.],
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0., 1.]
-)
-```
 """
 struct lsChannels <: Channels
-    sc::Vector{Float64}
-    sr::Vector{Float64}
-    S::Vector{Float64}
-    lc::Vector{Int}
-    lr::Vector{Int}
-    L::Vector{Int}
-    J::Vector{Float64}
+    i::Vector{lsQuantumNumbers}
 end
 
 """
 See also [`lsChannels`](@ref), [`fjChannels`](@ref)
 
-    jjChannels(sc::Vector{Float64}, lc::Vector{Int}, Jc::Vector{Float64}, sr::Vector{Float64}, lr::Vector{Int}, Jr::Vector{Float64}, J::Vector{Float64})
+    jjChannels(i::Vector{jjQuantumNumbers})
 
 Type to store the quantum numbers of an MQDT channel representation, here in the 
 "jj" coupling scheme, i.e. core and Rydberg angular momentum (AM) quantum numbers 
 are coupled separately to give a total core AM (Jc) and total Rydberg AM (Jr).
-
-# Examples
-
-```julia-repl
-MQDT.jjChannels(
-    [0.5, 0.5],
-    [0, 0],
-    [0.5, 0.5],
-    [0.5, 0.5],
-    [0, 0],
-    [0.5, 0.5],
-    [0., 1.]
-)
-```
 """
 struct jjChannels <: Channels
-    sc::Vector{Float64}
-    lc::Vector{Int}
-    Jc::Vector{Float64}
-    sr::Vector{Float64}
-    lr::Vector{Int}
-    Jr::Vector{Float64}
-    J::Vector{Float64}
+    i::Vector{jjQuantumNumbers}
 end
 
 """
 See also [`lsChannels`](@ref), [`jjChannels`](@ref)
 
-    fjChannels(sc::Vector{Float64}, lc::Vector{Int}, Jc::Vector{Float64}, Fc::Vector{Float64}, sr::Vector{Float64}, lr::Vector{Int}, Jr::Vector{Float64}, F::Vector{Float64})
+    fjChannels(i::Vector{fjQuantumNumbers})
 
 Type to store the quantum numbers of an MQDT channel representation, here in the "fj" (sometimes called 
-"fragmentation") coupling scheme, i.e. core angular momentum quantum numbers are coupled to the nuclear spin 
-to give a core hyperfine configuration (Fc) which is coupled to the total Rydberg angular momentum (Jr).
-
-# Examples
-
-```julia-repl
-MQDT.fjChannels(
-    [0.5, 0.5, 0.5],
-    [0, 0, 0],
-    [0.5, 0.5, 0.5],
-    [0., 1., 1.],
-    [0.5, 0.5, 0.5],
-    [0, 0, 0],
-    [0.5, 0.5, 0.5],
-    [0.5, 0.5, 1.5],
-)
-```
+"fragmentation") coupling scheme
 """
 struct fjChannels <: Channels
-    sc::Vector{Float64}
-    lc::Vector{Int}
-    Jc::Vector{Float64}
-    Fc::Vector{Float64}
-    sr::Vector{Float64}
-    lr::Vector{Int}
-    Jr::Vector{Float64}
-    F::Vector{Float64}
-end
-
-"""
-See also [`fjChannels`](@ref), [`fj_quantum_numbers`](@ref)
-
-    fjQuantumNumbers(sc::Float64, lc::Int, Jc::Float64, Fc::Float64, sr::Float64, lr::Int, Jr::Float64, F::Float64)
-
-Type to store the quantum numbers of a single MQDT channel in the "fj" (sometimes called "fragmentation") coupling scheme.
-Can conveniently be constructed using from [`fjChannels`](@ref) using the [`fj_quantum_numbers`](@ref) function.
-
-# Examples
-
-```julia-repl
-MQDT.fjQuantumNumbers(
-    0.5,
-    0,
-    0.5,
-    1.,
-    0.5,
-    0,
-    0.5,
-    1.5,
-)
-```
-"""
-struct fjQuantumNumbers <: Channels
-    sc::Float64
-    lc::Int
-    Jc::Float64
-    Fc::Float64
-    sr::Float64
-    lr::Int
-    Jr::Float64
-    F::Float64
+    i::Vector{fjQuantumNumbers}
 end
 
 # --------------------------------------------------------
@@ -182,19 +169,70 @@ end
 # --------------------------------------------------------
 
 function Base.size(T::Channels)
-    return length(T.lr)
+    return length(T.i)
 end
 
-function Base.cat(T::lsChannels)
-    return vcat(T.sc', T.sr', T.S', T.lc', T.lr', T.L', T.J')
+function get_S(T::Channels)
+    t = T.i
+    r = Vector{Int}(undef, length(t))
+    for i in eachindex(t)
+        r[i] = t[i].S
+    end
+    return r
 end
 
-function Base.cat(T::jjChannels)
-    return vcat(T.sc', T.lc', T.Jc', T.sr', T.lr', T.Jr', T.J')
+function get_lc(T::Channels)
+    t = T.i
+    r = Vector{Int}(undef, length(t))
+    for i in eachindex(t)
+        r[i] = t[i].lc
+    end
+    return r
 end
 
-function Base.cat(T::fjChannels)
-    return vcat(T.sc', T.lc', T.Jc', T.Fc', T.sr', T.lr', T.Jr', T.F')
+function get_lr(T::Channels)
+    t = T.i
+    r = Vector{Int}(undef, length(t))
+    for i in eachindex(t)
+        r[i] = t[i].lr
+    end
+    return r
+end
+
+function get_L(T::Channels)
+    t = T.i
+    r = Vector{Int}(undef, length(t))
+    for i in eachindex(t)
+        r[i] = t[i].L
+    end
+    return r
+end
+
+function get_Jr(T::Channels)
+    t = T.i
+    r = Vector{Float64}(undef, length(t))
+    for i in eachindex(t)
+        r[i] = t[i].Jr
+    end
+    return r
+end
+
+function get_J(T::Channels)
+    t = T.i
+    r = Vector{Float64}(undef, length(t))
+    for i in eachindex(t)
+        r[i] = t[i].J
+    end
+    return r
+end
+
+function get_F(T::Channels)
+    t = T.i
+    r = Vector{Float64}(undef, length(t))
+    for i in eachindex(t)
+        r[i] = t[i].F
+    end
+    return r
 end
 
 """
@@ -206,8 +244,8 @@ Given a channel representation, this function returns the parity of a each
 channel based of the orbital angular momenta of the core and the Rydberg electron.
 """
 function parity(T::Channels)
-    pc = 2iseven.(T.lc) .- 1
-    pr = 2iseven.(T.lr) .- 1
+    pc = 2iseven.(get_lc(T)) .- 1
+    pr = 2iseven.(get_lr(T)) .- 1
     return pc .* pr
 end
 
@@ -229,14 +267,24 @@ function unique_parity(T::Channels)
 end
 
 """
+    good_quantum_number(T::lsChannels)
     good_quantum_number(T::jjChannels)
     good_quantum_number(T::fjChannels)
 
-Given a jj (fj) channel representation, this function checks whether each channel 
+Given a ls or jj (fj) channel representation, this function checks whether each channel 
 has the same total (hyperfine) angular momentum J (F) and, if true, returns it.
 """
+function good_quantum_number(T::lsChannels)
+    f = unique(get_J(T))
+    if length(f) == 1
+        return f[1]
+    else
+        error("good_quantum_number: channels have different J")
+    end
+end
+
 function good_quantum_number(T::jjChannels)
-    f = unique(T.J)
+    f = unique(get_J(T))
     if length(f) == 1
         return f[1]
     else
@@ -245,7 +293,7 @@ function good_quantum_number(T::jjChannels)
 end
 
 function good_quantum_number(T::fjChannels)
-    f = unique(T.F)
+    f = unique(get_F(T))
     if length(f) == 1
         return f[1]
     else
@@ -258,64 +306,124 @@ end
 # --------------------------------------------------------
 
 """
-See also [`Model`](@ref)
+See also [`fModel`](@ref), [`kModel`](@ref)
 
 Abstract type to store MQDT models. 
 """
-abstract type Models end
+abstract type Model end
 
 """
-    Model(
+See also [`kModel`](@ref)
+
+    fModel(
         name::String,
         size::Int,
-        lsterms::Vector{String},
-        # jjterms::Vector{String},
+        terms::Vector{String},
         core::Vector{Bool},
-        rydbergritz::Vector{Bool},
         thresholds::Vector{Float64},
         defects::Matrix{Float64},
         mixing::Vector{String},
         angles::Matrix{Float64},
-        SLJ::Matrix{Int},
+        lschannels::lsChannels,
         channels::Channels,
         unitary::Matrix{Float64}
     )
 
-Type to store MQDT models. Contains all relevant parameters to form the K matrix and calculate the spectrum for a specific Rydberg series.
+Type to store MQDT models inspired by [PRX 15, 011009 (2025)] using sparse K matriced and frame transformation. 
+Contains all relevant parameters to form the K matrix and calculate the spectrum for a specific Rydberg series.
 
 # Examples
 
 ```julia-repl
-MODEL_S0 = Model(
-    "S0",
+RYDBERG_S0 = fModel(
+    "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
     6, 
-    ["6sns 1S0", "4f13 5d 6snp a", "6pnl 1S0", "4f13 5d 6snp b", "6pnl 3P0", "4f13 5d 6snp c"],
-    # ["(6s1/2)(ns1/2)", "5d a", "(6p3/2)(np3/2)", "5d b", "(6p1/2)(np1/2)", "5d c"],
+    ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
     Bool[1, 0, 1, 0, 1, 0], 
-    Bool[0, 0, 0, 0, 0, 0], 
     [50443.070393, 83967.7, 80835.39, 83967.7, 77504.98, 83967.7],
     [0.355097325 0.278368431; 0.204537279 0; 0.116394359 0; 0.295432196 0; 0.25765161 0; 0.155807042 0],
     ["12", "13", "14", "34", "35", "16"],
     [0.12654859 0; 0.30010744 0; 0.05703381 0; 0.11439805 0; 0.09864375 0; 0.14248210 0],
-    [0 0 0; 0 0 0; 1 1 0],
-    MQDT.jjChannels([0.5, 0.5, 0.5], [0, 1, 1], [0.5, 0.5, 0.5], [0.5, 0.5, 0.5], [0, 1, 1], [0.5, 1.5, 0.5], [0, 0, 0]),
+    lsChannels([
+        lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
+        lsQuantumNumbers(0.5, 0, 1, 1, 0, 0),
+        lsQuantumNumbers(0.5, 1, 1, 1, 1, 0)]
+        ),
+    jjchannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0),
+        jjQuantumNumbers(0.5, 1, 0.5, 1, 1.5, 0),
+        jjQuantumNumbers(0.5, 1, 0.5, 1, 0.5, 0)]
+        ),
     [1 0 0 0 0 0; 0 1 0 0 0 0; 0 0 -sqrt(2/3) 0 sqrt(1/3) 0; 0 0 0 1 0 0; 0 0 sqrt(1/3) 0 sqrt(2/3) 0; 0 0 0 0 0 1]
 )
 ```
 """
-struct Model <: Models
+struct fModel <: Model
     name::String
     size::Int
-    lsterms::Vector{String}
+    terms::Vector{String}
     core::Vector{Bool}
-    rydbergritz::Vector{Bool}
     thresholds::Vector{Float64}
     defects::Matrix{Float64}
     mixing::Vector{String}
     angles::Matrix{Float64}
-    SLJ::Matrix{Int}
+    lschannels::lsChannels
     channels::Channels
     unitary::Matrix{Float64}
+end
+
+"""
+See also [`fModel`](@ref)
+
+    kModel(
+        name::String
+        size::Int
+        terms::Vector{String}
+        jjscheme::Vector{Bool}
+        lschannels::lsChannels
+        jjchannels::jjChannels
+        thresholds::Vector{Float64}
+        K0::Matrix{Float64}
+        K1::Vector{Float64}
+    )
+
+Type to store MQDT models inspired by [JPB 47, 155001 (2014)] using dense, energy-dependent K matrices. 
+Contains all relevant parameters to form the K matrix and calculate the spectrum for a specific Rydberg series.
+
+# Examples
+
+```julia-repl
+KMODEL_S0 = kModel(
+    "1S0",
+    3,
+    ["(5s1/2)(ns1/2)", "(4d5/2)(nd5/2)", "(4d3/2)(nd3/2)"],
+    Bool[1, 1, 1], 
+    lsChannels([
+        lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
+        lsQuantumNumbers(0.5, 0, 2, 2, 0, 0),
+        lsQuantumNumbers(0.5, 0, 2, 2, 0, 0)
+    ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0),
+        jjQuantumNumbers(0.5, 2, 2.5, 2, 2.5, 0),
+        jjQuantumNumbers(0.5, 2, 1.5, 2, 1.5, 0)
+    ]),
+    [45932.2002, 60768.43, 60488.09],
+    [1.051261 0.3759864 -0.02365485; 0.3759864 -0.6400925 -0.0002063825; -0.02365485 -0.0002063825 3.009087],
+    [0.8763911, 0.4042584, 17.22631]
+)
+```
+"""
+struct kModel <: Model
+    name::String
+    size::Int
+    terms::Vector{String}
+    jjscheme::Vector{Bool}
+    lschannels::lsChannels
+    jjchannels::jjChannels
+    thresholds::Vector{Float64}
+    K0::Matrix{Float64}
+    K1::Vector{Float64}
 end
 
 # --------------------------------------------------------
@@ -330,10 +438,79 @@ function Base.size(T::Model)
     return (T.size,)
 end
 
-function get_lr(T::Model)
+function get_lr(T::fModel)
     l = zeros(Int, T.size)
-    l[findall(T.core)] = T.channels.lr
+    l[findall(T.core)] = get_lr(T.channels)
     return l
+end
+
+function get_lr(T::kModel)
+    return get_lr(T.jjchannels)
+end
+
+function get_S(T::fModel)
+    return get_S(T.lschannels)
+end
+
+function get_L(T::fModel)
+    return get_L(T.lschannels)
+end
+
+function get_J(T::fModel)
+    return get_J(T.lschannels)
+end
+
+function test_model(T::fModel)
+    if T.size != length(T.terms) != length(T.core) != length(T.thresholds) != size(T.defects, 1)
+        return println("Model size does not correspond to provided parameters.")
+    elseif size(T.unitary) != (T.size, T.size)
+        return println("Frame transformation matrix does not have the correct dimensions.")
+    elseif length(findall(T.core)) != size(T.channels) != size(T.lschannels)
+        return println("Wrong number of channels.")
+    elseif length(T.mixing) != size(T.angles, 1)
+        return println("Wrong number of close-coupling rotations.")
+    else
+        return println("Model $(T.name) passed.")
+    end
+end
+
+function test_model(T::kModel)
+    if T.size != length(T.terms) != length(jjscheme) != length(T.lschannels) != length(T.jjchannels) != length(T.thresholds) != length(T.K1)
+        return println("Model size does not correspond to provided parameters.")
+    elseif size(T.K0) != (T.size, T.size)
+        return println("Frame transformation matrix does not have the correct dimensions.")
+    else
+        return println("Model $(T.name) passed.")
+    end
+end
+
+function test_model(T::Union{Vector{fModel}, Vector{kModel}})
+    for i in eachindex(T)
+        test_model(T[i])
+    end
+end
+
+function test_unitary(T::fModel)
+    c = findall(T.core)
+    t0 = T.unitary[c,c]
+    if typeof(T.channels) == jjChannels
+        t1 = matrix_ls_to_jj(T.lschannels, T.channels)'
+    elseif typeof(T.channels) == fjChannels
+        lc = unique(get_lc(T.lschannels))
+        lr = unique(get_lr(T.lschannels))
+        qn = MQDT.AngularMomenta(lc, lr, 1/2) # generalize for nuclear spin
+        jj = jj_channels(qn)
+        tjj = matrix_ls_to_jj(T.lschannels, jj)
+        tfj = matrix_jj_to_fj(jj, T.channels, 1/2) # generalize for nuclear spin
+        t1 = -(tjj * tfj)'
+    end
+    return isapprox(t0, t1), t0, t1
+end
+
+function test_unitary(T::kModel)
+    t1 = eigen(T.K0).vectors
+    t2 = matrix_ls_to_jj(T.lschannels, T.jjchannels)'
+    return t1, t2
 end
 
 # --------------------------------------------------------

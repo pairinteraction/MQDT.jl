@@ -140,7 +140,7 @@ end
 """
     kbar(M::Number) = tan(π * M)
     kbar(M::Vector{Float64}) = diagm(kbar.(M))
-    kbar(N::Number, M::Model, P::Parameters)
+    kbar(N::Number, M::fModel, P::Parameters)
 
 Function that returns the K matrix in the close-coupling frame, i.e. in its diagonal representation
 """
@@ -152,17 +152,23 @@ function kbar(M::Vector{Float64})
     return diagm(kbar.(M))
 end
 
-function kbar(N::Number, M::Model, P::Parameters)
+function kbar(N::Number, M::fModel, P::Parameters)
     n = nu(N, M, P)
     m = theta(n, M.defects)
-    i = findall(isone, M.rydbergritz)
-    if !isempty(i)
-        for j in i
-            m[j] = theta_rr(n[j], M.defects, j)
-        end
-    end
     return kbar(m)
 end
+
+# function kbar(N::Number, M::fModel, P::Parameters)
+#     n = nu(N, M, P)
+#     m = theta(n, M.defects)
+#     i = findall(isone, M.rydbergritz)
+#     if !isempty(i)
+#         for j in i
+#             m[j] = theta_rr(n[j], M.defects, j)
+#         end
+#     end
+#     return kbar(m)
+# end
 
 """
     couple(C::String)
@@ -194,7 +200,7 @@ end
 """
     rot(T::Number, C::String, D::Int)
     rot(T::Vector, C::Vector{String}, D::Int)
-    rot(N::Number, M::Model, P::Parameters)
+    rot(N::Number, M::fModel, P::Parameters)
 
 Function that returns a rotation matrix of dimensions `D` with rotation angle `T`.
 Works for subsequent rotations passed as vectors.
@@ -231,7 +237,7 @@ function rot(T::Vector, C::Vector{String}, D::Int)
     return r
 end
 
-function rot(N::Number, M::Model, P::Parameters)
+function rot(N::Number, M::fModel, P::Parameters)
     if iszero(M.angles) # check presence of channel mixing
         return diagm(ones(M.size))
     else
@@ -247,25 +253,31 @@ function rot(N::Number, M::Model, P::Parameters)
 end
 
 """
-    transform(N::Number, M::Model, P::Parameters)
+    transform(N::Number, M::fModel, P::Parameters)
 
 Function that returns the frame transformation matrix from close-coupling to fragmentation frame.
 """
-function transform(N::Number, M::Model, P::Parameters)
+function transform(N::Number, M::fModel, P::Parameters)
     r = rot(N, M, P)
     u = M.unitary
     return u * r
 end
 
 """
-    kmat(N::Number, M::Model, P::Parameters)
+    kmat(N::Number, M::fModel, P::Parameters)
+    kmat(N::Number, M::kModel, P::Parameters)
 
 Function that returns the K matrix in the fragmentation frame.
 """
-function kmat(N::Number, M::Model, P::Parameters)
+function kmat(N::Number, M::fModel, P::Parameters)
     k = kbar(N, M, P)
     t = transform(N, M, P)
     return t * k * t'
+end
+
+function kmat(N::Number, M::kModel, P::Parameters)
+    k = M.K0 + diagm(M.K1 * (1 - epsilon(N, P)/P.threshold))
+    return k
 end
 
 """
@@ -376,13 +388,13 @@ end
 # --------------------------------------------------------
 
 """
-    basisarray(T::EigenStates, M::Model)
-    basisarray(T::Vector{EigenStates}, M::Vector{Model})
+    basisarray(T::EigenStates, M::fModel)
+    basisarray(T::Vector{EigenStates}, M::Vector{fModel})
 
 Function that generates all relevant bound-state data.
 Returns a `BasisArray`, which is a list of `BasisState` instances.
 """
-function basisarray(T::EigenStates, M::Model)
+function basisarray(T::EigenStates, M::fModel)
     F = findall(M.core)
     B = Vector{BasisState}()
     c = M.channels
@@ -390,17 +402,18 @@ function basisarray(T::EigenStates, M::Model)
     p = unique_parity(c)
     f = good_quantum_number(c)
     n = T.nu[F,:]
-    l = c.lr
+    l = get_lr(c)
     a = T.a[F,:]
     t = M.unitary[F, F]
-    s = diag(t * diagm(M.SLJ[:,1]) * t')
+    S = get_S(M)
+    s = diag(t * diagm(S) * t')
     for k in eachindex(e)
         push!(B, BasisState(e[k], p, f, n[:,k], l, s, a[:,k], c))
     end
     return BasisArray(B)
 end
 
-function basisarray(T::Vector{EigenStates}, M::Vector{Model})
+function basisarray(T::Vector{EigenStates}, M::Vector{fModel})
     E = Vector{Float64}()
     B = Vector{BasisState}()
     for i in eachindex(T)
@@ -416,12 +429,12 @@ end
 # --------------------------------------------------------
 
 """
-    dbstates(T::EigenStates, M::Model)
-    dbstates(T::Vector{EigenStates}, M::Vector{Model})
+    dbstates(T::EigenStates, M::fModel)
+    dbstates(T::Vector{EigenStates}, M::Vector{fModel})
 
 Function that generates all relevant bound-state data specifically for the PAIRINTERACTION database.
 """
-function databasearray(T::EigenStates, M::Model)
+function databasearray(T::EigenStates, M::fModel)
     F = findall(M.core)
     U = findall(iszero, M.core)
     c = M.channels
@@ -434,14 +447,14 @@ function databasearray(T::EigenStates, M::Model)
     a_rel = T.a[F,:]
     a_irr = T.a[U,:]
     t = M.unitary[F, F]
-    S = M.SLJ[:,1]
-    L = M.SLJ[:,2]
-    J = M.SLJ[:,3]
+    S = get_S(M)
+    L = get_L(M)
+    J = get_J(M)
     s = diag(t * diagm(S) * t')
     l = diag(t * diagm(L) * t')
     j = diag(t * diagm(J) * t')
-    l_ryd = c.lr
-    j_ryd = c.Jr
+    l_ryd = get_lr(c)
+    j_ryd = get_Jr(c)
     B = Vector{DataBaseState}()
     for i in eachindex(e)
         under = sum(a_irr[:,i].^2)
@@ -450,7 +463,7 @@ function databasearray(T::EigenStates, M::Model)
     return DataBaseArray(B)
 end
 
-function databasearray(T::Vector{EigenStates}, M::Vector{Model})
+function databasearray(T::Vector{EigenStates}, M::Vector{fModel})
     E = Vector{Float64}()
     B = Vector{DataBaseState}()
     for i in eachindex(T)

@@ -29,11 +29,16 @@ function radialwavefunction(r::Number, n::Float64, l::Int)
 end
 
 """
-    integrator_start(n, l)
+    integrator_start(n1, n2, l1, l2)
 
 Heuristic for determination of the inner bound for radial integration depending on angular momentum.
 """
-function integrator_start(n, l)
+function integrator_start(n1, n2, l1, l2)
+    if l1 > l2
+        n, l = n1, l1
+    else
+        n, l = n2, l2
+    end
     if l < 1
         return 1e-3
     elseif l < 2
@@ -46,13 +51,22 @@ function integrator_start(n, l)
 end
 
 """
-    integrate(f::Function, g::Function, order::Int, start::Number, stop::Number)
+    check_large_n(n1, n2)
 
-Radial integration using the package `QuadGK`.
+Heuristic for the evaluation of wavefunctions at high n. Quantum defect wavefunctions in GSL are only evaluated up to n ~ 98.
+Therefore, if n > 98.563200745, the function rounds n to the nearest integer in order to evaluate hydrogenic functions instead.
 """
-function integrate(f::Function, g::Function, order::Int, start::Number, stop::Number)
-    func(x) = f(x) * g(x) * x^order
-    return quadgk(func, start, stop, rtol=1e-8)
+function check_large_n(n1, n2)
+    nlim = 98.563200745 # limit for l=3
+    if n1 < nlim && n2 < nlim
+        return n1, n2
+    elseif n1 < nlim
+        return n1, round(Int, n2)
+    elseif n2 < nlim
+        return round(Int, n1), n2
+    else
+        return round(Int, n1), round(Int, n2)
+    end
 end
 
 """
@@ -60,7 +74,10 @@ See also [`radial_moment`](@ref)
 
     radial_overlap(n1, n2, l1, l2)
 
-Analytic overlap of two radial wave functions.
+Analytic overlap of two radial wave functions. Eq. 16 in [PRA 97, 022508 (2018)]. 
+I actually think this formula may be totally wrong. 
+Results are not in line with numeric integration using MQDT.radial_moment(0, ...).
+The odd thing is that the magnetic moments seem correct though. 
 
 # Examples
 
@@ -86,26 +103,26 @@ See also [`radial_overlap`](@ref)
 
     radial_moment(order::Int, n1, n2, l1, l2)
 
-Numeric integral of two radial wave functions.
-Returns the result and the accuracy as a tuple.
+Fast radial integration using Gauß-Legendre weights. See the `FastGaussQuadrature` package for details.
 
 # Examples
 
 ```julia-repl
 MQDT.radial_moment(1, 30, 31, 1, 2)
-(329.78054480806827, 2.2900528483368755e-6)
+329.78054480806406
 ```
 """
 @memoize function radial_moment(order::Int, n1, n2, l1, l2)
-    w1(r) = radialwavefunction(r, n1, l1)
-    w2(r) = radialwavefunction(r, n2, l2)
-    if l1 > l2
-        s1 = integrator_start(n1, l1)
-    else
-        s1 = integrator_start(n2, l2)
-    end
-    s2 = 5min(n1, n2)^2
-    return integrate(w1, w2, order, s1, s2)
+    n = ceil(Int, max(n1, n2))
+    points, weights = gausslegendre(3n)
+    r1 = sqrt(integrator_start(n1, n2, l1, l2))
+    r2 = sqrt(3n^2)
+    dr = r1 .+ (r2-r1)/2 .* (1 .+ points)
+    nn1, nn2 = check_large_n(n1, n2)
+    w1 = radialwavefunction.(dr.^2, nn1, l1)
+    w2 = radialwavefunction.(dr.^2, nn2, l2)
+    res = dot(weights .* (r2-r1)/2, w1 .* w2 .* 2dr.^(2order + 1))
+    return res
 end
 
 """
@@ -119,12 +136,12 @@ Combines the functions `radial_overlap` and `radial_moment`.
 
 ```julia-repl
 MQDT.radial_integral(1, 30, 31, 1, 2)
-(329.78054480806827, 2.2900528483368755e-6)
+329.78054480806406
 ```
 """
 function radial_integral(order::Int, n1, n2, l1, l2)
     if iszero(order)
-        return (radial_overlap(n1, n2, l1, l2), 0.)
+        return radial_overlap(n1, n2, l1, l2)
     else
         return radial_moment(order, n1, n2, l1, l2)
     end
@@ -150,7 +167,7 @@ MQDT.radial_matrix(1, [30, 30], [31, 31], [1, 2], [2, 1])
     R = zeros(length(n1), length(n2))
     for i in eachindex(n1)
         for j in eachindex(n2)
-            R[i,j] = radial_integral(k, n1[i], n2[j], l1[i], l2[j])[1]
+            R[i,j] = radial_integral(k, n1[i], n2[j], l1[i], l2[j])
         end
     end
     return R
@@ -164,64 +181,61 @@ end
 See also [`angular_matrix`](@ref)
 
     angular_moment(k, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
+    angular_moment(k, q1::jjQuantumNumbers, q2::jjQuantumNumbers)
+    angular_moment(k, q1::lsQuantumNumbers, q2::lsQuantumNumbers)
 
 Returns the angular matrix elements (i.e. an analytically evaluated integral of spherical harmonics).
-Formula is found in Robicheaux2018 Eq. 20
+Formula is found in Robicheaux2018 Eq. 20 and in Vaillant2014 Eq. C3
 """
 function angular_moment(k, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     a = 0.
     if (q1.sc, q1.lc, q1.Jc, q1.Fc) == (q2.sc, q2.lc, q2.Jc, q2.Fc)
-        q1.sr == q2.sr && iseven(q1.lr+q2.lr+k) && abs(q1.F-q2.F) <= k && abs(q1.lr-q2.lr) <= k && abs(q1.Jr-q2.Jr) <= k
-        Λ = q1.F + q1.Fc + q1.Jr + q2.Jr + q1.lr + q2.lr + q1.sr
-        sq = square_brakets([q1.F, q2.F, q1.Jr, q2.Jr, q1.lr, q2.lr])
-        qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
-        qn2 = Vector{Int64}(2*[q1.Jr, q1.F, q1.Fc, q2.F, q2.Jr, k])
-        qn3 = Vector{Int64}(2*[q1.lr, q1.Jr, q1.sr, q2.Jr, q2.lr, k])
-        a = (-1.)^Λ * sq * sf_coupling_3j(qn1...) * sf_coupling_6j(qn2...) * sf_coupling_6j(qn3...)
+        if iseven(q1.lr+q2.lr+k) && abs(q1.F-q2.F) <= k && abs(q1.lr-q2.lr) <= k && abs(q1.Jr-q2.Jr) <= k
+            Λ = q1.F + q1.Fc + q1.Jr + q2.Jr + q1.lr + q2.lr + 0.5
+            sq = square_brakets([q1.F, q2.F, q1.Jr, q2.Jr, q1.lr, q2.lr])
+            qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
+            qn2 = Vector{Int64}(2*[q1.Jr, q1.F, q1.Fc, q2.F, q2.Jr, k])
+            qn3 = Vector{Int64}(2*[q1.lr, q1.Jr, 0.5, q2.Jr, q2.lr, k])
+            a = (-1.)^Λ * sq * sf_coupling_3j(qn1...) * sf_coupling_6j(qn2...) * sf_coupling_6j(qn3...)
+        end
     end
     return a
 end
 
-"""
-See also [`fjChannels`](@ref)
+function angular_moment(k, q1::jjQuantumNumbers, q2::jjQuantumNumbers)
+    c1 = fj_quantum_numbers(q1)
+    c2 = fj_quantum_numbers(q2)
+    return angular_moment(k, c1, c2)
+end
 
-    fj_channels(C::Channels)
-    fj_channels(C::jjChannels)
+# function angular_moment(k, q1::jjQuantumNumbers, q2::jjQuantumNumbers)
+#     a = 0.
+#     if (q1.sc, q1.lc, q1.Jc) == (q2.sc, q2.lc, q2.Jc)
+#         if iseven(q1.lr+q2.lr+k) && abs(q1.J-q2.J) <= k && abs(q1.lr-q2.lr) <= k && abs(q1.Jr-q2.Jr) <= k
+#             Λ = q1.J + q1.Jc + q1.Jr + q2.Jr + q1.lr + q2.lr + 0.5
+#             sq = square_brakets([q1.J, q2.J, q1.Jr, q2.Jr, q1.lr, q2.lr])
+#             qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
+#             qn2 = Vector{Int64}(2*[q1.Jr, q1.J, q1.Jc, q2.J, q2.Jr, k])
+#             qn3 = Vector{Int64}(2*[q1.lr, q1.Jr, 0.5, q2.Jr, q2.lr, k])
+#             a = (-1.)^Λ * sq * sf_coupling_3j(qn1...) * sf_coupling_6j(qn2...) * sf_coupling_6j(qn3...)
+#         end
+#     end
+#     return a
+# end
 
-Type checking function for `Channels`. 
-If the input is an `fjChannels`, returns the input. 
-If the input is a `jjChannels`, constructs and returns the corresponding `fjChannel`.
-Does nothing for other inputs.
-"""
-function fj_channels(C::Channels)
-    if typeof(C) == fjChannels
-        return C
-    elseif typeof(C) == jjChannels
-        return fj_channels(C)
+function angular_moment(k, q1::lsQuantumNumbers, q2::lsQuantumNumbers)
+    a = 0.
+    if (q1.lc, q1.S) == (q2.lc, q2.S)
+        if iseven(q1.lr+q2.lr+k) && abs(q1.J-q2.J) <= k && abs(q1.lr-q2.lr) <= k
+            Λ = q1.lc + q1.S
+            sq = square_brakets([q1.lr, q2.lr, q1.L, q2.L, q1.J, q2.J])
+            qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
+            qn2 = Vector{Int64}(2*[q1.J, k, q2.J, q1.L, q1.S, q2.L])
+            qn3 = Vector{Int64}(2*[q1.L, k, q2.L, q1.lr, q1.lc, q2.lr])
+            a = (-1.)^Λ * sq * sf_coupling_3j(qn1...) * sf_coupling_6j(qn2...) * sf_coupling_6j(qn3...)
+        end
     end
-end
-
-function fj_channels(C::jjChannels)
-    return fjChannels(C.sc, C.lc, C.Jc, C.Jc, C.sr, C.lr, C.Jr, C.J)
-end
-
-"""
-See also [`fjQuantumNumbers`](@ref)
-
-    fj_quantum_numbers(C::Vector)
-
-Creates a `fjQuantumNumbers` type required for evaluating functions that calculate matrix elements.
-Note that `fjQuantumNumbers` requires a list of arguments, while `fj_quantum_numbers` supports all arguments being passed as a single vector.
-
-# Examples
-
-```julia-repl
-MQDT.fj_quantum_numbers([0.5, 0, 0.5, 1., 0.5, 0, 0.5, 1.5])
-Main.MQDT.fjQuantumNumbers(0.5, 0, 0.5, 1.0, 0.5, 0, 0.5, 1.5)
-```
-"""
-function fj_quantum_numbers(C::Vector)
-    return fjQuantumNumbers(C...)
+    return a
 end
 
 """
@@ -233,16 +247,12 @@ Iterates `angular_moment` over Channels, returns a matrix.
 This function is 'memoized' using the `Memoize` package.
 """
 @memoize function angular_matrix(k::Int, k1::Channels, k2::Channels)
-    c1 = fj_channels(k1)
-    c2 = fj_channels(k2)
-    v1 = cat(c1)
-    v2 = cat(c2)
-    A = zeros(size(v1, 2), size(v2, 2))
-    for i in axes(v1, 2)
-        q1 = fj_quantum_numbers(v1[:,i])
-        for j in axes(v2, 2)
-            q2 = fj_quantum_numbers(v2[:,j])
-            A[i,j] = angular_moment(k, q1, q2)
+    c1 = k1.i
+    c2 = k2.i
+    A = zeros(length(c1), length(c2))
+    for i in eachindex(c1)
+        for j in eachindex(c2)
+            A[i,j] = angular_moment(k, c1[i], c2[j])
         end
     end
     return A
@@ -352,16 +362,12 @@ Iterates `magneton` over Channels, returns a matrix.
 This function is 'memoized' using the `Memoize` package.
 """
 @memoize function magnetic_matrix(nd, mp, ic, k1::Channels, k2::Channels)
-    c1 = fj_channels(k1)
-    c2 = fj_channels(k2)
-    v1 = cat(c1)
-    v2 = cat(c2)
-    A = zeros(size(v1, 2), size(v2, 2))
-    for i in axes(v1, 2)
-        q1 = fj_quantum_numbers(v1[:,i])
-        for j in axes(v2, 2)
-            q2 = fj_quantum_numbers(v2[:,j])
-            A[i,j] = magneton(nd, mp, ic, q1, q2)
+    c1 = k1.i
+    c2 = k2.i
+    A = zeros(length(c1), length(c2))
+    for i in eachindex(c1)
+        for j in eachindex(c2)
+            A[i,j] = magneton(nd, mp, ic, c1[i], c2[j])
         end
     end
     return A
@@ -369,6 +375,7 @@ end
 
 """
     magneton(nd, mp, ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
+    magneton(nd, mp, ic, q1::jjQuantumNumbers, q2::jjQuantumNumbers)
 
 Returns the reduced magnetic dipole moment (excluding radial contributions from the Rydberg electron)
 """
@@ -384,13 +391,19 @@ function magneton(nd, mp, ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     return - μ_B*(m_lr + m_lc + g_s*(m_sr + m_sc)) + μ_N*m_ic
 end
 
+function magneton(nd, mp, ic, q1::jjQuantumNumbers, q2::jjQuantumNumbers)
+    c1 = fj_quantum_numbers(q1)
+    c2 = fj_quantum_numbers(q2)
+    return magneton(nd, mp, ic, c1, c2)
+end
+
 """
     element_lr(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
 
 Returns the reduced matrix element of Rydberg orbital anugular momentum (Robicheaux2018 Eq. 24)
 """
 function element_lr(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    if q1.sc == q2.sc && q1.sr == q2.sr && q1.lc == q2.lc && q1.lr == q2.lr
+    if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(q1.lr) * G1(q1, q2) * G2(q1, q2)
     else
         return 0.
@@ -403,7 +416,7 @@ end
 Returns the reduced matrix element of Rydberg spin (Robicheaux2018 Eq. 24)
 """
 function element_sr(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    if q1.sc == q2.sc && q1.sr == q2.sr && q1.lc == q2.lc && q1.lr == q2.lr
+    if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(0.5) * G1(q1, q2) * G3(q1, q2)
     else
         return 0.
@@ -416,7 +429,7 @@ end
 Returns the reduced matrix element of core nuclear spin (Robicheaux2018 Eq. 24)
 """
 function element_ic(ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    if q1.sc == q2.sc && q1.sr == q2.sr && q1.lc == q2.lc && q1.lr == q2.lr
+    if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(ic) * G4(q1, q2) * G5(q1, q2, ic)
     else
         return 0.
@@ -429,7 +442,7 @@ end
 Returns the reduced matrix element of core orbital anugular momentum (Robicheaux2018 Eq. 24)
 """
 function element_lc(ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    if q1.sc == q2.sc && q1.sr == q2.sr && q1.lc == q2.lc && q1.lr == q2.lr
+    if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(q1.lc) * G4(q1, q2) * G6(q1, q2, ic) * G7(q1, q2)
     else
         return 0.
@@ -442,7 +455,7 @@ end
 Returns the reduced matrix element of core spin (Robicheaux2018 Eq. 24)
 """
 function element_sc(ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    if q1.sc == q2.sc && q1.sr == q2.sr && q1.lc == q2.lc && q1.lr == q2.lr
+    if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(0.5) * G4(q1, q2) * G6(q1, q2, ic) * G8(q1, q2)
     else
         return 0.
@@ -504,10 +517,10 @@ Auxiliary function to calculate reduced matrix elements for the magnetic moment 
 """
 function G2(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     g = 0.
-    if q1.sr == q2.sr && q1.lr == q2.lr
-        Λ = q1.sr + q1.lr + q1.Jr + 1
+    if q1.lr == q2.lr
+        Λ = 0.5 + q1.lr + q1.Jr + 1
         sq = square_brakets([q1.Jr, q2.Jr])
-        qn = Vector{Int64}(2*[q1.lr, q1.Jr, q1.sr, q2.Jr, q1.lr, 1])
+        qn = Vector{Int64}(2*[q1.lr, q1.Jr, 0.5, q2.Jr, q1.lr, 1])
         g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
     end
     return g
@@ -520,10 +533,10 @@ Auxiliary function to calculate reduced matrix elements for the magnetic moment 
 """
 function G3(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     g = 0.
-    if q1.sr == q2.sr && q1.lr == q2.lr
-        Λ = q1.sr + q1.lr + q2.Jr + 1
+    if q1.lr == q2.lr
+        Λ = 0.5 + q1.lr + q2.Jr + 1
         sq = square_brakets([q1.Jr, q2.Jr])
-        qn = Vector{Int64}(2*[q1.sr, q1.Jr, q1.lr, q2.Jr, q1.sr, 1])
+        qn = Vector{Int64}(2*[0.5, q1.Jr, q1.lr, q2.Jr, 0.5, 1])
         g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
     end
     return g
@@ -611,13 +624,13 @@ end
 # --------------------------------------------------------
 
 """
-See also [`multipole_moment`](@ref), [`magnetic_dipole_moment`](@ref), [`special_quadrupole_moment`](@ref)
+See also [`multipole_moment`](@ref), [`magnetic_dipole_moment`](@ref), [`special_quadrupol_moment`](@ref)
 
     matrix_element(k::Int, B::BasisArray)
     matrix_element(B::BasisArray)
     matrix_element(A::Parameters, B::BasisArray)
 
-Iterates `multipole_moment`, `magnetic_dipole_moment`, and `special_quadrupole_moment` over a list of states passed as `BasisArray`
+Iterates `multipole_moment`, `magnetic_dipole_moment`, and `special_quadrupol_moment` over a list of states passed as `BasisArray`
 in order to calculate reduced elements.
 """
 function matrix_element(k::Int, B::BasisArray)
@@ -711,161 +724,111 @@ end
 #   and calculate transformations
 # --------------------------------------------------------
 
-struct QuantumNumbers
-    sc::Vector{Number}
+struct AngularMomenta
     lc::Vector{Number}
-    sr::Vector{Number}
     lr::Vector{Number}
     ic::Number
 end
 
-function ls_channels(Q::QuantumNumbers)
-    sc_list = Q.sc
-    lc_list = Q.lc
-    sr_list = Q.sr
-    lr_list = Q.lr
-    Sc = Float64[]
-    Sr = Float64[]
-    St = Float64[]
-    Lc = Int[]
-    Lr = Int[]
-    Lt = Int[]
-    Jt = Float64[]
-    for sc in sc_list
-        for sr in sr_list
-            for st in abs(sc-sr):sc+sr
-                for lc in lc_list
-                    for lr in lr_list
-                        for lt in abs(lc-lr):lc+lr
-                            for jt in abs(lt-st):lt+st
-                                push!(Sc, sc)
-                                push!(Sr, sr)
-                                push!(St, st)
-                                push!(Lc, lc)
-                                push!(Lr, lr)
-                                push!(Lt, lt)
-                                push!(Jt, jt)
-                            end
+function ls_channels(Q::AngularMomenta)
+    out = Vector{lsQuantumNumbers}()
+    for S in 0:1
+        for lc in Q.lc
+            for lr in Q.lr
+                for L in abs(lc-lr):lc+lr
+                    for J in abs(L-S):L+S
+                        push!(out, lsQuantumNumbers(0.5, S, lc, lr, L, J))
+                    end
+                end
+            end
+        end
+    end
+    return lsChannels(out)
+end
+
+function jj_channels(Q::AngularMomenta)
+    out = Vector{jjQuantumNumbers}()
+    for lc in Q.lc
+        for jc in abs(lc-0.5):lc+0.5
+            for lr in Q.lr
+                for jr in abs(lr-0.5):lr+0.5
+                    for J in abs(jc-jr):jc+jr
+                        push!(out, jjQuantumNumbers(0.5, lc, jc, lr, jr, J))
+                    end
+                end
+            end
+        end
+    end
+    return jjChannels(out)
+end
+
+function fj_channels(Q::AngularMomenta)
+    out = Vector{fjQuantumNumbers}()
+    for lc in Q.lc
+        for jc in abs(lc-0.5):lc+0.5
+            for fc in abs(Q.ic-jc):Q.ic+jc
+                for lr in Q.lr
+                    for jr in abs(lr-0.5):lr+0.5
+                        for ft in abs(fc-jr):fc+jr
+                            push!(out, fjQuantumNumbers(0.5, lc, jc, fc, lr, jr, ft))
                         end
                     end
                 end
             end
         end
     end
-    return lsChannels(Sc, Sr, St, Lc, Lr, Lt, Jt)
+    return fjChannels(out)
 end
 
-function jj_channels(Q::QuantumNumbers)
-    sc_list = Q.sc
-    lc_list = Q.lc
-    sr_list = Q.sr
-    lr_list = Q.lr
-    Sc = Float64[]
-    Lc = Int[]
-    Jc = Float64[]
-    Sr = Float64[]
-    Lr = Int[]
-    Jr = Float64[]
-    Jt = Float64[]
-    for sc in sc_list
-        for lc in lc_list
-            for jc in abs(sc-lc):sc+lc
-                for sr in sr_list
-                    for lr in lr_list
-                        for jr in abs(sr-lr):sr+lr
-                            for jt in abs(jc-jr):jc+jr
-                                push!(Sc, sc)
-                                push!(Lc, lc)
-                                push!(Jc, jc)
-                                push!(Sr, sr)
-                                push!(Lr, lr)
-                                push!(Jr, jr)
-                                push!(Jt, jt)
-                            end
-                        end
-                    end
-                end
-            end
-        end
+function ls_channels(C::lsChannels)
+    J = get_J(C)
+    values = sort(unique(J))
+    channels = Vector{lsChannels}()
+    for j in values
+        c = J .== j
+        push!(channels, lsChannels(C.i[c]))
     end
-    return jjChannels(Sc, Lc, Jc, Sr, Lr, Jr, Jt)
+    return values, channels
 end
 
-function ff_channels(Q::QuantumNumbers)
-    sc_list = Q.sc
-    lc_list = Q.lc
-    sr_list = Q.sr
-    lr_list = Q.lr
-    ic = Q.ic
-    Sc = Float64[]
-    Lc = Int[]
-    Jc = Float64[]
-    Fc = Float64[]
-    Sr = Float64[]
-    Lr = Int[]
-    Jr = Float64[]
-    Ft = Float64[]
-    for sc in sc_list
-        for lc in lc_list
-            for jc in abs(sc-lc):sc+lc
-                for fc in abs(ic-jc):ic+jc
-                    for sr in sr_list
-                        for lr in lr_list
-                            for jr in abs(sr-lr):sr+lr
-                                for ft in abs(fc-jr):fc+jr
-                                    push!(Sc, sc)
-                                    push!(Lc, lc)
-                                    push!(Jc, jc)
-                                    push!(Fc, fc)
-                                    push!(Sr, sr)
-                                    push!(Lr, lr)
-                                    push!(Jr, jr)
-                                    push!(Ft, ft)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
+function jj_channels(C::jjChannels)
+    J = get_J(C)
+    values = sort(unique(J))
+    channels = Vector{jjChannels}()
+    for j in values
+        c = J .== j
+        push!(channels, jjChannels(C.i[c]))
     end
-    return fjChannels(Sc, Lc, Jc, Fc, Sr, Lr, Jr, Ft)
+    return values, channels
 end
 
-function ff_channels(C::fjChannels)
-    sc = C.sc
-    lc = C.lc
-    Jc = C.Jc
-    Fc = C.Fc
-    sr = C.sr
-    lr = C.lr
-    Jr = C.Jr
-    Ft = C.F
-    values = sort(unique(Ft))
-    C = Vector{Channels}()
+function fj_channels(C::fjChannels)
+    F = get_F(C)
+    values = sort(unique(F))
+    channels = Vector{fjChannels}()
     for f in values
-        c = Ft .== f
-        push!(C, fjChannels(sc[c], lc[c], Jc[c], Fc[c], sr[c], lr[c], Jr[c], Ft[c]))
+        c = F .== f
+        push!(channels, fjChannels(C.i[c]))
     end
-    return values, C
+    return values, channels
 end
 
-function ls_to_jj(sc1, sr1, S, lc1, lr1, L, J1, sc2, lc2, Jc, sr2, lr2, Jr, J2)
+function ls_to_jj(q1::lsQuantumNumbers, q2::jjQuantumNumbers)
     res = 0.
-    if (sc1, lc1, sr1, lr1, J1) == (sc2, lc2, sr2, lr2, J2)
-        sq = square_brakets([S, L, Jc, Jr])
-        qn = Vector{Int64}(2*[sc1, sr1, S, lc1, lr1, L, Jc, Jr, J1])
-        res = sq*f9j(qn...)
+    if (q1.sc, q1.lc, q1.lr, q1.J) == (q2.sc, q2.lc, q2.lr, q2.J)
+        sq = square_brakets([q1.S, q1.L, q2.Jc, q2.Jr])
+        qn = Vector{Int64}(2*[q1.sc, 0.5, q1.S, q1.lc, q1.lr, q1.L, q2.Jc, q2.Jr, q1.J])
+        res = sq*sf_coupling_9j(qn...)
     end
     return res 
 end
 
-function jj_to_fj(sc1, lc1, Jc1, sr1, lr1, Jr1, J, sc2, lc2, Jc2, Fc, sr2, lr2, Jr2, Ft, ic)
+function jj_to_fj(q1::jjQuantumNumbers, q2::fjQuantumNumbers, ic)
     res = 0.
-    if (sc1, lc1, sr1, lr1, Jc1, Jr1) == (sc2, lc2, sr2, lr2, Jc2, Jr2)
-        Λ_io = Jr1 + Fc - ic - J
-        sq = square_brakets([J, Fc])
-        qn = Vector{Int64}(2*[Jr1, Jc1, J, ic, Ft, Fc])
+    if (q1.sc, q1.lc, q1.lr, q1.Jc, q1.Jr) == (q2.sc, q2.lc, q2.lr, q2.Jc, q2.Jr)
+        Λ_io = q1.Jr + q2.Fc - ic - q1.J
+        sq = square_brakets([q1.J, q2.Fc])
+        qn = Vector{Int64}(2*[q1.Jr, q1.Jc, q1.J, ic, q2.F, q2.Fc])
         res = (-1.)^Λ_io*sq*sf_coupling_6j(qn...)
     end
     return res 
@@ -875,7 +838,7 @@ function matrix_ls_to_jj(in::lsChannels, out::jjChannels)
     t = Matrix{Float64}(undef, size(in), size(out))
     for i in axes(t, 1)
         for j in axes(t, 2)
-            t[i,j] = ls_to_jj(cat(in)[:,i]..., cat(out)[:,j]...)
+            t[i,j] = ls_to_jj(in.i[i], out.i[j])
         end
     end
     return t
@@ -885,7 +848,7 @@ function matrix_jj_to_fj(in::jjChannels, out::fjChannels, ic::Number)
     t = Matrix{Float64}(undef, size(in), size(out))
     for i in axes(t, 1)
         for j in axes(t, 2)
-            t[i,j] = jj_to_fj(cat(in)[:,i]..., cat(out)[:,j]..., ic)
+            t[i,j] = jj_to_fj(in.i[i], out.i[j], ic)
         end
     end
     return t

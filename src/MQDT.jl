@@ -3,13 +3,14 @@ module MQDT
 using LinearAlgebra
 using Roots
 using SparseArrays
+using FastGaussQuadrature
 using GSL
-using QuadGK
 using Memoize
 using DataFrames
 
 export 
-    Model, Parameters, EigenStates, BasisArray, DataBaseArray, # structs
+    lsQuantumNumbers, jjQuantumNumbers, fjQuantumNumbers, lsChannels, jjChannels, fjChannels,
+    fModel, kModel, Parameters, EigenStates, BasisArray, DataBaseArray, # structs
     eigenstates, basisarray, databasearray, matrix_element, state_data, matrix_data, tri_to_full # functions
 
 include("general.jl")
