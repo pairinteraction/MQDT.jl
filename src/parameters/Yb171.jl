@@ -2,7 +2,7 @@ module Yb171
 
 using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers, test_model
 
-export PARA, RYDBERG_S05, RYDBERG_S15, CORE_P05, RYDBERG_P05, RYDBERG_P15, RYDBERG_P25, RYDBERG_D05, RYDBERG_D15, RYDBERG_D25, RYDBERG_D35
+export PARA, FMODEL_HIGHN_S05, FMODEL_HIGHN_S15, FMODEL_LOWN_P05, FMODEL_HIGHN_P05, FMODEL_HIGHN_P15, FMODEL_HIGHN_P25, FMODEL_HIGHN_D05, FMODEL_HIGHN_D15, FMODEL_HIGHN_D25, FMODEL_HIGHN_D35
 
 # Isotope data
 PARA = Parameters(
@@ -18,7 +18,7 @@ PARA = Parameters(
 )
 
 # MQDT Models
-RYDBERG_S05 = fModel(
+FMODEL_HIGHN_S05 = fModel(
     "S F=1/2, ν > 26", # [Phys. Rev. X 15, 011009 (2025)]
     7,
     ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c", "6sns 3S1"],
@@ -43,7 +43,7 @@ RYDBERG_S05 = fModel(
     #[1/2 0 0 0 0 0 sqrt(3)/2; 0 1 0 0 0 0 0; 0 0 sqrt(2/3) 0 sqrt(1/3) 0 0; 0 0 0 1 0 0 0; 0 0 -sqrt(1/3) 0 sqrt(2/3) 0 0; 0 0 0 0 0 1 0; sqrt(3)/2 0 0 0 0 0 -1/2] # correct frame transformation
 )
 
-RYDBERG_S15 = fModel(
+FMODEL_HIGHN_S15 = fModel(
     "S F=3/2, ν > 26", # [Phys. Rev. X 15, 011009 (2025)]
     1,
     ["6sns 3S1"],
@@ -61,7 +61,7 @@ RYDBERG_S15 = fModel(
     [1;;]
 )
 
-CORE_P05 = fModel(
+FMODEL_LOWN_P05 = fModel(
     "P F=1/2, 1.5 < ν < 2.5", # fit to Yb174 NIST data
     3,
     ["6snp 1P1", "6snp 3P1", "6snp 3P0"],
@@ -83,7 +83,7 @@ CORE_P05 = fModel(
     [-sqrt(2/3) -sqrt(1/3) 0; 1/(2sqrt(3)) -sqrt(1/6) sqrt(3)/2; -1/2 1/sqrt(2) 1/2]
 )
 
-RYDBERG_P05 = fModel(
+FMODEL_HIGHN_P05 = fModel(
     "P F=1/2, ν > 5.7", # [Phys. Rev. X 15, 011009 (2025)] # fit for ν > 28, but extrapolates nicely down for ν > 5.7
     8,
     ["6snp 1P1", "6snp 3P1", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d", "6snp 3P0", "4f13 5d 6snl e"],
@@ -105,7 +105,7 @@ RYDBERG_P05 = fModel(
     [-sqrt(2/3) -sqrt(1/3) 0 0 0 0 0 0; 1/(2sqrt(3)) -sqrt(1/6) 0 0 0 0 sqrt(3)/2 0; 0 0 1 0 0 0 0 0; 0 0 0 1 0 0 0 0; 0 0 0 0 1 0 0 0; 0 0 0 0 0 1 0 0; -1/2 1/sqrt(2) 0 0 0 0 1/2 0; 0 0 0 0 0 0 0 1]
 )
 
-RYDBERG_P15 = fModel(
+FMODEL_HIGHN_P15 = fModel(
     "P F=3/2, ν > 18", # [Phys. Rev. X 15, 011009 (2025)] # fit for ν > 28, but extrapolates nicely down for ν > 18
     10,
     ["6snp 1P1", "6snp 3P1", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d", "6snp 3P2", "4f13 5d 6snl e", "4f13 5d 6snl f", "4f13 5d 6snl g"],
@@ -127,7 +127,7 @@ RYDBERG_P15 = fModel(
     [sqrt(5/3)/2 sqrt(5/6)/2 0 0 0 0 -sqrt(3/2)/2 0 0 0; -sqrt(1/3) sqrt(2/3) 0 0 0 0 0 0 0 0; 0 0 1 0 0 0 0 0 0 0; 0 0 0 1 0 0 0 0 0 0; 0 0 0 0 1 0 0 0 0 0; 0 0 0 0 0 1 0 0 0 0; 1/2 1/(2sqrt(2)) 0 0 0  0 sqrt(5/2)/2 0 0 0; 0 0 0 0 0 0 0 1 0 0; 0 0 0 0 0 0 0 0 1 0; 0 0 0 0 0 0 0 0 0 1]
 )
 
-RYDBERG_P25 = fModel(
+FMODEL_HIGHN_P25 = fModel(
     "P F=5/2, ν > 28", # [Phys. Rev. X 15, 011009 (2025)]
     4,
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
@@ -145,7 +145,7 @@ RYDBERG_P25 = fModel(
     [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1]
 )
 
-RYDBERG_D05 = fModel(
+FMODEL_HIGHN_D05 = fModel(
     "D F=1/2, ν > 30", # [Phys. Rev. X 15, 011009 (2025)]
     1,
     ["6snd 3D1"],
@@ -163,7 +163,7 @@ RYDBERG_D05 = fModel(
     [1;;]
 )
 
-RYDBERG_D15 = fModel(
+FMODEL_HIGHN_D15 = fModel(
     "D F=3/2, ν > 30", # [Phys. Rev. X 15, 011009 (2025)]
     6,
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D1"],
@@ -187,7 +187,7 @@ RYDBERG_D15 = fModel(
     [-sqrt(3/5) -sqrt(2/5) 0 0 0 0; sqrt(3/5)/2 -3/(2sqrt(10)) 0 0 0 sqrt(5/2)/2; 0 0 1 0 0 0; 0 0 0 1 0 0; 0 0 0 0 1 0; -1/2 sqrt(3/2)/2 0 0 0 sqrt(3/2)/2]
 )
 
-RYDBERG_D25 = fModel(
+FMODEL_HIGHN_D25 = fModel(
     "D F=5/2, ν > 30", # [Phys. Rev. X 15, 011009 (2025)]
     6,
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D3"],
@@ -211,7 +211,7 @@ RYDBERG_D25 = fModel(
     [sqrt(7/5)/2 sqrt(7/30) 0 0 0 -sqrt(5/3)/2; -sqrt(2/5) sqrt(3/5) 0 0 0 0; 0 0 1 0 0 0; 0 0 0 1 0 0; 0 0 0 0 1 0; 1/2 sqrt(1/6) 0 0 0 sqrt(7/3)/2]
 )
 
-RYDBERG_D35 = fModel(
+FMODEL_HIGHN_D35 = fModel(
     "D F=7/2, ν > 14", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)], provides good match around 18d
     1,
     ["6snd 3D3"],
@@ -229,7 +229,7 @@ RYDBERG_D35 = fModel(
     [1;;]
 )
 
-MODELS = [RYDBERG_S05, RYDBERG_S15, CORE_P05, RYDBERG_P05, RYDBERG_P15, RYDBERG_P25, RYDBERG_D05, RYDBERG_D15, RYDBERG_D25, RYDBERG_D35]
+MODELS = [FMODEL_HIGHN_S05, FMODEL_HIGHN_S15, FMODEL_LOWN_P05, FMODEL_HIGHN_P05, FMODEL_HIGHN_P15, FMODEL_HIGHN_P25, FMODEL_HIGHN_D05, FMODEL_HIGHN_D15, FMODEL_HIGHN_D25, FMODEL_HIGHN_D35]
 test_model(MODELS)
 
 end

@@ -2,7 +2,7 @@ module Yb173
 
 using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers, test_model
 
-export PARA, MODEL_S15, MODEL_S25, MODEL_S35, MODEL_P05, MODEL_P15, MODEL_P25, MODEL_P35, MODEL_P45
+export PARA, FMODEL_HIGHN_S15, FMODEL_HIGHN_S25, FMODEL_HIGHN_S35, FMODEL_HIGHN_P05, FMODEL_HIGHN_P15, FMODEL_HIGHN_P25, FMODEL_HIGHN_P35, FMODEL_HIGHN_P45
 
 # Isotope data
 PARA = Parameters(
@@ -24,7 +24,7 @@ PARA = Parameters(
 # https://journals.aps.org/pra/abstract/10.1103/PhysRevA.102.022810
 
 # MQDT Models
-MODEL_S15 = fModel(
+FMODEL_HIGHN_S15 = fModel(
     "S F=3/2",
     1,
     ["6sns 3S1"],
@@ -43,7 +43,7 @@ MODEL_S15 = fModel(
     [1;;]
 )
 
-MODEL_S25 = fModel(
+FMODEL_HIGHN_S25 = fModel(
     "S F=5/2",
     7,
     ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c", "6sns 3S1"],
@@ -68,7 +68,7 @@ MODEL_S25 = fModel(
     [sqrt(5)/2/sqrt(3) 0 0 0 0 0 sqrt(7)/2/sqrt(3); 0 1 0 0 0 0 0; 0 0 -sqrt(2/3) 0 sqrt(1/3) 0 0; 0 0 0 1 0 0 0; 0 0 sqrt(1/3) 0 sqrt(2/3) 0 0; 0 0 0 0 0 1 0; sqrt(7)/2/sqrt(3) 0 0 0 0 0 -sqrt(5)/2/sqrt(3)]
 )
 
-MODEL_S35 = fModel(
+FMODEL_HIGHN_S35 = fModel(
     "S F=7/2",
     1,
     ["6sns 3S1"],
@@ -87,7 +87,7 @@ MODEL_S35 = fModel(
     [1;;]
 )
 
-MODEL_P05 = fModel(
+FMODEL_HIGHN_P05 = fModel(
     "P F=1/2",
     4,
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
@@ -106,7 +106,7 @@ MODEL_P05 = fModel(
     [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1]
 )
 
-MODEL_P15 = fModel(
+FMODEL_HIGHN_P15 = fModel(
     "P F=3/2",
     10,
     ["6snp 1P1", "6snp 3P1", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d", "6snp 3P2", "4f13 5d 6snl e", "4f13 5d 6snl f", "4f13 5d 6snl g"],
@@ -129,7 +129,7 @@ MODEL_P15 = fModel(
     [0.57735 0.288675 0 0 0 0 0.763763 0 0 0; -0.816497 0.204124 0 0 0 0 0.540062 0 0 0; 0 0 1 0 0 0 0 0 0 0; 0 0 0 1 0 0 0 0 0 0; 0 0 0 0 1 0 0 0 0 0; 0 0 0 0 0 1 0 0 0 0; 0 0.935414 0 0 0  0 -0.353553 0 0 0; 0 0 0 0 0 0 0 1 0 0; 0 0 0 0 0 0 0 0 1 0; 0 0 0 0 0 0 0 0 0 1]'
 )
 
-MODEL_P25 = fModel(
+FMODEL_HIGHN_P25 = fModel(
     "P F=5/2",
     12,
     ["6snp 1P1", "6snp 3P1", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d", "6snp 3P0", "4f13 5d 6snl e", "6snp 3P2", "4f13 5d 6snl f", "4f13 5d 6snl g", "4f13 5d 6snl h"],
@@ -154,7 +154,7 @@ MODEL_P25 = fModel(
     [0.440959 -0.372678 0 0 0 0 0.471405 0 0.666667 0 0 0; -0.62361 0.333333 0 0 0 0 0.527046 0 0.471405 0 0 0; 0 0 1 0 0 0 0 0 0 0 0 0; 0 0 0 1 0 0 0 0 0 0 0 0; 0 0 0 0 1 0 0 0 0 0 0 0; 0 0 0 0 0 1 0 0 0 0 0 0; -0.645497 0 0 0 0 0 -0.763763 0 0 0 0 0; 0 0 0 0 0 0 0 1 0 0 0 0; 0 0.816497 0 0 0 0 0 0 -0.57735 0 0 0; 0 0 0 0 0 0 0 0 0 1 0 0; 0 0 0 0 0 0 0 0 0 0 1 0; 0 0 0 0 0 0 0 0 0 0 0 1]'
 )
 
-MODEL_P35 = fModel(
+FMODEL_HIGHN_P35 = fModel(
     "P F=7/2",
     10,
     ["6snp 1P1", "6snp 3P1", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d", "6snp 3P2", "4f13 5d 6snl e", "4f13 5d 6snl f", "4f13 5d 6snl g"],
@@ -177,7 +177,7 @@ MODEL_P35 = fModel(
     [0.645497 -0.57735 0 0 0 0 0.5 0 0 0; 0.456435 0.816497 0 0 0 0 0.353553 0 0 0; 0 0 1 0 0 0 0 0 0 0; 0 0 0 1 0 0 0 0 0 0; 0 0 0 0 1 0 0 0 0 0; 0 0 0 0 0 1 0 0 0 0; 0.612372 0 0 0 0  0 -0.790569 0 0 0; 0 0 0 0 0 0 0 1 0 0; 0 0 0 0 0 0 0 0 1 0; 0 0 0 0 0 0 0 0 0 1]'
 )
 
-MODEL_P45 = fModel(
+FMODEL_HIGHN_P45 = fModel(
     "P F=9/2",
     4,
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
@@ -196,7 +196,7 @@ MODEL_P45 = fModel(
     [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1]
 )
 
-MODELS = [MODEL_S15, MODEL_S25, MODEL_S35, MODEL_P05, MODEL_P15, MODEL_P25, MODEL_P35, MODEL_P45]
+MODELS = [FMODEL_HIGHN_S15, FMODEL_HIGHN_S25, FMODEL_HIGHN_S35, FMODEL_HIGHN_P05, FMODEL_HIGHN_P15, FMODEL_HIGHN_P25, FMODEL_HIGHN_P35, FMODEL_HIGHN_P45]
 test_model(MODELS)
 
 end

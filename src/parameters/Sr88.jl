@@ -2,7 +2,7 @@ module Sr88
 
 using ..MQDT: Parameters, fModel, kModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers, test_model
 
-export PARA, FMODEL_G1, FMODEL_S0, FMODEL_S1, FMODEL_P0, FMODEL_P1, FMODEL_P2, FMODEL_D1, FMODEL_D2, FMODEL_D3, FMODEL_F2, FMODEL_F3, FMODEL_F4
+export PARA, FMODEL_LOWN_P1, FMODEL_HIGHN_S0, FMODEL_HIGHN_S1, FMODEL_HIGHN_P0, FMODEL_HIGHN_P1, FMODEL_HIGHN_P2, FMODEL_HIGHN_D1, FMODEL_HIGHN_D2, FMODEL_HIGHN_D3, FMODEL_HIGHN_F2, FMODEL_HIGHN_F3, FMODEL_HIGHN_F4
 
 # Isotope data 
 PARA = Parameters(
@@ -17,7 +17,7 @@ PARA = Parameters(
 )
 
 # MQDT Models
-FMODEL_S0 = fModel(
+FMODEL_HIGHN_S0 = fModel(
     "S J=0",
     1,
     ["5sns 1S0"],
@@ -35,7 +35,7 @@ FMODEL_S0 = fModel(
     [1;;]
 )
 
-FMODEL_S1 = fModel(
+FMODEL_HIGHN_S1 = fModel(
     "S J=1",
     1,
     ["5sns 3S1"],
@@ -53,7 +53,7 @@ FMODEL_S1 = fModel(
     [1;;]
 )
 
-FMODEL_G1 = fModel(
+FMODEL_LOWN_P1 = fModel(
     "recombination",
     2,
     ["5snp 1P1", "5snp 3P1"],
@@ -73,7 +73,7 @@ FMODEL_G1 = fModel(
     [-sqrt(1/3) sqrt(2/3); sqrt(2/3) sqrt(1/3)]
 )
 
-FMODEL_P0 = fModel(
+FMODEL_HIGHN_P0 = fModel(
     "P J=0",
     1,
     ["5snp 3P0"],
@@ -91,7 +91,7 @@ FMODEL_P0 = fModel(
     [1;;]
 )
 
-FMODEL_P1 = fModel(
+FMODEL_HIGHN_P1 = fModel(
     "P J=1",
     2,
     ["5snp 1P1", "5snp 3P1"],
@@ -111,7 +111,7 @@ FMODEL_P1 = fModel(
     [-sqrt(1/3) sqrt(2/3); sqrt(2/3) sqrt(1/3)]
 )
 
-FMODEL_P2 = fModel(
+FMODEL_HIGHN_P2 = fModel(
     "P J=2",
     1,
     ["5snp 3P2"],
@@ -129,7 +129,7 @@ FMODEL_P2 = fModel(
     [1;;]
 )
 
-FMODEL_D1 = fModel(
+FMODEL_HIGHN_D1 = fModel(
     "D J=1",
     1,
     ["5snd 3D1"],
@@ -147,7 +147,7 @@ FMODEL_D1 = fModel(
     [1;;]
 )
 
-FMODEL_D2 = fModel(
+FMODEL_HIGHN_D2 = fModel(
     "D J=2",
     2,
     ["5snd 1D2", "5snd 3D2"],
@@ -167,7 +167,7 @@ FMODEL_D2 = fModel(
     [-sqrt(2/5) sqrt(3/5); sqrt(3/5) sqrt(2/5)]
 )
 
-FMODEL_D3 = fModel(
+FMODEL_HIGHN_D3 = fModel(
     "D J=3",
     1,
     ["5snd 3D3"],
@@ -185,7 +185,7 @@ FMODEL_D3 = fModel(
     [1;;]
 )
 
-FMODEL_F2 = fModel(
+FMODEL_HIGHN_F2 = fModel(
     "F J=2",
     1,
     ["5snd 3F2"],
@@ -203,7 +203,7 @@ FMODEL_F2 = fModel(
     [1;;]
 )
 
-FMODEL_F3 = fModel(
+FMODEL_HIGHN_F3 = fModel(
     "F J=3",
     2,
     ["5snd 1F3", "5snd 3F3"],
@@ -223,7 +223,7 @@ FMODEL_F3 = fModel(
     [-sqrt(3/7) sqrt(4/7); sqrt(4/7) sqrt(3/7)]
 )
 
-FMODEL_F4 = fModel(
+FMODEL_HIGHN_F4 = fModel(
     "F J=4",
     1,
     ["5snd 3F4"],
@@ -241,7 +241,7 @@ FMODEL_F4 = fModel(
     [1;;]
 )
 
-FMODELS = [FMODEL_G1, FMODEL_S0, FMODEL_S1, FMODEL_P0, FMODEL_P1, FMODEL_P2, FMODEL_D1, FMODEL_D2, FMODEL_D3, FMODEL_F2, FMODEL_F3, FMODEL_F4]
+FMODELS = [FMODEL_LOWN_P1, FMODEL_HIGHN_S0, FMODEL_HIGHN_S1, FMODEL_HIGHN_P0, FMODEL_HIGHN_P1, FMODEL_HIGHN_P2, FMODEL_HIGHN_D1, FMODEL_HIGHN_D2, FMODEL_HIGHN_D3, FMODEL_HIGHN_F2, FMODEL_HIGHN_F3, FMODEL_HIGHN_F4]
 test_model(FMODELS)
 
 KMODEL_S0 = kModel(
