@@ -8,10 +8,25 @@ using GSL
 using Memoize
 using DataFrames
 
-export 
-    lsQuantumNumbers, jjQuantumNumbers, fjQuantumNumbers, lsChannels, jjChannels, fjChannels,
-    fModel, kModel, Parameters, EigenStates, BasisArray, DataBaseArray, # structs
-    eigenstates, basisarray, databasearray, matrix_element, state_data, matrix_data, tri_to_full # functions
+export lsQuantumNumbers,
+    jjQuantumNumbers,
+    fjQuantumNumbers,
+    lsChannels,
+    jjChannels,
+    fjChannels,
+    fModel,
+    kModel,
+    Parameters,
+    EigenStates,
+    BasisArray,
+    DataBaseArray,
+    eigenstates,
+    basisarray,
+    databasearray,
+    matrix_element,
+    state_data,
+    matrix_data,
+    tri_to_full
 
 include("general.jl")
 include("boundstates.jl")

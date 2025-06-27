@@ -18,7 +18,8 @@ function state_data(T::BasisArray, P::Parameters)
         f = get_f(T),
         nu = get_nu(T),
         l = exp_l(T),
-        S = exp_S(T))
+        S = exp_S(T),
+    )
     return df
 end
 
@@ -42,10 +43,10 @@ function state_data(T::DataBaseArray, P::Parameters)
         std_s = std_S(T),
         std_l_ryd = std_lr(T),
         std_j_ryd = std_Jr(T),
-        is_j_total_momentum = is_J(T, P), 
+        is_j_total_momentum = is_J(T, P),
         is_calculated_with_mqdt = is_mqdt(T),
-        underspecified_channel_contribution = get_neg(T)
-        )
+        underspecified_channel_contribution = get_neg(T),
+    )
     return df
 end
 
@@ -56,13 +57,10 @@ See also [`state_data`](@ref)
 
 Store a reduced matrix elements as a data frame as used by the PAIRINTERACTION software.
 """
-function matrix_data(T::SparseMatrixCSC{Float64, Int64})
+function matrix_data(T::SparseMatrixCSC{Float64,Int64})
     m = findnz(T) # non-zero elements
     t = findall(m[1] .<= m[2]) # upper triangle
-    df = DataFrame(
-        id_initial = m[1][t], 
-        id_final = m[2][t], 
-        value = m[3][t])
+    df = DataFrame(id_initial = m[1][t], id_final = m[2][t], value = m[3][t])
     return df
 end
 
@@ -71,7 +69,7 @@ See also [`matrix_data`](@ref)
 
     tri_to_full(M::DataFrame, S::DataFrame)
 
-Converts a reduced matrix elements data frame storing the upper triangle to a data frame 
+Converts a reduced matrix elements data frame storing the upper triangle to a data frame
 storing the full matrix including the wigner phase convention (-1)^(f_final-f_initial).
 """
 function tri_to_full(M::DataFrame, S::DataFrame)
@@ -82,7 +80,7 @@ function tri_to_full(M::DataFrame, S::DataFrame)
     val = M.value
     D = sparse(i1, i2, val, s, s)
     for i in axes(D, 1)
-        for j in i:s
+        for j = i:s
             d = D[i, j]
             if !iszero(d)
                 D[j, i] = d * (-1)^(f[i]-f[j])
@@ -101,7 +99,7 @@ end
 function get_e(T::BasisArray, P::Parameters)
     t = Vector{Float64}(undef, size(T))
     for i in eachindex(t)
-        t[i] = P.threshold - P.rydberg ./ T.states[i].energy.^2
+        t[i] = P.threshold - P.rydberg ./ T.states[i].energy .^ 2
     end
     return t
 end
@@ -134,7 +132,7 @@ function exp_q(q::Vector, n::Vector)
     if allequal(q)
         return Float64(q[1])
     else
-        return dot(q, n.^2)
+        return dot(q, n .^ 2)
     end
 end
 
@@ -142,8 +140,8 @@ function std_q(q::Vector, n::Vector)
     if allequal(q)
         return 0.0
     else
-        e1 = dot(q, n.^2)^2
-        e2 = dot(q.^2, n.^2)
+        e1 = dot(q, n .^ 2)^2
+        e2 = dot(q .^ 2, n .^ 2)
         if abs(e1 - e2) < 1e-11
             return 0.0
         else
@@ -187,7 +185,7 @@ end
 function get_e(T::DataBaseArray, P::Parameters)
     t = Vector{Float64}(undef, size(T))
     for i in eachindex(t)
-        t[i] = P.threshold - P.rydberg ./ T.states[i].nu.^2
+        t[i] = P.threshold - P.rydberg ./ T.states[i].nu .^ 2
     end
     return t / 219474.6313632 # convert 1/cm to atomic units
 end

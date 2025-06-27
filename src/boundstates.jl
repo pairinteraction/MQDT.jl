@@ -8,7 +8,7 @@ See also [`theta_rr`](@ref)
     theta(N::Number, M::Matrix)
     theta(N::Vector, M::Matrix)
 
-Given `M` contains quantum defect parameters, where the k-th column represents the (k-1)st order of energy dependence, 
+Given `M` contains quantum defect parameters, where the k-th column represents the (k-1)st order of energy dependence,
 this function returns the specific quantum defect at principal quantum number `N`, where `N` can also be a list.
 
 # Examples
@@ -23,8 +23,8 @@ MQDT.theta(60, [0.4 10 100; 0.4 1 0])
 function theta(N::Number, M::Matrix)
     l, w = size(M)
     t = zeros(l)
-    for i in 1:w
-        t .+= M[:,i] * (1/N^2)^(i-1)
+    for i = 1:w
+        t .+= M[:, i] * (1/N^2)^(i-1)
     end
     return t
 end
@@ -32,8 +32,8 @@ end
 function theta(N::Vector, M::Matrix)
     l, w = size(M)
     t = zeros(l)
-    for i in 1:w
-        t .+= M[:,i] .* (1 ./ N.^2).^(i-1)
+    for i = 1:w
+        t .+= M[:, i] .* (1 ./ N .^ 2) .^ (i-1)
     end
     return t
 end
@@ -44,7 +44,7 @@ See also [`theta`](@ref)
     theta_rr(N::Number, M::Matrix, index::Int)
 
 Similar to `theta`, but here the energy dependence is assumed to be according to the Rydberg-Ritz formula.
-Given `M` contains quantum defect parameters, where the k-th column represents the (k-1)st order of energy dependence, 
+Given `M` contains quantum defect parameters, where the k-th column represents the (k-1)st order of energy dependence,
 this function returns the specific quantum defect at principal quantum number `N`, where `N` can also be a list.
 
 # Examples
@@ -56,8 +56,8 @@ MQDT.theta_rr(60, [0.4 10 100; 0.4 1 0], 1)
 """
 function theta_rr(N::Number, M::Matrix, index::Int)
     if !isempty(index)
-        m = M[index,:]
-        t = 0.
+        m = M[index, :]
+        t = 0.0
         for i in eachindex(m)
             t += m[i] * (1/(N-m[1])^2)^(i-1)
         end
@@ -92,7 +92,7 @@ MQDT.nu(60, [50442.795744, 83967.7, 80835.39, 77504.98, 50443.217463], 50443.217
 ```
 """
 function nu(N::Number, T::Vector, I::Number, R::Number)
-    return 1 ./ sqrt.((T .- I)./R .+ 1/N^2)
+    return 1 ./ sqrt.((T .- I) ./ R .+ 1/N^2)
 end
 
 function nu(N::Number, M::Model, P::Parameters)
@@ -105,7 +105,7 @@ end
 function nu(N::Vector, M::Model, P::Parameters)
     n = Matrix{Float64}(undef, M.size, length(N))
     for i in eachindex(N)
-        n[:,i] = nu(N[i], M, P)
+        n[:, i] = nu(N[i], M, P)
     end
     return n
 end
@@ -124,7 +124,7 @@ Given a principal quantum number, return the energy, depending on the ionization
 ```
 """
 function epsilon(N, T, R)
-    return T .- R ./ N.^2
+    return T .- R ./ N .^ 2
 end
 
 function epsilon(N, P::Parameters)
@@ -190,7 +190,7 @@ function couple(C::String)
     c = parse(Int, C)
     i = div(c, 10)
     j = mod(c, 10)
-    if j == 0 
+    if j == 0
         i = div(c, 100)
         j = mod(c, 100)
     end
@@ -225,8 +225,8 @@ function rot(T::Number, C::String, D::Int)
     r = [cos(T) -sin(T); sin(T) cos(T)]
     out = diagm(ones(D))
     i, j = couple(C)
-    out[[i,j],[i,j]] = r
-    return out 
+    out[[i, j], [i, j]] = r
+    return out
 end
 
 function rot(T::Vector, C::Vector{String}, D::Int)
@@ -241,8 +241,8 @@ function rot(N::Number, M::fModel, P::Parameters)
     if iszero(M.angles) # check presence of channel mixing
         return diagm(ones(M.size))
     else
-        t = M.angles[:,1]
-        i = findall(!iszero, M.angles[:,2]) # check energy dependence
+        t = M.angles[:, 1]
+        i = findall(!iszero, M.angles[:, 2]) # check energy dependence
         if !isempty(i)
             j = couple(M.mixing[i[1]])[1] # find involved channel
             n = nu(N, M, P)[j] # find nu relative to threshold
@@ -311,7 +311,9 @@ function mroots(N::Number, M::Model, P::Parameters)
     for i in eachindex(z)
         mz = m(z[i])
         if abs(mz) > 1e-10
-            println("Warning: skipped a root that seems inaccurate. Value was $(mz) at n=$(z[i]) for $(M.name).")
+            println(
+                "Warning: skipped a root that seems inaccurate. Value was $(mz) at n=$(z[i]) for $(M.name).",
+            )
         else
             push!(c, i)
         end
@@ -321,7 +323,7 @@ end
 
 function mroots(N1::Number, N2::Number, M::Model, P::Parameters)
     z = Float64[]
-    for i in N1:N2-1
+    for i = N1:(N2-1)
         append!(z, mroots(i, M, P))
     end
     return z
@@ -346,21 +348,25 @@ end
 Returns the nullspace of the M matrix, which corresponds to the channel coefficents for an MQDT bound state.
 """
 function LinearAlgebra.nullspace(n::Vector{Float64}, M::Matrix)
-    m = M ./ n'.^(3/2)
+    m = M ./ n' .^ (3/2)
     e = eigen(m)
     s = sortperm(abs.(e.values))
     i = s[1]
     f = e.values[i]
-    if  abs(f) > 1e-11
-        println("Warning: nullspace may not be accurate. Smallest eigenvalue is $f for nu=$(n[1]).")
+    if abs(f) > 1e-11
+        println(
+            "Warning: nullspace may not be accurate. Smallest eigenvalue is $f for nu=$(n[1]).",
+        )
     end
     if length(s) > 1
         g = e.values[s[2]]
         if abs(g) < 1e-14
-            println("Warning: nullspace may not be unique. Second smallest eigenvalue is $g for nu=$(n[1]).")
+            println(
+                "Warning: nullspace may not be unique. Second smallest eigenvalue is $g for nu=$(n[1]).",
+            )
         end
     end
-    return e.vectors[:,i]
+    return e.vectors[:, i]
 end
 
 """
@@ -368,7 +374,7 @@ See also [`eigenenergies`](@ref)
 
     eigenstates(N1::Number, N2::Number, M::Model, P::Parameters)
 
-Function that returns the bound states corresponding to an MQDT model in the form of an instance of `EigenStates`, 
+Function that returns the bound states corresponding to an MQDT model in the form of an instance of `EigenStates`,
 which contains the global reference principal quantum number, the channel-dependent principal quantum numbers, as well as the channel coefficients.
 """
 function eigenstates(N1::Number, N2::Number, M::Model, P::Parameters)
@@ -377,8 +383,8 @@ function eigenstates(N1::Number, N2::Number, M::Model, P::Parameters)
     a = similar(n)
     for i in eachindex(z)
         m = mfunc(z[i])
-        t = nullspace(n[:,i], m)
-        a[:,i] = t
+        t = nullspace(n[:, i], m)
+        a[:, i] = t
     end
     return EigenStates(z, n, a)
 end
@@ -401,14 +407,14 @@ function basisarray(T::EigenStates, M::fModel)
     e = T.n
     p = unique_parity(c)
     f = good_quantum_number(c)
-    n = T.nu[F,:]
+    n = T.nu[F, :]
     l = get_lr(c)
-    a = T.a[F,:]
+    a = T.a[F, :]
     t = M.unitary[F, F]
     S = get_S(M)
     s = diag(t * diagm(S) * t')
     for k in eachindex(e)
-        push!(B, BasisState(e[k], p, f, n[:,k], l, s, a[:,k], c))
+        push!(B, BasisState(e[k], p, f, n[:, k], l, s, a[:, k], c))
     end
     return BasisArray(B)
 end
@@ -442,10 +448,10 @@ function databasearray(T::EigenStates, M::fModel)
     p = unique_parity(c)
     f = good_quantum_number(c)
     n_all = T.nu
-    n_rel = T.nu[F,:]
+    n_rel = T.nu[F, :]
     a_all = T.a
-    a_rel = T.a[F,:]
-    a_irr = T.a[U,:]
+    a_rel = T.a[F, :]
+    a_irr = T.a[U, :]
     t = M.unitary[F, F]
     S = get_S(M)
     L = get_L(M)
@@ -457,8 +463,25 @@ function databasearray(T::EigenStates, M::fModel)
     j_ryd = get_Jr(c)
     B = Vector{DataBaseState}()
     for i in eachindex(e)
-        under = sum(a_irr[:,i].^2)
-        push!(B, DataBaseState(e[i], p, f, n_rel[:,i], n_all[:,i], a_rel[:,i], a_all[:,i], s, l, j, l_ryd, j_ryd, under))
+        under = sum(a_irr[:, i] .^ 2)
+        push!(
+            B,
+            DataBaseState(
+                e[i],
+                p,
+                f,
+                n_rel[:, i],
+                n_all[:, i],
+                a_rel[:, i],
+                a_all[:, i],
+                s,
+                l,
+                j,
+                l_ryd,
+                j_ryd,
+                under,
+            ),
+        )
     end
     return DataBaseArray(B)
 end

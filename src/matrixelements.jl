@@ -20,12 +20,19 @@ MQDT.radialwavefunction(1000, 40., 1)
 ```
 """
 function radialwavefunction(r::Number, n::Int, l::Int)
-    r * 2/n^2 * sqrt(sf_gamma(n-l)/sf_gamma(n+l+1)) * exp(-r/n) * (2r/n)^l * sf_laguerre_n(n-l-1, 2l+1, 2r/n)
+    r * 2/n^2 *
+    sqrt(sf_gamma(n-l)/sf_gamma(n+l+1)) *
+    exp(-r/n) *
+    (2r/n)^l *
+    sf_laguerre_n(n-l-1, 2l+1, 2r/n)
 end
 
 function radialwavefunction(r::Number, n::Float64, l::Int)
-    n = round(n, digits=8)
-    1/n * 1/sqrt(sf_gamma(n+l+1) * sf_gamma(n-l)) * exp(-r/n) * (2r/n)^(l+1) * sf_hyperg_U(l+1-n, 2(l+1), 2r/n)
+    n = round(n, digits = 8)
+    1/n * 1/sqrt(sf_gamma(n+l+1) * sf_gamma(n-l)) *
+    exp(-r/n) *
+    (2r/n)^(l+1) *
+    sf_hyperg_U(l+1-n, 2(l+1), 2r/n)
 end
 
 """
@@ -74,10 +81,10 @@ See also [`radial_moment`](@ref)
 
     radial_overlap(n1, n2, l1, l2)
 
-Analytic overlap of two radial wave functions. Eq. 16 in [PRA 97, 022508 (2018)]. 
-I actually think this formula may be totally wrong. 
+Analytic overlap of two radial wave functions. Eq. 16 in [PRA 97, 022508 (2018)].
+I actually think this formula may be totally wrong.
 Results are not in line with numeric integration using MQDT.radial_moment(0, ...).
-The odd thing is that the magnetic moments seem correct though. 
+The odd thing is that the magnetic moments seem correct though.
 
 # Examples
 
@@ -90,7 +97,7 @@ function radial_overlap(n1, n2, l1, l2)
     b1 = beta(n1, l1)
     b2 = beta(n2, l2)
     if n1 == n2 && l1 == l2
-        return 1.
+        return 1.0
     elseif b1 != b2
         return 2sqrt(n1*n2)/(n1+n2) * sin(b1-b2)/(b1-b2)
     else
@@ -119,14 +126,14 @@ MQDT.radial_moment(1, 30, 31, 1, 2)
     r2 = sqrt(3n^2)
     dr = r1 .+ (r2-r1)/2 .* (1 .+ points)
     nn1, nn2 = check_large_n(n1, n2)
-    w1 = radialwavefunction.(dr.^2, nn1, l1)
-    w2 = radialwavefunction.(dr.^2, nn2, l2)
-    res = dot(weights .* (r2-r1)/2, w1 .* w2 .* 2dr.^(2order + 1))
+    w1 = radialwavefunction.(dr .^ 2, nn1, l1)
+    w2 = radialwavefunction.(dr .^ 2, nn2, l2)
+    res = dot(weights .* (r2-r1)/2, w1 .* w2 .* 2dr .^ (2order + 1))
     return res
 end
 
 """
-See also [`radial_overlap`](@ref), [`radial_moment`](@ref), 
+See also [`radial_overlap`](@ref), [`radial_moment`](@ref),
 
     radial_integral(order::Int, n1, n2, l1, l2)
 
@@ -167,7 +174,7 @@ MQDT.radial_matrix(1, [30, 30], [31, 31], [1, 2], [2, 1])
     R = zeros(length(n1), length(n2))
     for i in eachindex(n1)
         for j in eachindex(n2)
-            R[i,j] = radial_integral(k, n1[i], n2[j], l1[i], l2[j])
+            R[i, j] = radial_integral(k, n1[i], n2[j], l1[i], l2[j])
         end
     end
     return R
@@ -188,15 +195,23 @@ Returns the angular matrix elements (i.e. an analytically evaluated integral of 
 Formula is found in Robicheaux2018 Eq. 20 and in Vaillant2014 Eq. C3
 """
 function angular_moment(k, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    a = 0.
+    a = 0.0
     if (q1.sc, q1.lc, q1.Jc, q1.Fc) == (q2.sc, q2.lc, q2.Jc, q2.Fc)
-        if iseven(q1.lr+q2.lr+k) && abs(q1.F-q2.F) <= k && abs(q1.lr-q2.lr) <= k && abs(q1.Jr-q2.Jr) <= k
+        if iseven(q1.lr+q2.lr+k) &&
+           abs(q1.F-q2.F) <= k &&
+           abs(q1.lr-q2.lr) <= k &&
+           abs(q1.Jr-q2.Jr) <= k
             Λ = q1.F + q1.Fc + q1.Jr + q2.Jr + q1.lr + q2.lr + 0.5
             sq = square_brakets([q1.F, q2.F, q1.Jr, q2.Jr, q1.lr, q2.lr])
             qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
             qn2 = Vector{Int64}(2*[q1.Jr, q1.F, q1.Fc, q2.F, q2.Jr, k])
             qn3 = Vector{Int64}(2*[q1.lr, q1.Jr, 0.5, q2.Jr, q2.lr, k])
-            a = (-1.)^Λ * sq * sf_coupling_3j(qn1...) * sf_coupling_6j(qn2...) * sf_coupling_6j(qn3...)
+            a =
+                (-1.0)^Λ *
+                sq *
+                sf_coupling_3j(qn1...) *
+                sf_coupling_6j(qn2...) *
+                sf_coupling_6j(qn3...)
         end
     end
     return a
@@ -224,7 +239,7 @@ end
 # end
 
 function angular_moment(k, q1::lsQuantumNumbers, q2::lsQuantumNumbers)
-    a = 0.
+    a = 0.0
     if (q1.lc, q1.S) == (q2.lc, q2.S)
         if iseven(q1.lr+q2.lr+k) && abs(q1.J-q2.J) <= k && abs(q1.lr-q2.lr) <= k
             Λ = q1.lc + q1.S
@@ -232,7 +247,12 @@ function angular_moment(k, q1::lsQuantumNumbers, q2::lsQuantumNumbers)
             qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
             qn2 = Vector{Int64}(2*[q1.J, k, q2.J, q1.L, q1.S, q2.L])
             qn3 = Vector{Int64}(2*[q1.L, k, q2.L, q1.lr, q1.lc, q2.lr])
-            a = (-1.)^Λ * sq * sf_coupling_3j(qn1...) * sf_coupling_6j(qn2...) * sf_coupling_6j(qn3...)
+            a =
+                (-1.0)^Λ *
+                sq *
+                sf_coupling_3j(qn1...) *
+                sf_coupling_6j(qn2...) *
+                sf_coupling_6j(qn3...)
         end
     end
     return a
@@ -252,7 +272,7 @@ This function is 'memoized' using the `Memoize` package.
     A = zeros(length(c1), length(c2))
     for i in eachindex(c1)
         for j in eachindex(c2)
-            A[i,j] = angular_moment(k, c1[i], c2[j])
+            A[i, j] = angular_moment(k, c1[i], c2[j])
         end
     end
     return A
@@ -280,12 +300,12 @@ function multipole_moment(k::Int, s1::BasisState, s2::BasisState)
     l2 = s2.lr
     a2 = s2.coeff
     k2 = s2.channels
-    M = 0.
+    M = 0.0
     if p1 == p2 && iseven(k) || p1 != p2 && isodd(k)
         R = radial_matrix(k, n1, n2, l1, l2)
         Y = angular_matrix(k, k1, k2)
         M = a1' * (Y .* R) * a2
-    end 
+    end
     return M
 end
 
@@ -311,7 +331,7 @@ function magnetic_dipole_moment(nd, mp, ic, s1::BasisState, s2::BasisState)
     l2 = s2.lr
     a2 = s2.coeff
     k2 = s2.channels
-    M = 0.
+    M = 0.0
     """
     this combination of radial and angular terms is for paramagnetic interaction (Zeeman term)
     """
@@ -319,7 +339,7 @@ function magnetic_dipole_moment(nd, mp, ic, s1::BasisState, s2::BasisState)
         R = radial_matrix(0, n1, n2, l1, l2)
         Y = magnetic_matrix(nd, mp, ic, k1, k2)
         M = a1' * (Y .* R) * a2
-    end 
+    end
     return M
 end
 
@@ -341,7 +361,7 @@ function special_quadrupole_moment(s1::BasisState, s2::BasisState)
     l2 = s2.lr
     a2 = s2.coeff
     k2 = s2.channels
-    M = 0.
+    M = 0.0
     """
     this combination of radial and angular terms is for diamagentic interaction
     """
@@ -349,7 +369,7 @@ function special_quadrupole_moment(s1::BasisState, s2::BasisState)
         R = radial_matrix(2, n1, n2, l1, l2)
         Y = angular_matrix(0, k1, k2)
         M = a1' * (Y .* R) * a2
-    end 
+    end
     return M
 end
 
@@ -367,7 +387,7 @@ This function is 'memoized' using the `Memoize` package.
     A = zeros(length(c1), length(c2))
     for i in eachindex(c1)
         for j in eachindex(c2)
-            A[i,j] = magneton(nd, mp, ic, c1[i], c2[j])
+            A[i, j] = magneton(nd, mp, ic, c1[i], c2[j])
         end
     end
     return A
@@ -406,7 +426,7 @@ function element_lr(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(q1.lr) * G1(q1, q2) * G2(q1, q2)
     else
-        return 0.
+        return 0.0
     end
 end
 
@@ -419,7 +439,7 @@ function element_sr(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(0.5) * G1(q1, q2) * G3(q1, q2)
     else
-        return 0.
+        return 0.0
     end
 end
 
@@ -432,7 +452,7 @@ function element_ic(ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(ic) * G4(q1, q2) * G5(q1, q2, ic)
     else
-        return 0.
+        return 0.0
     end
 end
 
@@ -445,7 +465,7 @@ function element_lc(ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(q1.lc) * G4(q1, q2) * G6(q1, q2, ic) * G7(q1, q2)
     else
-        return 0.
+        return 0.0
     end
 end
 
@@ -458,7 +478,7 @@ function element_sc(ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     if q1.sc == q2.sc && q1.lc == q2.lc && q1.lr == q2.lr
         return Λ(0.5) * G4(q1, q2) * G6(q1, q2, ic) * G8(q1, q2)
     else
-        return 0.
+        return 0.0
     end
 end
 
@@ -491,7 +511,7 @@ MQDT.square_brakets([1, 2, 3])
 ```
 """
 function square_brakets(a::Vector)
-    return sqrt(prod(2a.+1))
+    return sqrt(prod(2a .+ 1))
 end
 
 """
@@ -500,12 +520,12 @@ end
 Auxiliary function to calculate reduced matrix elements for the magnetic moment (Robicheaux2018 Eq. 25)
 """
 function G1(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    g = 0.
+    g = 0.0
     if q1.Jc == q2.Jc && q1.Fc == q2.Fc
         Λ = q1.Fc + q2.Jr + q1.F + 1
         sq = square_brakets([q1.F, q2.F])
         qn = Vector{Int64}(2*[q1.Jr, q1.F, q1.Fc, q2.F, q2.Jr, 1])
-        g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
     end
     return g
 end
@@ -516,12 +536,12 @@ end
 Auxiliary function to calculate reduced matrix elements for the magnetic moment (Robicheaux2018 Eq. 25)
 """
 function G2(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    g = 0.
+    g = 0.0
     if q1.lr == q2.lr
         Λ = 0.5 + q1.lr + q1.Jr + 1
         sq = square_brakets([q1.Jr, q2.Jr])
         qn = Vector{Int64}(2*[q1.lr, q1.Jr, 0.5, q2.Jr, q1.lr, 1])
-        g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
     end
     return g
 end
@@ -532,12 +552,12 @@ end
 Auxiliary function to calculate reduced matrix elements for the magnetic moment (Robicheaux2018 Eq. 25)
 """
 function G3(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    g = 0.
+    g = 0.0
     if q1.lr == q2.lr
         Λ = 0.5 + q1.lr + q2.Jr + 1
         sq = square_brakets([q1.Jr, q2.Jr])
         qn = Vector{Int64}(2*[0.5, q1.Jr, q1.lr, q2.Jr, 0.5, 1])
-        g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
     end
     return g
 end
@@ -548,12 +568,12 @@ end
 Auxiliary function to calculate reduced matrix elements for the magnetic moment (Robicheaux2018 Eq. 25)
 """
 function G4(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    g = 0.
+    g = 0.0
     if q1.Jr == q2.Jr
         Λ = q1.Fc + q1.Jr + q2.F + 1
         sq = square_brakets([q1.F, q2.F])
         qn = Vector{Int64}(2*[q1.Fc, q1.F, q1.Jr, q2.F, q2.Fc, 1])
-        g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
     end
     return g
 end
@@ -564,12 +584,12 @@ end
 Auxiliary function to calculate reduced matrix elements for the magnetic moment (Robicheaux2018 Eq. 25)
 """
 function G5(q1::fjQuantumNumbers, q2::fjQuantumNumbers, ic)
-    g = 0.
+    g = 0.0
     if q1.Jc == q2.Jc
         Λ = q1.Jc + ic + q1.Fc + 1
         sq = square_brakets([q1.Fc, q2.Fc])
         qn = Vector{Int64}(2*[ic, q1.Fc, q1.Jc, q2.Fc, ic, 1])
-        g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
     end
     return g
 end
@@ -583,7 +603,7 @@ function G6(q1::fjQuantumNumbers, q2::fjQuantumNumbers, ic)
     Λ = q1.Jc + ic + q2.Fc + 1
     sq = square_brakets([q1.Fc, q2.Fc])
     qn = Vector{Int64}(2*[q1.Jc, q1.Fc, ic, q2.Fc, q2.Jc, 1])
-    g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
+    g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
     return g
 end
 
@@ -593,12 +613,12 @@ end
 Auxiliary function to calculate reduced matrix elements for the magnetic moment (Robicheaux2018 Eq. 25)
 """
 function G7(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    g = 0.
+    g = 0.0
     if q1.sc == q2.sc && q1.lc == q2.lc
         Λ = q1.sc + q1.lc + q1.Jc + 1
         sq = square_brakets([q1.Jc, q2.Jc])
         qn = Vector{Int64}(2*[q1.lc, q1.Jc, q1.sc, q2.Jc, q1.lc, 1])
-        g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
     end
     return g
 end
@@ -609,12 +629,12 @@ end
 Auxiliary function to calculate reduced matrix elements for the magnetic moment (Robicheaux2018 Eq. 25)
 """
 function G8(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
-    g = 0.
+    g = 0.0
     if q1.sc == q2.sc && q1.lc == q2.lc
         Λ = q1.sc + q1.lc + q2.Jc + 1
         sq = square_brakets([q1.Jc, q2.Jc])
         qn = Vector{Int64}(2*[q1.sc, q1.Jc, q1.lc, q2.Jc, q1.sc, 1])
-        g = (-1.)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
     end
     return g
 end
@@ -642,12 +662,12 @@ function matrix_element(k::Int, B::BasisArray)
     for i in eachindex(st)
         b1 = st[i]
         f1 = b1.f
-        for j in i:length(st)
+        for j = i:length(st)
             b2 = st[j]
             f2 = b2.f
             m = multipole_moment(k, b1, b2)
             if !iszero(m)
-                M[i,j] = m
+                M[i, j] = m
                 """
                 # no need to save the lower triangle
                 if j != i
@@ -669,12 +689,12 @@ function matrix_element(B::BasisArray)
     for i in eachindex(st)
         b1 = st[i]
         f1 = b1.f
-        for j in i:length(st)
+        for j = i:length(st)
             b2 = st[j]
             f2 = b2.f
             m = special_quadrupole_moment(b1, b2)
             if !iszero(m)
-                M[i,j] = m
+                M[i, j] = m
                 """
                 # no need to save the lower triangle
                 if j != i
@@ -699,12 +719,12 @@ function matrix_element(A::Parameters, B::BasisArray)
     for i in eachindex(st)
         b1 = st[i]
         f1 = b1.f
-        for j in i:length(st)
+        for j = i:length(st)
             b2 = st[j]
             f2 = b2.f
             m = magnetic_dipole_moment(nd, mp, ic, b1, b2)
             if !iszero(m)
-                M[i,j] = m
+                M[i, j] = m
                 """
                 # no need to save the lower triangle
                 if j != i
@@ -720,7 +740,7 @@ end
 # --------------------------------------------------------
 # frame transformations
 # --------------------------------------------------------
-#   Additional code to span spin frames 
+#   Additional code to span spin frames
 #   and calculate transformations
 # --------------------------------------------------------
 
@@ -732,11 +752,11 @@ end
 
 function ls_channels(Q::AngularMomenta)
     out = Vector{lsQuantumNumbers}()
-    for S in 0:1
+    for S = 0:1
         for lc in Q.lc
             for lr in Q.lr
-                for L in abs(lc-lr):lc+lr
-                    for J in abs(L-S):L+S
+                for L = abs(lc-lr):(lc+lr)
+                    for J = abs(L-S):(L+S)
                         push!(out, lsQuantumNumbers(0.5, S, lc, lr, L, J))
                     end
                 end
@@ -749,10 +769,10 @@ end
 function jj_channels(Q::AngularMomenta)
     out = Vector{jjQuantumNumbers}()
     for lc in Q.lc
-        for jc in abs(lc-0.5):lc+0.5
+        for jc = abs(lc-0.5):(lc+0.5)
             for lr in Q.lr
-                for jr in abs(lr-0.5):lr+0.5
-                    for J in abs(jc-jr):jc+jr
+                for jr = abs(lr-0.5):(lr+0.5)
+                    for J = abs(jc-jr):(jc+jr)
                         push!(out, jjQuantumNumbers(0.5, lc, jc, lr, jr, J))
                     end
                 end
@@ -765,11 +785,11 @@ end
 function fj_channels(Q::AngularMomenta)
     out = Vector{fjQuantumNumbers}()
     for lc in Q.lc
-        for jc in abs(lc-0.5):lc+0.5
-            for fc in abs(Q.ic-jc):Q.ic+jc
+        for jc = abs(lc-0.5):(lc+0.5)
+            for fc = abs(Q.ic-jc):(Q.ic+jc)
                 for lr in Q.lr
-                    for jr in abs(lr-0.5):lr+0.5
-                        for ft in abs(fc-jr):fc+jr
+                    for jr = abs(lr-0.5):(lr+0.5)
+                        for ft = abs(fc-jr):(fc+jr)
                             push!(out, fjQuantumNumbers(0.5, lc, jc, fc, lr, jr, ft))
                         end
                     end
@@ -814,31 +834,31 @@ function fj_channels(C::fjChannels)
 end
 
 function ls_to_jj(q1::lsQuantumNumbers, q2::jjQuantumNumbers)
-    res = 0.
+    res = 0.0
     if (q1.sc, q1.lc, q1.lr, q1.J) == (q2.sc, q2.lc, q2.lr, q2.J)
         sq = square_brakets([q1.S, q1.L, q2.Jc, q2.Jr])
         qn = Vector{Int64}(2*[q1.sc, 0.5, q1.S, q1.lc, q1.lr, q1.L, q2.Jc, q2.Jr, q1.J])
         res = sq*sf_coupling_9j(qn...)
     end
-    return res 
+    return res
 end
 
 function jj_to_fj(q1::jjQuantumNumbers, q2::fjQuantumNumbers, ic)
-    res = 0.
+    res = 0.0
     if (q1.sc, q1.lc, q1.lr, q1.Jc, q1.Jr) == (q2.sc, q2.lc, q2.lr, q2.Jc, q2.Jr)
         Λ_io = q1.Jr + q2.Fc - ic - q1.J
         sq = square_brakets([q1.J, q2.Fc])
         qn = Vector{Int64}(2*[q1.Jr, q1.Jc, q1.J, ic, q2.F, q2.Fc])
-        res = (-1.)^Λ_io*sq*sf_coupling_6j(qn...)
+        res = (-1.0)^Λ_io*sq*sf_coupling_6j(qn...)
     end
-    return res 
+    return res
 end
 
 function matrix_ls_to_jj(in::lsChannels, out::jjChannels)
     t = Matrix{Float64}(undef, size(in), size(out))
     for i in axes(t, 1)
         for j in axes(t, 2)
-            t[i,j] = ls_to_jj(in.i[i], out.i[j])
+            t[i, j] = ls_to_jj(in.i[i], out.i[j])
         end
     end
     return t
@@ -848,7 +868,7 @@ function matrix_jj_to_fj(in::jjChannels, out::fjChannels, ic::Number)
     t = Matrix{Float64}(undef, size(in), size(out))
     for i in axes(t, 1)
         for j in axes(t, 2)
-            t[i,j] = jj_to_fj(in.i[i], out.i[j], ic)
+            t[i, j] = jj_to_fj(in.i[i], out.i[j], ic)
         end
     end
     return t
