@@ -1,0 +1,8 @@
+# https://github.blog/changelog/2022-03-24-ignore-commits-in-the-blame-view-beta/
+# https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#ignore-commits-in-the-blame-view
+#
+# To use interactively:
+# $ git blame --ignore-revs-file=.git-blame-ignore-revs ...
+
+# first time run pre-commit and JuliaFormatter
+f2d609db73c469aa07ab7290b2f85943ae9c62b1
