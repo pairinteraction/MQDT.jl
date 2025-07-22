@@ -10,20 +10,27 @@
 curl -fsSL https://install.julialang.org | sh
 ```
 
-## Running tests from within the repository
+## Running tests
 
 ```bash
 julia --project=. -e 'using Pkg; Pkg.test()'
 ```
 
-## Building docs from within the repository
+## Building docs
 
+From within the `docs` directory, you can build the documentation with:
 ```bash
-julia --project=docs -e 'import Pkg; Pkg.develop(path="."); Pkg.instantiate(); include("docs/make.jl")'
+julia --project=. -e 'import Pkg; Pkg.develop(path=".."); Pkg.instantiate(); include("make.jl")'
 ```
 
-## Running examples from within the repository
+## Running examples
 
+From within the `examples` directory, first initialize a new julia project and install the MQDT.jl package in development mode:
 ```bash
-julia --project=examples -e 'import Pkg; Pkg.develop(path="."); Pkg.instantiate(); include("examples/generate_lu_fano.jl")'
+julia --project=. -e 'import Pkg; Pkg.develop(path=".."); Pkg.instantiate()'
+```
+
+Then you can run a script (from within the `examples` directory) like this:
+```bash
+julia --project=. generate_lu_fano.jl
 ```

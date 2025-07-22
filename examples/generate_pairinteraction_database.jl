@@ -1,7 +1,7 @@
 using MQDT
 
 # choose species
-SP = :Yb174
+species = :Yb174
 
 # generate dispatch tables # TODO check whether the MODELS_TABLE is not missing any models
 const MODELS_TABLE = Dict(
@@ -72,22 +72,22 @@ const PARA_TABLE = Dict(
 )
 
 # calculate bound states
-n1, n2 = 35, 40 # above n ~ 95 will cause problems with the current call of hypergeometric functions from the GSL package
-models = MODELS_TABLE[SP]
-para = PARA_TABLE[SP]
-c_states = MQDT.eigenstates(1.5, 2.5, MQDT.Yb174.FMODEL_LOWN_P0, para) # clock states # TODO  make it work for SP != Yb174
-r_states = [MQDT.eigenstates(n1, n2, M, para) for M in models] # Rydberg states
+n_min, n_max = 35, 40 # above n ~ 95 will cause problems with the current call of hypergeometric functions from the GSL package
+models = MODELS_TABLE[species]
+parameters = PARA_TABLE[species]
+clock_states = MQDT.eigenstates(1.5, 2.5, MQDT.Yb174.FMODEL_LOWN_P0, parameters)  # TODO  make it work for species != Yb174
+rydberg_states = [MQDT.eigenstates(n_min, n_max, M, parameters) for M in models]
 
 # generate state table
-c_basis = MQDT.basisarray(c_states, MQDT.Yb174.FMODEL_LOWN_P0) # TODO make it work for SP != Yb174
-r_basis = MQDT.basisarray(r_states, models)
-basis = union(c_basis, r_basis)
-state_table = MQDT.state_data(basis, para)
+clock_basis = MQDT.basisarray(clock_states, MQDT.Yb174.FMODEL_LOWN_P0) # TODO make it work for species != Yb174
+rydberg_basis = MQDT.basisarray(rydberg_states, models)
+basis = union(clock_basis, rydberg_basis)
+state_table = MQDT.state_data(basis, parameters)
 
 # calculate matrix elements
 @time d1 = MQDT.matrix_element(1, basis) # dipole
 @time d2 = MQDT.matrix_element(2, basis) # quadrupole
-@time dm = MQDT.matrix_element(para, basis) # Zeeman
+@time dm = MQDT.matrix_element(parameters, basis) # Zeeman
 @time dd = MQDT.matrix_element(basis) # diamagnetic
 
 # generate matrix element table
@@ -97,10 +97,10 @@ mm = MQDT.matrix_data(dm)
 md = MQDT.matrix_data(dd)
 
 # prepare PAIRINTERACTION output
-c_db = MQDT.databasearray(c_states, MQDT.Yb174.FMODEL_LOWN_P0) # TODO make it work for SP != Yb174
-r_db = MQDT.databasearray(r_states, models)
+c_db = MQDT.databasearray(clock_states, MQDT.Yb174.FMODEL_LOWN_P0) # TODO make it work for species != Yb174
+r_db = MQDT.databasearray(rydberg_states, models)
 b_db = union(c_db, r_db)
-ST = MQDT.state_data(b_db, para)
+ST = MQDT.state_data(b_db, parameters)
 
 # store full matrix for PAIRINTERACTION (as opposed to upper triangle)
 M1 = MQDT.tri_to_full(m1, ST)
@@ -110,16 +110,16 @@ MD = MQDT.tri_to_full(md, ST)
 
 # store tables as csv files
 using CSV
-CSV.write("$(SP)_mqdt_states.csv", ST)
-CSV.write("$(SP)_mqdt_matrix_elements_d.csv", M1)
-CSV.write("$(SP)_mqdt_matrix_elements_q.csv", M2)
-CSV.write("$(SP)_mqdt_matrix_elements_mu.csv", MM)
-CSV.write("$(SP)_mqdt_matrix_elements_q0.csv", MD)
+CSV.write("$(species)_mqdt_states.csv", ST)
+CSV.write("$(species)_mqdt_matrix_elements_d.csv", M1)
+CSV.write("$(species)_mqdt_matrix_elements_q.csv", M2)
+CSV.write("$(species)_mqdt_matrix_elements_mu.csv", MM)
+CSV.write("$(species)_mqdt_matrix_elements_q0.csv", MD)
 
 # store tables as parquet files
 using Parquet2
-Parquet2.writefile("$(SP)_mqdt_states.parquet", ST)
-Parquet2.writefile("$(SP)_mqdt_matrix_elements_d.parquet", M1)
-Parquet2.writefile("$(SP)_mqdt_matrix_elements_q.parquet", M2)
-Parquet2.writefile("$(SP)_mqdt_matrix_elements_mu.parquet", MM)
-Parquet2.writefile("$(SP)_mqdt_matrix_elements_q0.parquet", MD)
+Parquet2.writefile("$(species)_mqdt_states.parquet", ST)
+Parquet2.writefile("$(species)_mqdt_matrix_elements_d.parquet", M1)
+Parquet2.writefile("$(species)_mqdt_matrix_elements_q.parquet", M2)
+Parquet2.writefile("$(species)_mqdt_matrix_elements_mu.parquet", MM)
+Parquet2.writefile("$(species)_mqdt_matrix_elements_q0.parquet", MD)

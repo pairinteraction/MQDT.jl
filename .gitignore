@@ -1,3 +1,6 @@
+# Ignore julia specific files
 Manifest*.toml
+
+# Ignore local development files
+playground/
 .vscode/
-/docs/build/
