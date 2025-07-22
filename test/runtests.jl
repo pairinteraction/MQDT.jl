@@ -1,6 +1,5 @@
 using MQDT
 using Test
-using GSL
 using LinearAlgebra
 using CGcoefficient
 
