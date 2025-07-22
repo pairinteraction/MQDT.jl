@@ -3,81 +3,7 @@
 # --------------------------------------------------------
 
 """
-    radialwavefunction(r::Number, n::Int, l::Int) = r* 2/n^2* sqrt(sf_gamma(n-l)/sf_gamma(n+l+1))* exp(-r/n)* (2r/n)^l* sf_laguerre_n(n-l-1, 2l+1, 2r/n)
-    radialwavefunction(r::Number, n::Float64, l::Int) = 1/n* 1/sqrt(sf_gamma(n+l+1)* sf_gamma(n-l))* exp(-r/n)* (2r/n)^(l+1)* sf_hyperg_U(l+1-n, 2(l+1), 2r/n)
-
-Evaluate the radial wave function for hydrogenic states using Laguerre polynomials and for quantum defect states using Whitaker functions.
-Calls function from the Gnu Scientific Library package `GSL`.
-
-# Examples
-
-```julia-repl
-MQDT.radialwavefunction(1000, 40, 1)
--0.014041583633649013
-
-MQDT.radialwavefunction(1000, 40., 1)
--0.014041583633649006
-```
-"""
-function radialwavefunction(r::Number, n::Int, l::Int)
-    r * 2/n^2 *
-    sqrt(sf_gamma(n-l)/sf_gamma(n+l+1)) *
-    exp(-r/n) *
-    (2r/n)^l *
-    sf_laguerre_n(n-l-1, 2l+1, 2r/n)
-end
-
-function radialwavefunction(r::Number, n::Float64, l::Int)
-    n = round(n, digits = 8)
-    1/n * 1/sqrt(sf_gamma(n+l+1) * sf_gamma(n-l)) *
-    exp(-r/n) *
-    (2r/n)^(l+1) *
-    sf_hyperg_U(l+1-n, 2(l+1), 2r/n)
-end
-
-"""
-    integrator_start(n1, n2, l1, l2)
-
-Heuristic for determination of the inner bound for radial integration depending on angular momentum.
-"""
-function integrator_start(n1, n2, l1, l2)
-    if l1 > l2
-        n, l = n1, l1
-    else
-        n, l = n2, l2
-    end
-    if l < 1
-        return 1e-3
-    elseif l < 2
-        return 1/4
-    elseif l < 4
-        return (2l-1)/2
-    else
-        return n^2 - n*sqrt(n^2 - l^2)
-    end
-end
-
-"""
-    check_large_n(n1, n2)
-
-Heuristic for the evaluation of wavefunctions at high n. Quantum defect wavefunctions in GSL are only evaluated up to n ~ 98.
-Therefore, if n > 98.563200745, the function rounds n to the nearest integer in order to evaluate hydrogenic functions instead.
-"""
-function check_large_n(n1, n2)
-    nlim = 98.563200745 # limit for l=3
-    if n1 < nlim && n2 < nlim
-        return n1, n2
-    elseif n1 < nlim
-        return n1, round(Int, n2)
-    elseif n2 < nlim
-        return round(Int, n1), n2
-    else
-        return round(Int, n1), round(Int, n2)
-    end
-end
-
-"""
-Get a cached rydberg state (where the wavefunction was already calculated) or create a new one.
+Get a cached rydberg state from the ryd-numerov package (where the wavefunction was already calculated) or create a new one.
 """
 @memoize function get_rydberg_state_cached(species, nu, l)
     ryd_numerov = pyimport("ryd_numerov")
@@ -97,44 +23,9 @@ Get a cached rydberg state (where the wavefunction was already calculated) or cr
 end
 
 """
-See also [`radial_moment`](@ref)
-
-    radial_overlap(n1, n2, l1, l2)
-
-Analytic overlap of two radial wave functions. Eq. 16 in [PRA 97, 022508 (2018)].
-I actually think this formula may be totally wrong.
-Results are not in line with numeric integration using MQDT.radial_moment(0, ...).
-The odd thing is that the magnetic moments seem correct though.
-
-# Examples
-
-```julia-repl
-MQDT.radial_overlap(30, 31, 1, 2)
-0.999865618490289
-```
-"""
-function radial_overlap(n1, n2, l1, l2; use_ryd_numerov::Bool = true)
-    if use_ryd_numerov
-        return radial_moment(0, n1, n2, l1, l2; use_ryd_numerov = true)
-    end
-
-    b1 = beta(n1, l1)
-    b2 = beta(n2, l2)
-    if n1 == n2 && l1 == l2
-        return 1.0
-    elseif b1 != b2
-        return 2sqrt(n1*n2)/(n1+n2) * sin(b1-b2)/(b1-b2)
-    else
-        return 2sqrt(n1*n2)/(n1+n2)
-    end
-end
-
-"""
-See also [`radial_overlap`](@ref)
-
     radial_moment(order::Int, n1, n2, l1, l2)
 
-Fast radial integration using Gauß-Legendre weights. See the `FastGaussQuadrature` package for details.
+Calculate the radial matrix element using the python `ryd-numerov` package.
 
 # Examples
 
@@ -143,54 +34,19 @@ MQDT.radial_moment(1, 30, 31, 1, 2)
 329.78054480806406
 ```
 """
-@memoize function radial_moment(order::Int, n1, n2, l1, l2; use_ryd_numerov::Bool = true)
-    if use_ryd_numerov
-        state_i = get_rydberg_state_cached("H_textbook", n1, l1)
-        state_f = get_rydberg_state_cached("H_textbook", n2, l2)
-        radial = state_i.calc_radial_matrix_element(state_f, order, unit = "a.u.")
-        return pyconvert(Float64, radial)
-    end
-
-    n = ceil(Int, max(n1, n2))
-    points, weights = gausslegendre(3n)
-    r1 = sqrt(integrator_start(n1, n2, l1, l2))
-    r2 = sqrt(3n^2)
-    dr = r1 .+ (r2-r1)/2 .* (1 .+ points)
-    nn1, nn2 = check_large_n(n1, n2)
-    w1 = radialwavefunction.(dr .^ 2, nn1, l1)
-    w2 = radialwavefunction.(dr .^ 2, nn2, l2)
-    res = dot(weights .* (r2-r1)/2, w1 .* w2 .* 2dr .^ (2order + 1))
-    return res
+@memoize function radial_moment(order::Int, n1, n2, l1, l2)
+    state_i = get_rydberg_state_cached("H_textbook", n1, l1)
+    state_f = get_rydberg_state_cached("H_textbook", n2, l2)
+    radial = state_i.calc_radial_matrix_element(state_f, order, unit = "a.u.")
+    return pyconvert(Float64, radial)
 end
 
 """
-See also [`radial_overlap`](@ref), [`radial_moment`](@ref),
-
-    radial_integral(order::Int, n1, n2, l1, l2)
-
-Combines the functions `radial_overlap` and `radial_moment`.
-
-# Examples
-
-```julia-repl
-MQDT.radial_integral(1, 30, 31, 1, 2)
-329.78054480806406
-```
-"""
-function radial_integral(order::Int, n1, n2, l1, l2)
-    if iszero(order)
-        return radial_overlap(n1, n2, l1, l2)
-    else
-        return radial_moment(order, n1, n2, l1, l2)
-    end
-end
-
-"""
-See also [`radial_integral`](@ref)
+See also [`radial_moment`](@ref)
 
     function radial_matrix(k::Int, n1, n2, l1, l2)
 
-Evaluates `radial_integral` over lists.
+Evaluates `radial_moment` over lists.
 
 # Examples
 
@@ -205,7 +61,7 @@ MQDT.radial_matrix(1, [30, 30], [31, 31], [1, 2], [2, 1])
     R = zeros(length(n1), length(n2))
     for i in eachindex(n1)
         for j in eachindex(n2)
-            R[i, j] = radial_integral(k, n1[i], n2[j], l1[i], l2[j])
+            R[i, j] = radial_moment(k, n1[i], n2[j], l1[i], l2[j])
         end
     end
     return R

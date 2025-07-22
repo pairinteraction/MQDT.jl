@@ -72,7 +72,7 @@ const PARA_TABLE = Dict(
 )
 
 # calculate bound states
-n_min, n_max = 35, 40 # above n ~ 95 will cause problems with the current call of hypergeometric functions from the GSL package
+n_min, n_max = 35, 40
 models = MODELS_TABLE[species]
 parameters = PARA_TABLE[species]
 clock_states = MQDT.eigenstates(1.5, 2.5, MQDT.Yb174.FMODEL_LOWN_P0, parameters)  # TODO  make it work for species != Yb174
