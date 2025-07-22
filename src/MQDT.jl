@@ -3,7 +3,6 @@ module MQDT
 using LinearAlgebra
 using Roots
 using SparseArrays
-using FastGaussQuadrature
 using GSL
 using Memoize
 using DataFrames
