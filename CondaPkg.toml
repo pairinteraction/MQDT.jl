@@ -1,0 +1,5 @@
+[deps]
+python = ">=3.10"
+
+[pip.deps]
+ryd-numerov = ">=0.7.0"

@@ -7,6 +7,7 @@ using FastGaussQuadrature
 using GSL
 using Memoize
 using DataFrames
+using PythonCall
 
 export lsQuantumNumbers,
     jjQuantumNumbers,

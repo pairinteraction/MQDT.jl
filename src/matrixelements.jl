@@ -77,6 +77,26 @@ function check_large_n(n1, n2)
 end
 
 """
+Get a cached rydberg state (where the wavefunction was already calculated) or create a new one.
+"""
+@memoize function get_rydberg_state_cached(species, nu, l)
+    ryd_numerov = pyimport("ryd_numerov")
+
+    # disable warnings from ryd_numerov for now
+    logging = pyimport("logging")
+    logging.getLogger("ryd_numerov").setLevel(logging.ERROR)
+
+    energy_au = -0.5 / nu^2  # simple hydrogenic energy with effective principal quantum number nu
+    n = ceil(Int, max(nu, l + 1))  # FIXME
+
+    state = ryd_numerov.RydbergState(species, n, l, j = l + 0.5)
+    state.set_energy(energy_au)
+    state.create_model(potential_type = "coulomb")
+    state.create_wavefunction("numerov", sign_convention = "positive_at_outer_bound")
+    return state
+end
+
+"""
 See also [`radial_moment`](@ref)
 
     radial_overlap(n1, n2, l1, l2)
@@ -93,7 +113,11 @@ MQDT.radial_overlap(30, 31, 1, 2)
 0.999865618490289
 ```
 """
-function radial_overlap(n1, n2, l1, l2)
+function radial_overlap(n1, n2, l1, l2; use_ryd_numerov::Bool = true)
+    if use_ryd_numerov
+        return radial_moment(0, n1, n2, l1, l2; use_ryd_numerov = true)
+    end
+
     b1 = beta(n1, l1)
     b2 = beta(n2, l2)
     if n1 == n2 && l1 == l2
@@ -119,7 +143,14 @@ MQDT.radial_moment(1, 30, 31, 1, 2)
 329.78054480806406
 ```
 """
-@memoize function radial_moment(order::Int, n1, n2, l1, l2)
+@memoize function radial_moment(order::Int, n1, n2, l1, l2; use_ryd_numerov::Bool = true)
+    if use_ryd_numerov
+        state_i = get_rydberg_state_cached("H_textbook", n1, l1)
+        state_f = get_rydberg_state_cached("H_textbook", n2, l2)
+        radial = state_i.calc_radial_matrix_element(state_f, order, unit = "a.u.")
+        return pyconvert(Float64, radial)
+    end
+
     n = ceil(Int, max(n1, n2))
     points, weights = gausslegendre(3n)
     r1 = sqrt(integrator_start(n1, n2, l1, l2))
