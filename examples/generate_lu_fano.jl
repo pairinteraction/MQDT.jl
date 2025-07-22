@@ -26,6 +26,7 @@ function g_F(F, I, J, L, S)
 end
 
 # wigner3j symbols
+wigner_init_float(10, "Jmax", 3)
 function wigner3j(k::Int, q::Int, f1::Number, m1::Number, f2::Number, m2::Number)
     a = 0.0
     if abs(q) <= k && abs(m1) <= f1 && abs(m2) <= f2 && abs(f1-f2) <= k && m1-m2 == q

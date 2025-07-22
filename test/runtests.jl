@@ -2,6 +2,9 @@ using MQDT
 using Test
 using GSL
 using LinearAlgebra
+using CGcoefficient
+
+wigner_init_float(13, "Jmax", 9) # initialize Wigner symbol caluclation
 
 @testset "MQDT.jl" begin
     # TODO replace the following code with proper tests
