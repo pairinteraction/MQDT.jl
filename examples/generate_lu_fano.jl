@@ -1,6 +1,6 @@
 using LinearAlgebra
 using SparseArrays
-using GSL
+using CGcoefficient
 using DataFrames
 using MQDT
 using Plots
@@ -30,7 +30,7 @@ function wigner3j(k::Int, q::Int, f1::Number, m1::Number, f2::Number, m2::Number
     a = 0.0
     if abs(q) <= k && abs(m1) <= f1 && abs(m2) <= f2 && abs(f1-f2) <= k && m1-m2 == q
         qn = Vector{Int64}(2*[f1, k, f2, -m1, q, m2])
-        a = (-1.0)^(f1-m1) * sf_coupling_3j(qn...)
+        a = (-1.0)^(f1-m1) * f3j(qn...)
     end
     return a
 end

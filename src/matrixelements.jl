@@ -93,12 +93,7 @@ function angular_moment(k, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
             qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
             qn2 = Vector{Int64}(2*[q1.Jr, q1.F, q1.Fc, q2.F, q2.Jr, k])
             qn3 = Vector{Int64}(2*[q1.lr, q1.Jr, 0.5, q2.Jr, q2.lr, k])
-            a =
-                (-1.0)^Λ *
-                sq *
-                sf_coupling_3j(qn1...) *
-                sf_coupling_6j(qn2...) *
-                sf_coupling_6j(qn3...)
+            a = (-1.0)^Λ * sq * f3j(qn1...) * f6j(qn2...) * f6j(qn3...)
         end
     end
     return a
@@ -119,7 +114,7 @@ end
 #             qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
 #             qn2 = Vector{Int64}(2*[q1.Jr, q1.J, q1.Jc, q2.J, q2.Jr, k])
 #             qn3 = Vector{Int64}(2*[q1.lr, q1.Jr, 0.5, q2.Jr, q2.lr, k])
-#             a = (-1.)^Λ * sq * sf_coupling_3j(qn1...) * sf_coupling_6j(qn2...) * sf_coupling_6j(qn3...)
+#             a = (-1.)^Λ * sq * f3j(qn1...) * f6j(qn2...) * f6j(qn3...)
 #         end
 #     end
 #     return a
@@ -134,12 +129,7 @@ function angular_moment(k, q1::lsQuantumNumbers, q2::lsQuantumNumbers)
             qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
             qn2 = Vector{Int64}(2*[q1.J, k, q2.J, q1.L, q1.S, q2.L])
             qn3 = Vector{Int64}(2*[q1.L, k, q2.L, q1.lr, q1.lc, q2.lr])
-            a =
-                (-1.0)^Λ *
-                sq *
-                sf_coupling_3j(qn1...) *
-                sf_coupling_6j(qn2...) *
-                sf_coupling_6j(qn3...)
+            a = (-1.0)^Λ * sq * f3j(qn1...) * f6j(qn2...) * f6j(qn3...)
         end
     end
     return a
@@ -412,7 +402,7 @@ function G1(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
         Λ = q1.Fc + q2.Jr + q1.F + 1
         sq = square_brakets([q1.F, q2.F])
         qn = Vector{Int64}(2*[q1.Jr, q1.F, q1.Fc, q2.F, q2.Jr, 1])
-        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * f6j(qn...)
     end
     return g
 end
@@ -428,7 +418,7 @@ function G2(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
         Λ = 0.5 + q1.lr + q1.Jr + 1
         sq = square_brakets([q1.Jr, q2.Jr])
         qn = Vector{Int64}(2*[q1.lr, q1.Jr, 0.5, q2.Jr, q1.lr, 1])
-        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * f6j(qn...)
     end
     return g
 end
@@ -444,7 +434,7 @@ function G3(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
         Λ = 0.5 + q1.lr + q2.Jr + 1
         sq = square_brakets([q1.Jr, q2.Jr])
         qn = Vector{Int64}(2*[0.5, q1.Jr, q1.lr, q2.Jr, 0.5, 1])
-        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * f6j(qn...)
     end
     return g
 end
@@ -460,7 +450,7 @@ function G4(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
         Λ = q1.Fc + q1.Jr + q2.F + 1
         sq = square_brakets([q1.F, q2.F])
         qn = Vector{Int64}(2*[q1.Fc, q1.F, q1.Jr, q2.F, q2.Fc, 1])
-        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * f6j(qn...)
     end
     return g
 end
@@ -476,7 +466,7 @@ function G5(q1::fjQuantumNumbers, q2::fjQuantumNumbers, ic)
         Λ = q1.Jc + ic + q1.Fc + 1
         sq = square_brakets([q1.Fc, q2.Fc])
         qn = Vector{Int64}(2*[ic, q1.Fc, q1.Jc, q2.Fc, ic, 1])
-        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * f6j(qn...)
     end
     return g
 end
@@ -490,7 +480,7 @@ function G6(q1::fjQuantumNumbers, q2::fjQuantumNumbers, ic)
     Λ = q1.Jc + ic + q2.Fc + 1
     sq = square_brakets([q1.Fc, q2.Fc])
     qn = Vector{Int64}(2*[q1.Jc, q1.Fc, ic, q2.Fc, q2.Jc, 1])
-    g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
+    g = (-1.0)^Λ * sq * f6j(qn...)
     return g
 end
 
@@ -505,7 +495,7 @@ function G7(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
         Λ = q1.sc + q1.lc + q1.Jc + 1
         sq = square_brakets([q1.Jc, q2.Jc])
         qn = Vector{Int64}(2*[q1.lc, q1.Jc, q1.sc, q2.Jc, q1.lc, 1])
-        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * f6j(qn...)
     end
     return g
 end
@@ -521,7 +511,7 @@ function G8(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
         Λ = q1.sc + q1.lc + q2.Jc + 1
         sq = square_brakets([q1.Jc, q2.Jc])
         qn = Vector{Int64}(2*[q1.sc, q1.Jc, q1.lc, q2.Jc, q1.sc, 1])
-        g = (-1.0)^Λ * sq * sf_coupling_6j(qn...)
+        g = (-1.0)^Λ * sq * f6j(qn...)
     end
     return g
 end
@@ -725,7 +715,7 @@ function ls_to_jj(q1::lsQuantumNumbers, q2::jjQuantumNumbers)
     if (q1.sc, q1.lc, q1.lr, q1.J) == (q2.sc, q2.lc, q2.lr, q2.J)
         sq = square_brakets([q1.S, q1.L, q2.Jc, q2.Jr])
         qn = Vector{Int64}(2*[q1.sc, 0.5, q1.S, q1.lc, q1.lr, q1.L, q2.Jc, q2.Jr, q1.J])
-        res = sq*sf_coupling_9j(qn...)
+        res = sq * f9j(qn...)
     end
     return res
 end
@@ -733,10 +723,10 @@ end
 function jj_to_fj(q1::jjQuantumNumbers, q2::fjQuantumNumbers, ic)
     res = 0.0
     if (q1.sc, q1.lc, q1.lr, q1.Jc, q1.Jr) == (q2.sc, q2.lc, q2.lr, q2.Jc, q2.Jr)
-        Λ_io = q1.Jr + q2.Fc - ic - q1.J
+        Λ = q1.Jr + q2.Fc - ic - q1.J
         sq = square_brakets([q1.J, q2.Fc])
         qn = Vector{Int64}(2*[q1.Jr, q1.Jc, q1.J, ic, q2.F, q2.Fc])
-        res = (-1.0)^Λ_io*sq*sf_coupling_6j(qn...)
+        res = (-1.0)^Λ * sq * f6j(qn...)
     end
     return res
 end

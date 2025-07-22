@@ -3,7 +3,7 @@ module MQDT
 using LinearAlgebra
 using Roots
 using SparseArrays
-using GSL
+using CGcoefficient
 using Memoize
 using DataFrames
 using PythonCall

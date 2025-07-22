@@ -4,6 +4,7 @@ authors = ["Frederic Hummel <frederic@atom-computing.com>", "Sebastian Weber"]
 version = "1.0.0-DEV"
 
 [deps]
+CGcoefficient = "c862aa61-d51e-47d1-b396-b1e789b4e0b6"
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 GSL = "92c85e6c-cbff-5e0c-80f7-495c94daaecd"
@@ -14,6 +15,7 @@ Roots = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
+CGcoefficient = "0.3.3"
 CondaPkg = "0.2.29"
 DataFrames = "1.7.0"
 GSL = "1.0.1"
