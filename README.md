@@ -10,6 +10,12 @@
 curl -fsSL https://install.julialang.org | sh
 ```
 
+## Update the package dependencies
+
+```bash
+julia --project=. -e 'using Pkg; Pkg.resolve(); Pkg.instantiate()'
+```
+
 ## Running tests
 
 ```bash
