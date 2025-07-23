@@ -1,6 +1,6 @@
 name = "MQDT"
 uuid = "1bfeae05-7215-4237-8fdd-b424babe7f02"
-authors = ["Frederic Hummel <frederic@atom-computing.com>", "Sebastian Weber"]
+authors = ["Frederic Hummel <frederic@atom-computing.com>", "Johannes Mögerle", "Sebastian Weber"]
 version = "1.0.0-DEV"
 
 [deps]
