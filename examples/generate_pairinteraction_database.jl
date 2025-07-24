@@ -1,13 +1,11 @@
 using MQDT
+wigner_init_float(13, "Jmax", 9) # initialize Wigner symbol caluclation
 
-# choose species
-species = :Yb174
-
-# generate dispatch tables # TODO check whether the MODELS_TABLE is not missing any models
 const MODELS_TABLE = Dict(
     :Sr87 => [
         MQDT.Sr87.FMODEL_HIGHN_S35,
         MQDT.Sr87.FMODEL_HIGHN_S45,
+        MQDT.Sr87.FMODEL_HIGHN_S55,
         MQDT.Sr87.FMODEL_HIGHN_P25,
         MQDT.Sr87.FMODEL_HIGHN_P35,
         MQDT.Sr87.FMODEL_HIGHN_P45,
@@ -71,17 +69,17 @@ const PARA_TABLE = Dict(
     :Yb174 => MQDT.Yb174.PARA,
 )
 
+# choose species
+species = :Yb174
+
 # calculate bound states
 n_min, n_max = 35, 40
 models = MODELS_TABLE[species]
 parameters = PARA_TABLE[species]
-clock_states = MQDT.eigenstates(1.5, 2.5, MQDT.Yb174.FMODEL_LOWN_P0, parameters)  # TODO  make it work for species != Yb174
-rydberg_states = [MQDT.eigenstates(n_min, n_max, M, parameters) for M in models]
+states = [MQDT.eigenstates(n_min, n_max, M, parameters) for M in models]
 
 # generate state table
-clock_basis = MQDT.basisarray(clock_states, MQDT.Yb174.FMODEL_LOWN_P0) # TODO make it work for species != Yb174
-rydberg_basis = MQDT.basisarray(rydberg_states, models)
-basis = union(clock_basis, rydberg_basis)
+basis = MQDT.basisarray(rydberg_states, models)
 state_table = MQDT.state_data(basis, parameters)
 
 # calculate matrix elements
@@ -97,10 +95,8 @@ mm = MQDT.matrix_data(dm)
 md = MQDT.matrix_data(dd)
 
 # prepare PAIRINTERACTION output
-c_db = MQDT.databasearray(clock_states, MQDT.Yb174.FMODEL_LOWN_P0) # TODO make it work for species != Yb174
-r_db = MQDT.databasearray(rydberg_states, models)
-b_db = union(c_db, r_db)
-ST = MQDT.state_data(b_db, parameters)
+db = MQDT.databasearray(rydberg_states, models)
+ST = MQDT.state_data(db, parameters)
 
 # store full matrix for PAIRINTERACTION (as opposed to upper triangle)
 M1 = MQDT.tri_to_full(m1, ST)
