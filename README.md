@@ -2,7 +2,9 @@
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://pairinteraction.github.io/MQDT.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://pairinteraction.github.io/MQDT.jl/dev/)
-[![Build Status](https://github.com/atom-pairinteraction/MQDT.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/atom-pairinteraction/MQDT.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Build Status](https://github.com/pairinteraction/MQDT.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/pairinteraction/MQDT.jl/actions/workflows/CI.yml?query=branch%3Amain)
+
+MQDT.jl is a Julia package designed to calculate Rydberg states and matrix elements using multi-channel quantum defect theory (MQDT).
 
 ## Installing Julia
 
