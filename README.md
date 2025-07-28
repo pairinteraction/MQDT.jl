@@ -42,3 +42,11 @@ Then you can run a script (from within the `examples` directory) like this:
 ```bash
 julia --project=. generate_lu_fano.jl
 ```
+
+## Citation
+
+If you use MQDT.jl in your research, please consider citing our paper:
+
+> Frederic Hummel, Sebastian Weber, Johannes Moegerle, Henri Menke, Jonathan King, Benjamin Bloom, Sebastian Hofferberth, Ming Li, *Engineering Rydberg-pair interactions in divalent atoms with hyperfine-split ionization thresholds*, [Phys. Rev. A 110, 042821 (2024)][journal-link]
+
+[journal-link]: https://journals.aps.org/pra/abstract/10.1103/PhysRevA.110.042821
