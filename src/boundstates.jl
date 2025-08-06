@@ -8,7 +8,7 @@ See also [`theta_rr`](@ref)
     theta(N::Number, M::Matrix)
     theta(N::Vector, M::Matrix)
 
-Given `M` contains quantum defect parameters, where the k-th column represents the (k-1)st order of energy dependence,
+Given `M` contains quantum defect parameters, where the k-th column represents the (k-1)st order of energy dependence, 
 this function returns the specific quantum defect at principal quantum number `N`, where `N` can also be a list.
 
 # Examples
@@ -23,7 +23,7 @@ MQDT.theta(60, [0.4 10 100; 0.4 1 0])
 function theta(N::Number, M::Matrix)
     l, w = size(M)
     t = zeros(l)
-    for i = 1:w
+    for i in 1:w
         t .+= M[:, i] * (1/N^2)^(i-1)
     end
     return t
@@ -32,7 +32,7 @@ end
 function theta(N::Vector, M::Matrix)
     l, w = size(M)
     t = zeros(l)
-    for i = 1:w
+    for i in 1:w
         t .+= M[:, i] .* (1 ./ N .^ 2) .^ (i-1)
     end
     return t
@@ -44,7 +44,7 @@ See also [`theta`](@ref)
     theta_rr(N::Number, M::Matrix, index::Int)
 
 Similar to `theta`, but here the energy dependence is assumed to be according to the Rydberg-Ritz formula.
-Given `M` contains quantum defect parameters, where the k-th column represents the (k-1)st order of energy dependence,
+Given `M` contains quantum defect parameters, where the k-th column represents the (k-1)st order of energy dependence, 
 this function returns the specific quantum defect at principal quantum number `N`, where `N` can also be a list.
 
 # Examples
@@ -190,7 +190,7 @@ function couple(C::String)
     c = parse(Int, C)
     i = div(c, 10)
     j = mod(c, 10)
-    if j == 0
+    if j == 0 
         i = div(c, 100)
         j = mod(c, 100)
     end
@@ -226,7 +226,7 @@ function rot(T::Number, C::String, D::Int)
     out = diagm(ones(D))
     i, j = couple(C)
     out[[i, j], [i, j]] = r
-    return out
+    return out 
 end
 
 function rot(T::Vector, C::Vector{String}, D::Int)
@@ -374,7 +374,7 @@ See also [`eigenenergies`](@ref)
 
     eigenstates(N1::Number, N2::Number, M::Model, P::Parameters)
 
-Function that returns the bound states corresponding to an MQDT model in the form of an instance of `EigenStates`,
+Function that returns the bound states corresponding to an MQDT model in the form of an instance of `EigenStates`, 
 which contains the global reference principal quantum number, the channel-dependent principal quantum numbers, as well as the channel coefficients.
 """
 function eigenstates(N1::Number, N2::Number, M::Model, P::Parameters)
@@ -403,7 +403,7 @@ Returns a `BasisArray`, which is a list of `BasisState` instances.
 function basisarray(T::EigenStates, M::fModel)
     F = findall(M.core)
     B = Vector{BasisState}()
-    c = M.channels
+    c = M.outer_channels
     e = T.n
     p = unique_parity(c)
     f = good_quantum_number(c)
@@ -414,19 +414,23 @@ function basisarray(T::EigenStates, M::fModel)
     S = get_S(M)
     s = diag(t * diagm(S) * t')
     for k in eachindex(e)
-        push!(B, BasisState(e[k], p, f, n[:, k], l, s, a[:, k], c))
+        if M.size > 1
+            push!(B, BasisState(e[k], p, f, n[:, k], l, s, a[:, k], c))
+        else
+            if l[1] < n[1,k]
+                push!(B, BasisState(e[k], p, f, n[:, k], l, s, a[:, k], c))
+            end
+        end
     end
     return BasisArray(B)
 end
 
 function basisarray(T::Vector{EigenStates}, M::Vector{fModel})
-    E = Vector{Float64}()
     B = Vector{BasisState}()
     for i in eachindex(T)
-        append!(E, T[i].n)
         append!(B, basisarray(T[i], M[i]).states)
     end
-    ordered = sortperm(E)
+    ordered = sortperm(get_nu(BasisArray(B)))
     return BasisArray(B[ordered])
 end
 
@@ -443,7 +447,7 @@ Function that generates all relevant bound-state data specifically for the PAIRI
 function databasearray(T::EigenStates, M::fModel)
     F = findall(M.core)
     U = findall(iszero, M.core)
-    c = M.channels
+    c = M.outer_channels
     e = T.n
     p = unique_parity(c)
     f = good_quantum_number(c)
@@ -464,35 +468,22 @@ function databasearray(T::EigenStates, M::fModel)
     B = Vector{DataBaseState}()
     for i in eachindex(e)
         under = sum(a_irr[:, i] .^ 2)
-        push!(
-            B,
-            DataBaseState(
-                e[i],
-                p,
-                f,
-                n_rel[:, i],
-                n_all[:, i],
-                a_rel[:, i],
-                a_all[:, i],
-                s,
-                l,
-                j,
-                l_ryd,
-                j_ryd,
-                under,
-            ),
-        )
+        if M.size > 1
+            push!(B, DataBaseState(e[i], p, f, n_rel[:,i], n_all[:,i], a_rel[:,i], a_all[:,i], s, l, j, l_ryd, j_ryd, under))
+        else
+            if l_ryd[1] < n_rel[1,i]
+                push!(B, DataBaseState(e[i], p, f, n_rel[:,i], n_all[:,i], a_rel[:,i], a_all[:,i], s, l, j, l_ryd, j_ryd, under))
+            end
+        end
     end
     return DataBaseArray(B)
 end
 
 function databasearray(T::Vector{EigenStates}, M::Vector{fModel})
-    E = Vector{Float64}()
     B = Vector{DataBaseState}()
     for i in eachindex(T)
-        append!(E, T[i].n)
         append!(B, databasearray(T[i], M[i]).states)
     end
-    ordered = sortperm(E)
+    ordered = sortperm(get_nu(DataBaseArray(B)))
     return DataBaseArray(B[ordered])
 end
