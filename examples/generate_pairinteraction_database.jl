@@ -1,9 +1,4 @@
-using Pkg
-Pkg.activate(".")
-Pkg.instantiate()
-
 using MQDT
-MQDT.wigner_init_float(13, "Jmax", 9) # initialize Wigner symbol caluclation
 
 const MODELS_TABLE = Dict(
     :Sr87 => [
@@ -95,14 +90,13 @@ parameters = PARA_TABLE[species]
 low_l_states = [eigenstates(n_min, n_max, M, parameters) for M in low_l_models]
 
 # calculate high \ell SQDT states
-lmax = 33
-high_l_models = single_channel_models(5:lmax, parameters)
+l_max = n_max - 1
+MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol caluclation
+high_l_models = single_channel_models(5:l_max, parameters)
 high_l_states = [eigenstates(n_min, n_max, M, parameters) for M in high_l_models]
 
 # generate state table
-basis = basisarray(
-    vcat(low_l_states, high_l_states), 
-    vcat(low_l_models, high_l_models))
+basis = basisarray(vcat(low_l_states, high_l_states), vcat(low_l_models, high_l_models))
 state_table = state_data(basis, parameters)
 
 # calculate matrix elements
@@ -118,9 +112,7 @@ mm = matrix_data(dm)
 md = matrix_data(dd)
 
 # prepare PAIRINTERACTION output
-db = databasearray(
-    vcat(low_l_states, high_l_states), 
-    vcat(low_l_models, high_l_models))
+db = databasearray(vcat(low_l_states, high_l_states), vcat(low_l_models, high_l_models))
 ST = state_data(db, parameters)
 
 # store full matrix for PAIRINTERACTION (as opposed to upper triangle)
