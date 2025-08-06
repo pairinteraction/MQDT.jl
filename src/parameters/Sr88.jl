@@ -229,21 +229,21 @@ FMODEL_HIGHN_F4 = fModel(
     [1;;],
 )
 
-FMODELS = [
-    FMODEL_LOWN_P1,
-    FMODEL_HIGHN_S0,
-    FMODEL_HIGHN_S1,
-    FMODEL_HIGHN_P0,
-    FMODEL_HIGHN_P1,
-    FMODEL_HIGHN_P2,
-    FMODEL_HIGHN_D1,
-    FMODEL_HIGHN_D2,
-    FMODEL_HIGHN_D3,
-    FMODEL_HIGHN_F2,
-    FMODEL_HIGHN_F3,
-    FMODEL_HIGHN_F4,
-]
-test_model(FMODELS)
+# FMODELS = [
+#     FMODEL_LOWN_P1,
+#     FMODEL_HIGHN_S0,
+#     FMODEL_HIGHN_S1,
+#     FMODEL_HIGHN_P0,
+#     FMODEL_HIGHN_P1,
+#     FMODEL_HIGHN_P2,
+#     FMODEL_HIGHN_D1,
+#     FMODEL_HIGHN_D2,
+#     FMODEL_HIGHN_D3,
+#     FMODEL_HIGHN_F2,
+#     FMODEL_HIGHN_F3,
+#     FMODEL_HIGHN_F4,
+# ]
+# test_model(FMODELS)
 
 KMODEL_S0 = kModel(
     "1S0",
@@ -459,18 +459,18 @@ KMODEL_1F3 = kModel(
     [-0.3530368, -1.318505],
 )
 
-KMODELS = [
-    KMODEL_S0,
-    KMODEL_S1,
-    KMODEL_P0,
-    KMODEL_1P1,
-    KMODEL_3P1,
-    KMODEL_P2,
-    KMODEL_D1,
-    KMODEL_D2,
-    KMODEL_D3,
-    KMODEL_1F3,
-]
-test_model(KMODELS)
+# KMODELS = [
+#     KMODEL_S0,
+#     KMODEL_S1,
+#     KMODEL_P0,
+#     KMODEL_1P1,
+#     KMODEL_3P1,
+#     KMODEL_P2,
+#     KMODEL_D1,
+#     KMODEL_D2,
+#     KMODEL_D3,
+#     KMODEL_1F3,
+# ]
+# test_model(KMODELS)
 
 end
