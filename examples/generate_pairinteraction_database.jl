@@ -1,5 +1,9 @@
+using Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+
 using MQDT
-wigner_init_float(13, "Jmax", 9) # initialize Wigner symbol caluclation
+MQDT.wigner_init_float(13, "Jmax", 9) # initialize Wigner symbol caluclation
 
 const MODELS_TABLE = Dict(
     :Sr87 => [
@@ -34,11 +38,17 @@ const MODELS_TABLE = Dict(
         MQDT.Yb171.FMODEL_HIGHN_S15,
         MQDT.Yb171.FMODEL_HIGHN_P05,
         MQDT.Yb171.FMODEL_HIGHN_P15,
-        MQDT.Yb171.FMODEL_HIGHN_P25,
         MQDT.Yb171.FMODEL_HIGHN_D05,
         MQDT.Yb171.FMODEL_HIGHN_D15,
         MQDT.Yb171.FMODEL_HIGHN_D25,
         MQDT.Yb171.FMODEL_HIGHN_D35,
+        MQDT.Yb171.FMODEL_HIGHN_F25,
+        MQDT.Yb171.FMODEL_HIGHN_F35,
+        MQDT.Yb171.FMODEL_HIGHN_F45,
+        MQDT.Yb171.FMODEL_HIGHN_G25,
+        MQDT.Yb171.FMODEL_HIGHN_G35,
+        MQDT.Yb171.FMODEL_HIGHN_G45,
+        MQDT.Yb171.FMODEL_HIGHN_G55,
     ],
     :Yb173 => [
         MQDT.Yb173.FMODEL_HIGHN_S15,
@@ -59,6 +69,12 @@ const MODELS_TABLE = Dict(
         MQDT.Yb174.FMODEL_HIGHN_D1,
         MQDT.Yb174.FMODEL_HIGHN_D2,
         MQDT.Yb174.FMODEL_HIGHN_D3,
+        MQDT.Yb174.FMODEL_HIGHN_F2,
+        MQDT.Yb174.FMODEL_HIGHN_F3,
+        MQDT.Yb174.FMODEL_HIGHN_F4,
+        MQDT.Yb174.FMODEL_HIGHN_G3,
+        MQDT.Yb174.FMODEL_HIGHN_G4,
+        MQDT.Yb174.FMODEL_HIGHN_G5,
     ],
 )
 const PARA_TABLE = Dict(
@@ -72,37 +88,46 @@ const PARA_TABLE = Dict(
 # choose species
 species = :Yb174
 
-# calculate bound states
+# calculate low \ell MQDT states
 n_min, n_max = 35, 40
-models = MODELS_TABLE[species]
+low_l_models = MODELS_TABLE[species]
 parameters = PARA_TABLE[species]
-states = [MQDT.eigenstates(n_min, n_max, M, parameters) for M in models]
+low_l_states = [eigenstates(n_min, n_max, M, parameters) for M in low_l_models]
+
+# calculate high \ell SQDT states
+lmax = 33
+high_l_models = single_channel_models(5:lmax, parameters)
+high_l_states = [eigenstates(n_min, n_max, M, parameters) for M in high_l_models]
 
 # generate state table
-basis = MQDT.basisarray(rydberg_states, models)
-state_table = MQDT.state_data(basis, parameters)
+basis = basisarray(
+    vcat(low_l_states, high_l_states), 
+    vcat(low_l_models, high_l_models))
+state_table = state_data(basis, parameters)
 
 # calculate matrix elements
-@time d1 = MQDT.matrix_element(1, basis) # dipole
-@time d2 = MQDT.matrix_element(2, basis) # quadrupole
-@time dm = MQDT.matrix_element(parameters, basis) # Zeeman
-@time dd = MQDT.matrix_element(basis) # diamagnetic
+@time d1 = matrix_element(1, basis) # dipole
+@time d2 = matrix_element(2, basis) # quadrupole
+@time dm = matrix_element(parameters, basis) # Zeeman
+@time dd = matrix_element(basis) # diamagnetic
 
 # generate matrix element table
-m1 = MQDT.matrix_data(d1)
-m2 = MQDT.matrix_data(d2)
-mm = MQDT.matrix_data(dm)
-md = MQDT.matrix_data(dd)
+m1 = matrix_data(d1)
+m2 = matrix_data(d2)
+mm = matrix_data(dm)
+md = matrix_data(dd)
 
 # prepare PAIRINTERACTION output
-db = MQDT.databasearray(rydberg_states, models)
-ST = MQDT.state_data(db, parameters)
+db = databasearray(
+    vcat(low_l_states, high_l_states), 
+    vcat(low_l_models, high_l_models))
+ST = state_data(db, parameters)
 
 # store full matrix for PAIRINTERACTION (as opposed to upper triangle)
-M1 = MQDT.tri_to_full(m1, ST)
-M2 = MQDT.tri_to_full(m2, ST)
-MM = MQDT.tri_to_full(mm, ST)
-MD = MQDT.tri_to_full(md, ST)
+M1 = tri_to_full(m1, ST)
+M2 = tri_to_full(m2, ST)
+MM = tri_to_full(mm, ST)
+MD = tri_to_full(md, ST)
 
 # store tables as csv files
 using CSV
