@@ -34,7 +34,7 @@ MQDT.radial_moment(1, 30, 31, 1, 2)
 329.78054480806406
 ```
 """
-function radial_moment(order::Int, n1, n2, l1, l2)
+@memoize function radial_moment(order::Int, n1, n2, l1, l2)
     state_i = get_rydberg_state_cached("H_textbook", n1, l1)
     state_f = get_rydberg_state_cached("H_textbook", n2, l2)
     radial = state_i.calc_radial_matrix_element(state_f, order, unit = "a.u.")
@@ -57,7 +57,7 @@ MQDT.radial_matrix(1, [30, 30], [31, 31], [1, 2], [2, 1])
  -302.278   276.085
 ```
 """
-@memoize function radial_matrix(k::Int, n1, n2, l1, l2)
+function radial_matrix(k::Int, n1, n2, l1, l2)
     R = zeros(length(n1), length(n2))
     for i in eachindex(n1)
         ni = n1[i]
@@ -66,8 +66,8 @@ MQDT.radial_matrix(1, [30, 30], [31, 31], [1, 2], [2, 1])
             nj = n2[j]
             lj = l2[j]
             if abs(li-lj) <= k
-                if max(li, lj) < 4 || abs(ni-nj) < 11 # cut off calculation of matrix elements for F states and higher \ell
-                    R[i,j] = radial_moment(k, ni, nj, li, lj)
+                if max(ni, nj) < 25 || abs(ni-nj) < 11 # cut off calculation of matrix elements for F states and higher \ell
+                    R[i, j] = radial_moment(k, ni, nj, li, lj)
                 end
             end
         end
@@ -637,12 +637,12 @@ end
 
 function ls_channels(Q::AngularMomenta)
     out = Vector{lsQuantumNumbers}()
-    for S in 0:1
+    for S = 0:1
         for lc in Q.lc
             for lr in Q.lr
-                for L in abs(lc-lr):(lc+lr)
-                    for J in abs(L-S):(L+S)
-                        for F in abs(J-Q.ic):(J+Q.ic)
+                for L = abs(lc-lr):(lc+lr)
+                    for J = abs(L-S):(L+S)
+                        for F = abs(J-Q.ic):(J+Q.ic)
                             push!(out, lsQuantumNumbers(0.5, S, lc, lr, L, J, F))
                         end
                     end
@@ -656,11 +656,11 @@ end
 function jj_channels(Q::AngularMomenta)
     out = Vector{jjQuantumNumbers}()
     for lc in Q.lc
-        for jc in abs(lc-0.5):(lc+0.5)
+        for jc = abs(lc-0.5):(lc+0.5)
             for lr in Q.lr
-                for jr in abs(lr-0.5):(lr+0.5)
-                    for J in abs(jc-jr):(jc+jr)
-                        for F in abs(J-Q.ic):(J+Q.ic)
+                for jr = abs(lr-0.5):(lr+0.5)
+                    for J = abs(jc-jr):(jc+jr)
+                        for F = abs(J-Q.ic):(J+Q.ic)
                             push!(out, jjQuantumNumbers(0.5, lc, jc, lr, jr, J, F))
                         end
                     end
@@ -674,11 +674,11 @@ end
 function fj_channels(Q::AngularMomenta)
     out = Vector{fjQuantumNumbers}()
     for lc in Q.lc
-        for jc in abs(lc-0.5):(lc+0.5)
-            for fc in abs(Q.ic-jc):(Q.ic+jc)
+        for jc = abs(lc-0.5):(lc+0.5)
+            for fc = abs(Q.ic-jc):(Q.ic+jc)
                 for lr in Q.lr
-                    for jr in abs(lr-0.5):(lr+0.5)
-                        for F in abs(fc-jr):(fc+jr)
+                    for jr = abs(lr-0.5):(lr+0.5)
+                        for F = abs(fc-jr):(fc+jr)
                             push!(out, fjQuantumNumbers(0.5, lc, jc, fc, lr, jr, F))
                         end
                     end
