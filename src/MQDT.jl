@@ -26,7 +26,8 @@ export lsQuantumNumbers,
     matrix_element,
     state_data,
     matrix_data,
-    tri_to_full
+    tri_to_full,
+    single_channel_models
 
 include("general.jl")
 include("boundstates.jl")
