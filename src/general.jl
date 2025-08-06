@@ -493,11 +493,11 @@ end
 
 function single_channel_models(l::Integer, p::Parameters)
     jr = [l-1/2, l-1/2, l+1/2, l+1/2]
-    j = [l-1, l, l, l+1]
+    jt = [l-1, l, l, l+1]
     m = Vector{fModel}(undef, 4)
-    for i in eachindex(j)
+    for i in eachindex(jt)
         m[i] = fModel(
-            "L=$l, J=$(j[i]), Jr=$(jr[i])",
+            "L=$l, J=$(jt[i]), Jr=$(jr[i])",
             1,
             [""],
             Bool[1],
@@ -505,8 +505,8 @@ function single_channel_models(l::Integer, p::Parameters)
             [0;;],
             [""],
             [0;;],
-            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], j[i])]),
-            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], j[i])]),
+            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], jt[i])]),
+            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], jt[i])]),
             [1;;],
         )
     end
