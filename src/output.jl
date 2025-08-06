@@ -18,9 +18,10 @@ function state_data(T::BasisArray, P::Parameters)
         f = get_f(T),
         nu = get_nu(T),
         l = exp_l(T),
-        S = exp_S(T),
-    )
-    return df
+        S = exp_S(T)
+        )
+    S = sortperm(get_e(T, P))
+    return df[S,:]
 end
 
 function state_data(T::DataBaseArray, P::Parameters)
@@ -43,11 +44,12 @@ function state_data(T::DataBaseArray, P::Parameters)
         std_s = std_S(T),
         std_l_ryd = std_lr(T),
         std_j_ryd = std_Jr(T),
-        is_j_total_momentum = is_J(T, P),
+        is_j_total_momentum = is_J(T, P), 
         is_calculated_with_mqdt = is_mqdt(T),
-        underspecified_channel_contribution = get_neg(T),
-    )
-    return df
+        underspecified_channel_contribution = get_neg(T)
+        )
+    S = sortperm(get_e(T, P))
+    return df[S,:]
 end
 
 """
@@ -57,10 +59,13 @@ See also [`state_data`](@ref)
 
 Store a reduced matrix elements as a data frame as used by the PAIRINTERACTION software.
 """
-function matrix_data(T::SparseMatrixCSC{Float64,Int64})
+function matrix_data(T::SparseMatrixCSC{Float64, Int64})
     m = findnz(T) # non-zero elements
     t = findall(m[1] .<= m[2]) # upper triangle
-    df = DataFrame(id_initial = m[1][t], id_final = m[2][t], value = m[3][t])
+    df = DataFrame(
+        id_initial = m[1][t], 
+        id_final = m[2][t], 
+        value = m[3][t])
     return df
 end
 
@@ -69,7 +74,7 @@ See also [`matrix_data`](@ref)
 
     tri_to_full(M::DataFrame, S::DataFrame)
 
-Converts a reduced matrix elements data frame storing the upper triangle to a data frame
+Converts a reduced matrix elements data frame storing the upper triangle to a data frame 
 storing the full matrix including the wigner phase convention (-1)^(f_final-f_initial).
 """
 function tri_to_full(M::DataFrame, S::DataFrame)
@@ -80,7 +85,7 @@ function tri_to_full(M::DataFrame, S::DataFrame)
     val = M.value
     D = sparse(i1, i2, val, s, s)
     for i in axes(D, 1)
-        for j = i:s
+        for j in i:s
             d = D[i, j]
             if !iszero(d)
                 D[j, i] = d * (-1)^(f[i]-f[j])
@@ -199,12 +204,19 @@ function get_p(T::DataBaseArray)
 end
 
 function get_n(T::DataBaseArray, P::Parameters)
-    nu = get_nu(T)
-    lr = round.(Int, exp_lr(T))
-    n = nu .+ 3 .- lr
-    n[findall(!iszero, lr)] .+= 1
+    n = get_nu(T)
+    l = round.(Int, exp_lr(T))
+    i0 = findall(iszero, l)
+    i1 = findall(iszero, l .- 1)
+    i2 = findall(iszero, l .- 2)
     if occursin("Yb", String(P.species))
-        n .+= 1
+        n[i0] .+= 4.5
+        n[i1] .+= 3.9
+        n[i2] .+= 2.8
+    else
+        n[i0] .+= 3.3
+        n[i1] .+= 2.8
+        n[i2] .+= 2.5
     end
     return round.(Int, n)
 end
