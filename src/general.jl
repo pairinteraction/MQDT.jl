@@ -513,10 +513,10 @@ function single_channel_models(l::Integer, p::Parameters)
     return m
 end
 
-function single_channel_models(l::UnitRange{Int64}, p::Parameters)
+function single_channel_models(l_list::UnitRange{Int64}, p::Parameters)
     m = Vector{fModel}()
-    for i in l
-        append!(m, single_channel_models(i, p))
+    for l in l_list
+        append!(m, single_channel_models(l, p))
     end
     return m
 end
