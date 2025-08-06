@@ -6,19 +6,23 @@ using ..MQDT:
     lsChannels,
     jjChannels,
     lsQuantumNumbers,
-    jjQuantumNumbers,
-    test_model
+    jjQuantumNumbers
 
 export PARA,
     FMODEL_HIGHN_S0,
     FMODEL_HIGHN_S1,
-    FMODEL_LOWN_P0,
     FMODEL_HIGHN_P0,
     FMODEL_HIGHN_P1,
     FMODEL_HIGHN_P2,
     FMODEL_HIGHN_D1,
     FMODEL_HIGHN_D2,
-    FMODEL_HIGHN_D3
+    FMODEL_HIGHN_D3,
+    FMODEL_HIGHN_F2,
+    FMODEL_HIGHN_F3,
+    FMODEL_HIGHN_F4,
+    FMODEL_HIGHN_G3,
+    FMODEL_HIGHN_G4,
+    FMODEL_HIGHN_G5
 
 # Isotope data
 PARA = Parameters(
@@ -34,140 +38,125 @@ PARA = Parameters(
 # MQDT Models
 FMODEL_HIGHN_S0 = fModel(
     "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
-    6,
-    [
-        "6sns 1S0",
-        "4f13 5d 6snl a",
-        "6pnp 1S0",
-        "4f13 5d 6snl b",
-        "6pnp 3P0",
-        "4f13 5d 6snl c",
-    ],
-    Bool[1, 0, 1, 0, 1, 0],
+    6, 
+    ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
+    Bool[1, 0, 1, 0, 1, 0], 
     [50443.070393, 83967.7, 80835.39, 83967.7, 77504.98, 83967.7],
     [
-        0.355097325 0.278368431;
-        0.204537279 0;
-        0.116394359 0;
-        0.295432196 0;
-        0.25765161 0;
-        0.155807042 0
-    ],
+        0.355101645 0.277673956; 
+        0.204537535 0; 
+        0.116393648 0; 
+        0.295439966 0; 
+        0.257664798 0; 
+        0.155797119 0
+        ],
     ["12", "13", "14", "34", "35", "16"],
-    [0.12654859 0; 0.30010744 0; 0.05703381 0; 0.11439805 0; 0.09864375 0; 0.14248210 0],
+    [
+        0.126557575 0; 
+        0.300103593 0; 
+        0.056987912 0; 
+        0.114312578 0; 
+        0.0986363362 0; 
+        0.142498543 0
+        ],
     lsChannels([
         lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
         lsQuantumNumbers(0.5, 0, 1, 1, 0, 0),
-        lsQuantumNumbers(0.5, 1, 1, 1, 1, 0),
-    ]),
+        lsQuantumNumbers(0.5, 1, 1, 1, 1, 0)
+        ]),
     jjChannels([
         jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0),
         jjQuantumNumbers(0.5, 1, 1.5, 1, 1.5, 0),
-        jjQuantumNumbers(0.5, 1, 0.5, 1, 0.5, 0),
-    ]),
+        jjQuantumNumbers(0.5, 1, 0.5, 1, 0.5, 0)
+        ]),
     [
-        1 0 0 0 0 0;
-        0 1 0 0 0 0;
-        0 0 -sqrt(2/3) 0 sqrt(1/3) 0;
-        0 0 0 1 0 0;
-        0 0 sqrt(1/3) 0 sqrt(2/3) 0;
+        1 0 0 0 0 0; 
+        0 1 0 0 0 0; 
+        0 0 sqrt(2/3) 0 -sqrt(1/3) 0; 
+        0 0 0 1 0 0; 
+        0 0 sqrt(1/3) 0 sqrt(2/3) 0; 
         0 0 0 0 0 1
-    ], # according to paper & rydcalc code
-    #[1 0 0 0 0 0; 0 1 0 0 0 0; 0 0 sqrt(2/3) 0 sqrt(1/3) 0; 0 0 0 1 0 0; 0 0 -sqrt(1/3) 0 sqrt(2/3) 0; 0 0 0 0 0 1] # correct frame transformation
+        ] # updated in [arXiv:2507.11487v1]
 )
 
 FMODEL_HIGHN_S1 = fModel(
     "S J=1, ν > 26", # fit only valid from 28s upward [Phys. Rev. Lett. 128, 033201 (2022)]
     1,
     ["6sns 3S1"],
-    Bool[1],
-    [50443.070393],
-    #[4.4382 4 -1e4 8e6 -3e9], # rydberg ritz
-    [0.4382 4 -1e4 8e6 -3e9], # adjusted for non-rydberg ritz
-    [""],
+    Bool[1], 
+    [50443.070393], 
+    [0.4382 4 -1e4 8e6 -3e9], # adjusted for non-rydberg ritz 
+    [""], 
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 0, 0, 1)]),
-    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 1)]),
-    [1;;],
-)
-
-FMODEL_LOWN_P0 = fModel(
-    "P J=0, 1.5 < ν < 5.5", # fit to NIST data between 6p and 9p
-    1,
-    ["6snp 3P0"],
-    Bool[1],
-    [50443.070393],
-    [0.969279 0.288219 1.36228],
-    [""],
-    [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 0)]),
-    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0)]),
-    [1;;],
+    lsChannels([
+        lsQuantumNumbers(0.5, 1, 0, 0, 0, 1)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 1)
+        ]),
+    [1;;]
 )
 
 FMODEL_HIGHN_P0 = fModel(
     "P J=0, ν > 6", # [Phys. Rev. X 15, 011009 (2025)]
     2,
-    ["6snp 3P0", "4f13 5d 6snl"],
+    ["6snp 3P0", "4f13 5d 6snd"],
     Bool[1, 0],
     [50443.070393, 83967.7],
-    [0.95356884 -0.28602498; 0.19845903 0],
+    [0.953661478 -0.287531374; 0.198460766 0],
     ["12"],
-    [0.16328854 0],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 0)]),
-    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0)]),
-    [1 0; 0 1],
+    [0.163343232 0], 
+    lsChannels([
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 0)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0)
+        ]),
+    [1 0; 0 1]
 )
 
 FMODEL_HIGHN_P1 = fModel(
     "P J=1, ν > 6", # [Phys. Rev. X 15, 011009 (2025)]
     6,
-    [
-        "6snp 1P1",
-        "6snp 3P1",
-        "4f13 5d 6snl a",
-        "4f13 5d 6snl b",
-        "4f13 5d 6snl c",
-        "4f13 5d 6snl d",
-    ],
+    ["6snp 1P1", "6snp 3P1", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d"],
     Bool[1, 1, 0, 0, 0, 0],
     [50443.070393, 50443.070393, 83967.7, 83967.7, 83967.7, 83967.7],
     [
-        0.92271098 2.6036257;
-        0.98208719 -5.4562725;
-        0.22851720 0;
-        0.20607759 0;
-        0.19352751 0;
+        0.92271098 2.6036257; 
+        0.98208719 -5.4562725; 
+        0.22851720 0; 
+        0.20607759 0; 
+        0.19352751 0; 
         0.18153094 0
-    ],
+        ],
     ["12", "13", "14", "15", "16", "23", "24", "25", "26"],
     [
-        -0.08410871 120.37555 -9314.23;
-        -0.07318156 0 0;
-        -0.06651977 0 0;
-        -0.02210989 0 0;
-        -0.10451698 0 0;
-        0.02477048 0 0;
-        0.05765807 0 0;
-        0.08606276 0 0;
-        0.04994363 0 0
-    ],
+        -0.08410871 120.37555 -9314.23; 
+        -0.07317986 0 0; 
+        -0.06651879 0 0; 
+        -0.02212194 0 0; 
+        -0.10452109 0 0; 
+        0.02477464 0 0; 
+        0.05763934 0 0; 
+        0.0860644 0 0; 
+        0.04993818 0 0
+        ],
     lsChannels([
         lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-    ]),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1)
+        ]),
     jjChannels([
         jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1),
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1),
-    ]),
+        jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1)
+        ]),
     [
-        sqrt(2/3) sqrt(1/3) 0 0 0 0;
-        -sqrt(1/3) sqrt(2/3) 0 0 0 0;
-        0 0 1 0 0 0;
-        0 0 0 1 0 0;
-        0 0 0 0 1 0;
+        sqrt(2/3) sqrt(1/3) 0 0 0 0; 
+        -sqrt(1/3) sqrt(2/3) 0 0 0 0; 
+        0 0 1 0 0 0; 
+        0 0 0 1 0 0; 
+        0 0 0 0 1 0; 
         0 0 0 0 0 1
-    ],
+        ]
 )
 
 FMODEL_HIGHN_P2 = fModel(
@@ -176,26 +165,43 @@ FMODEL_HIGHN_P2 = fModel(
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
     Bool[1, 0, 0, 0],
     [50443.070393, 83967.7, 83967.7, 83967.7],
-    [0.925121305 -2.73247165 74.664989; 0.230133261 0 0; 0.209638118 0 0; 0.186228192 0 0],
+    [
+        0.925150932 -2.69197178 66.7159709;
+        0.230028034 0 0; 
+        0.209224174 0 0; 
+        0.186236574 0 0
+        ],
     ["12", "13", "14"],
-    [0.0706666127 0; 0.0232711158 0; -0.0292153659 0],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 2)]),
-    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 2)]),
-    [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1],
+    [
+        0.0706189664 0; 
+        0.0231221428 0; 
+        -0.0291730345 0
+        ], 
+    lsChannels([
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 2)
+        ]),
+    [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1]
 )
 
 FMODEL_HIGHN_D1 = fModel(
     "D J=1, ν > 26", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)]
     1,
     ["6snd 3D1"],
-    Bool[1],
+    Bool[1], 
     [50443.070393],
     [0.75258093 0.3826 -483.1],
-    [""],
+    [""], 
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 1)]),
-    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 1)]),
-    [1;;],
+    lsChannels([
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 1)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 1)
+        ]),
+    [1;;]
 )
 
 FMODEL_HIGHN_D2 = fModel(
@@ -204,66 +210,184 @@ FMODEL_HIGHN_D2 = fModel(
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2"],
     Bool[1, 1, 0, 0, 1],
     [50443.070393, 50443.070393, 83967.7, 83967.7, 79725.35],
-    [
-        0.729500971 -0.0284447537;
-        0.75229161 0.0967044398;
-        0.196120406 0;
-        0.233821165 0;
-        0.152890218 0
-    ],
+    [0.729513646 -0.0377841183; 0.752292223 0.104072325; 0.19612036 0; 0.233752026 0; 0.152911249 0],
     ["12", "13", "14", "24", "15", "25"],
-    [
-        0.21157531 -15.3844;
-        0.00522534111 0;
-        0.0398754262 0;
-        -0.00720265975 0;
-        0.104784389 0;
-        0.0721775002 0
-    ],
+    [0.21157531 -15.3844; 0.00521559431 0; 0.0398131577 0; -0.0071658109 0; 0.10481227 0; 0.0721660042 0],
     lsChannels([
         lsQuantumNumbers(0.5, 0, 0, 2, 2, 2),
         lsQuantumNumbers(0.5, 1, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 0, 1, 1, 2, 2),
-    ]),
+        lsQuantumNumbers(0.5, 0, 1, 1, 2, 2)
+        ]),
     jjChannels([
         jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 2),
         jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 2),
-        jjQuantumNumbers(0.5, 1, 0.5, 1, 1.5, 2), # Jc and Jr could also be switched or both be 3/2
-    ]),
+        jjQuantumNumbers(0.5, 1, 0.5, 1, 1.5, 2) # Jc and Jr could also be switched or both be 3/2
+        ]),
     [
-        sqrt(3/5) sqrt(2/5) 0 0 0;
-        -sqrt(2/5) sqrt(3/5) 0 0 0;
-        0 0 1 0 0;
-        0 0 0 1 0;
+        sqrt(3/5) sqrt(2/5) 0 0 0; 
+        -sqrt(2/5) sqrt(3/5) 0 0 0; 
+        0 0 1 0 0; 
+        0 0 0 1 0; 
         0 0 0 0 1
-    ],
+        ]
 )
 
 FMODEL_HIGHN_D3 = fModel(
-    "D J=3, ν > 14", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)], provides good match around 18d
+    "D J=3, ν > 18", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)], provides good match around 21d
     1,
     ["6snd 3D3"],
-    Bool[1],
+    Bool[1], 
     [50443.070393],
-    [0.72895315 -0.2065 220.5],
-    [""],
+    [0.72902016 -0.705328923 829.238844], 
+    [""], 
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 3)]),
-    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 3)]),
-    [1;;],
+    lsChannels([
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 3)
+        ]),
+    [1;;]
 )
 
-MODELS = [
-    FMODEL_HIGHN_S0,
-    FMODEL_HIGHN_S1,
-    FMODEL_LOWN_P0,
-    FMODEL_HIGHN_P0,
-    FMODEL_HIGHN_P1,
-    FMODEL_HIGHN_P2,
-    FMODEL_HIGHN_D1,
-    FMODEL_HIGHN_D2,
-    FMODEL_HIGHN_D3,
-]
-test_model(MODELS)
+FMODEL_HIGHN_F2 = fModel(
+    "F J=2, ν > 25", # [arXiv:2507.11487v1]
+    1,
+    ["6snf 3F2"],
+    Bool[1], 
+    [50443.070393],
+    [0.0718252326 -1.00091963 -106.291066],
+    [""], 
+    [0;;],
+    lsChannels([
+        lsQuantumNumbers(0.5, 1, 0, 3, 3, 2)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 3, 2.5, 2)
+        ]),
+    [1;;]
+)
+
+FMODEL_HIGHN_F3 = fModel(
+    "F J=3, ν > 7", # [arXiv:2507.11487v1]
+    7,
+    ["6snf 1F3", "6snf 3F3", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d", "4f13 5d 6snl e"],
+    Bool[1, 1, 0, 0, 0, 0, 0],
+    [50443.070393, 50443.070393, 83967.7, 83967.7, 83967.7, 83967.7, 83967.7],
+    [
+        0.276158949 -12.7258012; 
+        0.0715123712 -0.768462937; 
+        0.239015576 0; 
+        0.226770354 0; 
+        0.175354845 0; 
+        0.196660618 0; 
+        0.21069642 0
+        ],
+    ["12", "13", "14", "15", "16", "17", "23", "24", "25", "26", "27"],
+    [
+        -0.0208481417 0.239045493; 
+        -0.00411835457 0; 
+        -0.0962784945 0; 
+        0.132826901 0; 
+        -0.0439244317 0; 
+        0.0508460294 0; 
+        -0.0376574252 0; 
+        0.026944623 0; 
+        -0.0148474857 0; 
+        -0.0521244126 0; 
+        0.0349516329 0
+        ],
+    lsChannels([
+        lsQuantumNumbers(0.5, 0, 0, 3, 3, 3),
+        lsQuantumNumbers(0.5, 1, 0, 3, 3, 3)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 3, 3.5, 3),
+        jjQuantumNumbers(0.5, 0, 0.5, 3, 2.5, 3)
+        ]),
+    [
+        sqrt(4/7) sqrt(3/7) 0 0 0 0 0; 
+        -sqrt(3/7) sqrt(4/7) 0 0 0 0 0; 
+        0 0 1 0 0 0 0; 
+        0 0 0 1 0 0 0; 
+        0 0 0 0 1 0 0; 
+        0 0 0 0 0 1 0; 
+        0 0 0 0 0 0 1
+        ]
+)
+
+FMODEL_HIGHN_F4 = fModel(
+    "F J=4, ν > 25", # [arXiv:2507.11487v1]
+    1,
+    ["6snf 3F4"],
+    Bool[1], 
+    [50443.070393],
+    [0.0839027969 -2.91009023],
+    [""], 
+    [0;;],
+    lsChannels([
+        lsQuantumNumbers(0.5, 1, 0, 3, 3, 4)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 3, 3.5, 4)
+        ]),
+    [1;;]
+)
+
+FMODEL_HIGHN_G3 = fModel(
+    "G J=3, ν > 25", # [arXiv:2507.11487v1]
+    1,
+    ["6sng 3G3"],
+    Bool[1], 
+    [50443.070393],
+    [0.0260964574 -0.14139526],
+    [""], 
+    [0;;],
+    lsChannels([
+        lsQuantumNumbers(0.5, 1, 0, 4, 4, 3)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 3)
+        ]),
+    [1;;]
+)
+
+FMODEL_HIGHN_G4 = fModel(
+    "G J=4, ν > 25", # [arXiv:2507.11487v1]
+    2,
+    ["6sng +G4", "6sng -G4"],
+    Bool[1, 1],
+    [50443.070393, 50443.070393],
+    [0.0262659964 -0.148808463; 0.0254568575 -0.134219071],
+    ["12"],
+    [-0.08222676 0],
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4),
+        jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4),
+        jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4)
+        ]),
+    [1 0; 0 1] # this series is well described in jj coupling. singlet-triplet mixing is approximately atan(sqrt(4/5))
+)
+
+FMODEL_HIGHN_G5 = fModel(
+    "G J=5, ν > 25", # [arXiv:2507.11487v1]
+    1,
+    ["6snf 3G5"],
+    Bool[1], 
+    [50443.070393],
+    [0.02529201 -0.11588052],
+    [""], 
+    [0;;],
+    lsChannels([
+        lsQuantumNumbers(0.5, 1, 0, 4, 4, 5)
+        ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 5)
+        ]),
+    [1;;]
+)
 
 end
