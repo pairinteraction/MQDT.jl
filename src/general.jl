@@ -5,7 +5,7 @@
 """
     Parameters(species::Symbol, mass::Float64, spin::Float64, rydberg::Float64, threshold::Float64, hyperfine::Float64, dipole::Float64)
 
-Type to store relevant parameters for each atomic element. A corresponding
+Type to store relevant parameters for each atomic element. A corresponding 
 file in the parameters folder of the mqdt module initializes this type.
 
 # Examples
@@ -39,7 +39,7 @@ end
 """
 See also [`lsQuantumNumbers`](@ref), [`jjQuantumNumbers`](@ref), [`fjQuantumNumbers`](@ref)
 
-Abstract type to store the quantum numbers of an MQDT channel representation.
+Abstract type to store the quantum numbers of an MQDT channel representation. 
 """
 abstract type QuantumNumbers end
 
@@ -48,8 +48,8 @@ See also [`lsQuantumNumbers`](@ref), [`jjQuantumNumbers`](@ref)
 
     fjQuantumNumbers(sc::Float64, lc::Int, Jc::Float64, Fc::Float64, lr::Int, Jr::Float64, F::Float64)
 
-Type to store the quantum numbers of a single MQDT channel in the "fj" (sometimes called "fragmentation")
-coupling scheme, i.e. core angular momentum quantum numbers are coupled to the nuclear spin to give a
+Type to store the quantum numbers of a single MQDT channel in the "fj" (sometimes called "fragmentation") 
+coupling scheme, i.e. core angular momentum quantum numbers are coupled to the nuclear spin to give a 
 core hyperfine configuration (Fc) which is coupled to the total Rydberg angular momentum (Jr).
 """
 struct fjQuantumNumbers <: QuantumNumbers
@@ -67,7 +67,7 @@ See also [`lsQuantumNumbers`](@ref), [`fjQuantumNumbers`](@ref)
 
     jjQuantumNumbers(lc::Int, Jc::Float64, lr::Int, Jr::Float64, J::Float64)
 
-Type to store the quantum numbers of a single MQDT channel in the "jj" coupling scheme,
+Type to store the quantum numbers of a single MQDT channel in the "jj" coupling scheme, 
 i.e. core and Rydberg angular momentum (AM) quantum numbers are coupled separately to give a total core AM (Jc) and total Rydberg AM (Jr).
 """
 struct jjQuantumNumbers <: QuantumNumbers
@@ -77,7 +77,10 @@ struct jjQuantumNumbers <: QuantumNumbers
     lr::Int
     Jr::Float64
     J::Float64
+    F::Float64
 end
+
+jjQuantumNumbers(sc, lc, Jc, lr, Jr, J) = jjQuantumNumbers(sc, lc, Jc, lr, Jr, J, J)
 
 """
 See also [`jjQuantumNumbers`](@ref), [`fjQuantumNumbers`](@ref)
@@ -94,18 +97,21 @@ struct lsQuantumNumbers <: QuantumNumbers
     lr::Int
     L::Int
     J::Float64
+    F::Float64
 end
+
+lsQuantumNumbers(sc, S, lc, lr, L, J) = lsQuantumNumbers(sc, S, lc, lr, L, J, J)
 
 # --------------------------------------------------------
 # Base functions for QuantumNumbers structs
 # --------------------------------------------------------
 
 function Base.cat(T::lsQuantumNumbers)
-    return Vector{Float64}([T.sc, T.S, T.lc, T.lr, T.L, T.J])
+    return Vector{Float64}([T.sc, T.S, T.lc, T.lr, T.L, T.J, T.F])
 end
 
 function Base.cat(T::jjQuantumNumbers)
-    return Vector{Float64}([T.sc, T.lc, T.Jc, T.lr, T.Jr, T.J])
+    return Vector{Float64}([T.sc, T.lc, T.Jc, T.lr, T.Jr, T.J, T.F])
 end
 
 function Base.cat(T::fjQuantumNumbers)
@@ -123,7 +129,7 @@ end
 """
 See also [`lsChannels`](@ref), [`jjChannels`](@ref), [`fjChannels`](@ref)
 
-Abstract type to store the quantum numbers of an MQDT channel representation.
+Abstract type to store the quantum numbers of an MQDT channel representation. 
 """
 abstract type Channels end
 
@@ -132,7 +138,7 @@ See also [`jjChannels`](@ref), [`fjChannels`](@ref)
 
     lsChannels(i::Vector{lsQuantumNumbers})
 
-Type to store the quantum numbers of an MQDT channel representation, here in the "LS" coupling scheme,
+Type to store the quantum numbers of an MQDT channel representation, here in the "LS" coupling scheme, 
 i.e. core and Rydberg angular momentum quantum numbers are coupled individually to give a total spin (S) and total orbital angular momentum (L).
 """
 struct lsChannels <: Channels
@@ -144,8 +150,8 @@ See also [`lsChannels`](@ref), [`fjChannels`](@ref)
 
     jjChannels(i::Vector{jjQuantumNumbers})
 
-Type to store the quantum numbers of an MQDT channel representation, here in the
-"jj" coupling scheme, i.e. core and Rydberg angular momentum (AM) quantum numbers
+Type to store the quantum numbers of an MQDT channel representation, here in the 
+"jj" coupling scheme, i.e. core and Rydberg angular momentum (AM) quantum numbers 
 are coupled separately to give a total core AM (Jc) and total Rydberg AM (Jr).
 """
 struct jjChannels <: Channels
@@ -157,7 +163,7 @@ See also [`lsChannels`](@ref), [`jjChannels`](@ref)
 
     fjChannels(i::Vector{fjQuantumNumbers})
 
-Type to store the quantum numbers of an MQDT channel representation, here in the "fj" (sometimes called
+Type to store the quantum numbers of an MQDT channel representation, here in the "fj" (sometimes called 
 "fragmentation") coupling scheme
 """
 struct fjChannels <: Channels
@@ -172,11 +178,32 @@ function Base.size(T::Channels)
     return length(T.i)
 end
 
-function get_S(T::Channels)
+function get_S(T::lsChannels)
     t = T.i
     r = Vector{Int}(undef, length(t))
     for i in eachindex(t)
         r[i] = t[i].S
+    end
+    return r
+end
+
+function get_S(T::jjChannels)
+    t = T.i
+    r = Vector{Float64}(undef, length(t))
+    for i in eachindex(t)
+        lr = t[i].lr
+        jr = t[i].Jr
+        jt = t[i].J
+        theta = atan(sqrt(lr/(lr+1)))
+        if jt == lr
+            if jr > lr
+                r[i] = cos(theta)^2
+            else
+                r[i] = sin(theta)^2
+            end
+        else
+            r[i] = 1.
+        end
     end
     return r
 end
@@ -199,13 +226,17 @@ function get_lr(T::Channels)
     return r
 end
 
-function get_L(T::Channels)
+function get_L(T::lsChannels)
     t = T.i
     r = Vector{Int}(undef, length(t))
     for i in eachindex(t)
         r[i] = t[i].L
     end
     return r
+end
+
+function get_L(T::jjChannels)
+    return get_lr(T)
 end
 
 function get_Jr(T::Channels)
@@ -240,7 +271,7 @@ See also [`unique_parity`](@ref)
 
     parity(T::Channels)
 
-Given a channel representation, this function returns the parity of a each
+Given a channel representation, this function returns the parity of a each 
 channel based of the orbital angular momenta of the core and the Rydberg electron.
 """
 function parity(T::Channels)
@@ -271,7 +302,7 @@ end
     good_quantum_number(T::jjChannels)
     good_quantum_number(T::fjChannels)
 
-Given a ls or jj (fj) channel representation, this function checks whether each channel
+Given a ls or jj (fj) channel representation, this function checks whether each channel 
 has the same total (hyperfine) angular momentum J (F) and, if true, returns it.
 """
 function good_quantum_number(T::lsChannels)
@@ -308,7 +339,7 @@ end
 """
 See also [`fModel`](@ref), [`kModel`](@ref)
 
-Abstract type to store MQDT models.
+Abstract type to store MQDT models. 
 """
 abstract type Model end
 
@@ -324,12 +355,12 @@ See also [`kModel`](@ref)
         defects::Matrix{Float64},
         mixing::Vector{String},
         angles::Matrix{Float64},
-        lschannels::lsChannels,
-        channels::Channels,
+        inner_channels::Channels
+        outer_channels::Channels
         unitary::Matrix{Float64}
     )
 
-Type to store MQDT models inspired by [PRX 15, 011009 (2025)] using sparse K matriced and frame transformation.
+Type to store MQDT models inspired by [PRX 15, 011009 (2025)] using sparse K matriced and frame transformation. 
 Contains all relevant parameters to form the K matrix and calculate the spectrum for a specific Rydberg series.
 
 # Examples
@@ -337,9 +368,9 @@ Contains all relevant parameters to form the K matrix and calculate the spectrum
 ```julia-repl
 RYDBERG_S0 = fModel(
     "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
-    6,
+    6, 
     ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
-    Bool[1, 0, 1, 0, 1, 0],
+    Bool[1, 0, 1, 0, 1, 0], 
     [50443.070393, 83967.7, 80835.39, 83967.7, 77504.98, 83967.7],
     [0.355097325 0.278368431; 0.204537279 0; 0.116394359 0; 0.295432196 0; 0.25765161 0; 0.155807042 0],
     ["12", "13", "14", "34", "35", "16"],
@@ -367,8 +398,8 @@ struct fModel <: Model
     defects::Matrix{Float64}
     mixing::Vector{String}
     angles::Matrix{Float64}
-    lschannels::lsChannels
-    channels::Channels
+    inner_channels::Channels
+    outer_channels::Channels
     unitary::Matrix{Float64}
 end
 
@@ -387,7 +418,7 @@ See also [`fModel`](@ref)
         K1::Vector{Float64}
     )
 
-Type to store MQDT models inspired by [JPB 47, 155001 (2014)] using dense, energy-dependent K matrices.
+Type to store MQDT models inspired by [JPB 47, 155001 (2014)] using dense, energy-dependent K matrices. 
 Contains all relevant parameters to form the K matrix and calculate the spectrum for a specific Rydberg series.
 
 # Examples
@@ -397,7 +428,7 @@ KMODEL_S0 = kModel(
     "1S0",
     3,
     ["(5s1/2)(ns1/2)", "(4d5/2)(nd5/2)", "(4d3/2)(nd3/2)"],
-    Bool[1, 1, 1],
+    Bool[1, 1, 1], 
     lsChannels([
         lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
         lsQuantumNumbers(0.5, 0, 2, 2, 0, 0),
@@ -440,7 +471,7 @@ end
 
 function get_lr(T::fModel)
     l = zeros(Int, T.size)
-    l[findall(T.core)] = get_lr(T.channels)
+    l[findall(T.core)] = get_lr(T.outer_channels)
     return l
 end
 
@@ -449,27 +480,53 @@ function get_lr(T::kModel)
 end
 
 function get_S(T::fModel)
-    return get_S(T.lschannels)
+    return get_S(T.inner_channels)
 end
 
 function get_L(T::fModel)
-    return get_L(T.lschannels)
+    return get_L(T.inner_channels)
 end
 
 function get_J(T::fModel)
-    return get_J(T.lschannels)
+    return get_J(T.inner_channels)
+end
+
+function single_channel_models(l::Integer, p::Parameters)
+    jr = [l-1/2, l-1/2, l+1/2, l+1/2]
+    j = [l-1, l, l, l+1]
+    m = Vector{fModel}(undef, 4)
+    for i in eachindex(j)
+        m[i] = fModel(
+            "L=$l, J=$(j[i]), Jr=$(jr[i])",
+            1,
+            [""],
+            Bool[1],
+            [p.threshold],
+            [0;;],
+            [""],
+            [0;;],
+            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], j[i])]),
+            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], j[i])]),
+            [1;;]
+        )
+    end
+    return m
+end
+
+function single_channel_models(l::UnitRange{Int64}, p::Parameters)
+    m = Vector{fModel}()
+    for i in l
+        append!(m, single_channel_models(i, p))
+    end
+    return m
 end
 
 function test_model(T::fModel)
-    if T.size !=
-       length(T.terms) !=
-       length(T.core) !=
-       length(T.thresholds) !=
-       size(T.defects, 1)
+    if T.size != length(T.terms) != length(T.core) != length(T.thresholds) != size(T.defects, 1)
         return println("Model size does not correspond to provided parameters.")
     elseif size(T.unitary) != (T.size, T.size)
         return println("Frame transformation matrix does not have the correct dimensions.")
-    elseif length(findall(T.core)) != size(T.channels) != size(T.lschannels)
+    elseif length(findall(T.core)) != size(T.outer_channels) != size(T.inner_channels)
         return println("Wrong number of channels.")
     elseif length(T.mixing) != size(T.angles, 1)
         return println("Wrong number of close-coupling rotations.")
@@ -479,13 +536,7 @@ function test_model(T::fModel)
 end
 
 function test_model(T::kModel)
-    if T.size !=
-       length(T.terms) !=
-       length(jjscheme) !=
-       length(T.lschannels) !=
-       length(T.jjchannels) !=
-       length(T.thresholds) !=
-       length(T.K1)
+    if T.size != length(T.terms) != length(jjscheme) != length(T.lschannels) != length(T.jjchannels) != length(T.thresholds) != length(T.K1)
         return println("Model size does not correspond to provided parameters.")
     elseif size(T.K0) != (T.size, T.size)
         return println("Frame transformation matrix does not have the correct dimensions.")
@@ -494,7 +545,7 @@ function test_model(T::kModel)
     end
 end
 
-function test_model(T::Union{Vector{fModel},Vector{kModel}})
+function test_model(T::Union{Vector{fModel}, Vector{kModel}})
     for i in eachindex(T)
         test_model(T[i])
     end
@@ -502,17 +553,28 @@ end
 
 function test_unitary(T::fModel)
     c = findall(T.core)
-    t0 = T.unitary[c, c]
-    if typeof(T.channels) == jjChannels
-        t1 = matrix_ls_to_jj(T.lschannels, T.channels)'
-    elseif typeof(T.channels) == fjChannels
-        lc = unique(get_lc(T.lschannels))
-        lr = unique(get_lr(T.lschannels))
-        qn = MQDT.AngularMomenta(lc, lr, 1/2) # generalize for nuclear spin
-        jj = jj_channels(qn)
-        tjj = matrix_ls_to_jj(T.lschannels, jj)
-        tfj = matrix_jj_to_fj(jj, T.channels, 1/2) # generalize for nuclear spin
-        t1 = -(tjj * tfj)'
+    t0 = T.unitary[c,c]
+    if typeof(T.outer_channels) == jjChannels
+        if typeof(T.inner_channels) == lsChannels
+            t1 = matrix_ls_to_jj(T.inner_channels, T.outer_channels)'
+        else
+            s = size(T.inner_channels)
+            t1 = diagm(repeat([1.], s))
+        end
+    elseif typeof(T.outer_channels) == fjChannels
+        if typeof(T.inner_channels) == jjChannels
+            t1 = -matrix_jj_to_fj(T.inner_channels, T.outer_channels, 1/2)' # generalize for nuclear spin
+        else
+            lc = unique(get_lc(T.inner_channels))
+            lr = unique(get_lr(T.inner_channels))
+            ft = unique(get_F(T.outer_channels))[1]
+            qn = MQDT.AngularMomenta(lc, lr, 1/2) # generalize for nuclear spin
+            jj = jj_channels(jj_channels(qn))
+            i = findall(x->x==ft, jj[1])[1]
+            tjj = matrix_ls_to_jj(T.inner_channels, jj[2][i])
+            tfj = matrix_jj_to_fj(jj[2][i], T.outer_channels, 1/2) # generalize for nuclear spin
+            t1 = -(tjj * tfj)'
+        end
     end
     return isapprox(t0, t1), t0, t1
 end
@@ -532,8 +594,8 @@ See also [`eigenstates`](@ref), [`BasisState`](@ref)
 
     EigenStates(n::Vector{Float64}, nu::Matrix{Float64}, a::Matrix{Float64})
 
-Type to store multi-channel bound states.
-`n` is a global energy reference to a global threshold specified in the `Parameters` type.
+Type to store multi-channel bound states. 
+`n` is a global energy reference to a global threshold specified in the `Parameters` type. 
 `nu` is the principal quantum number in each channel with respect to the channel-specific threshold.
 `a` is the coefficient of each channel contributing to the bound state.
 `EigenStates` is populated by the `eigenstates` function.
@@ -549,7 +611,7 @@ See also [`basisarray`](@ref), [`BasisArray`](@ref), [`EigenStates`](@ref)
 
     BasisState(energy::Float64, parity::Int, f::Float64, nu::Vector{Float64}, lr::Vector{Int}, S::Vector{Float64}, coeff::Vector{Float64}, channels::Channels)
 
-Type to store all relevant information of multi-channel bound states for a given Rydberg series.
+Type to store all relevant information of multi-channel bound states for a given Rydberg series. 
 `BasisState` is generated by the `basisarray` function using a `Model` and `EigenStates`.
 """
 struct BasisState
@@ -578,10 +640,10 @@ end
 """
 See also [`databasearray`](@ref), [`DataBaseArray`](@ref), [`EigenStates`](@ref), [`BasisState`](@ref)
 
-    DataBaseState(nu::Float64, parity::Int, f::Float64, nui::Vector{Float64}, nui_all::Vector{Float64}, ai::Vector{Float64}, ai_all::Vector{Float64},
+    DataBaseState(nu::Float64, parity::Int, f::Float64, nui::Vector{Float64}, nui_all::Vector{Float64}, ai::Vector{Float64}, ai_all::Vector{Float64}, 
         S::Vector{Float64}, L::Vector{Float64}, J::Vector{Float64}, lr::Vector{Int}, Jr::Vector{Float64}, neg::Float64)
 
-Type to store all relevant to the PAIRINTERACTION database for a given Rydberg series.
+Type to store all relevant to the PAIRINTERACTION database for a given Rydberg series. 
 `DataBaseState` is generated by the `databasearray` function using a `Model` and `EigenStates`.
 """
 struct DataBaseState
@@ -632,10 +694,18 @@ function Base.union(T1::BasisArray, T2::BasisArray)
     return BasisArray(vcat(T1.states, T2.states))
 end
 
+function Base.union(T1::BasisArray, T2::BasisArray, T3::BasisArray)
+    return BasisArray(vcat(T1.states, T2.states, T3.states))
+end
+
 function Base.size(T::DataBaseArray)
     return length(T.states)
 end
 
 function Base.union(T1::DataBaseArray, T2::DataBaseArray)
     return DataBaseArray(vcat(T1.states, T2.states))
+end
+
+function Base.union(T1::DataBaseArray, T2::DataBaseArray, T3::DataBaseArray)
+    return DataBaseArray(vcat(T1.states, T2.states, T3.states))
 end
