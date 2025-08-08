@@ -5,3 +5,4 @@ Manifest*.toml
 # Ignore local development files
 playground/
 .vscode/
+.DS_Store

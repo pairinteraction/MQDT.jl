@@ -20,8 +20,7 @@ function state_data(T::BasisArray, P::Parameters)
         l = exp_l(T),
         S = exp_S(T),
     )
-    S = sortperm(get_e(T, P))
-    return df[S, :]
+    return sort!(df, [:nu, :l])
 end
 
 function state_data(T::DataBaseArray, P::Parameters)
@@ -48,8 +47,7 @@ function state_data(T::DataBaseArray, P::Parameters)
         is_calculated_with_mqdt = is_mqdt(T),
         underspecified_channel_contribution = get_neg(T),
     )
-    S = sortperm(get_e(T, P))
-    return df[S, :]
+    return sort!(df, [:nu, :exp_l_ryd])
 end
 
 """
