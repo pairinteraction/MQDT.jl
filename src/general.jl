@@ -492,6 +492,7 @@ function get_J(T::fModel)
 end
 
 function single_channel_models(l::Integer, p::Parameters)
+    @assert l > 0 "l must be positive and nonzero for this function"
     jr = [l-1/2, l-1/2, l+1/2, l+1/2]
     jt = [l-1, l, l, l+1]
     m = Vector{fModel}(undef, 4)
