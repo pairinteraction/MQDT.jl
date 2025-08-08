@@ -553,12 +553,9 @@ function matrix_element(k::Int, B::BasisArray)
             m = multipole_moment(k, b1, b2)
             if !iszero(m)
                 M[i, j] = m
-                """
-                # no need to save the lower triangle
                 if j != i
-                    M[j,i] = (-1)^(f2-f1) * m
+                    M[j, i] = (-1)^(f2-f1) * m
                 end
-                """
             end
         end
     end
@@ -580,12 +577,9 @@ function matrix_element(B::BasisArray)
             m = special_quadrupole_moment(b1, b2)
             if !iszero(m)
                 M[i, j] = m
-                """
-                # no need to save the lower triangle
                 if j != i
-                    M[j,i] = (-1)^(f2-f1) * m
+                    M[j, i] = (-1)^(f2-f1) * m
                 end
-                """
             end
         end
     end
@@ -610,12 +604,9 @@ function matrix_element(A::Parameters, B::BasisArray)
             m = magnetic_dipole_moment(nd, mp, ic, b1, b2)
             if !iszero(m)
                 M[i, j] = m
-                """
-                # no need to save the lower triangle
                 if j != i
-                    M[j,i] = (-1)^(f2-f1) * m
+                    M[j, i] = (-1)^(f2-f1) * m
                 end
-                """
             end
         end
     end

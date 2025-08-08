@@ -111,28 +111,22 @@ m2 = matrix_data(d2)
 mm = matrix_data(dm)
 md = matrix_data(dd)
 
-# prepare PAIRINTERACTION output
+# prepare PAIRINTERACTION state table
 db = databasearray(vcat(low_l_states, high_l_states), vcat(low_l_models, high_l_models))
-ST = state_data(db, parameters)
-
-# store full matrix for PAIRINTERACTION (as opposed to upper triangle)
-M1 = tri_to_full(m1, ST)
-M2 = tri_to_full(m2, ST)
-MM = tri_to_full(mm, ST)
-MD = tri_to_full(md, ST)
+st = state_data(db, parameters)
 
 # store tables as csv files
 using CSV
-CSV.write("$(species)_mqdt_states.csv", ST)
-CSV.write("$(species)_mqdt_matrix_elements_d.csv", M1)
-CSV.write("$(species)_mqdt_matrix_elements_q.csv", M2)
-CSV.write("$(species)_mqdt_matrix_elements_mu.csv", MM)
-CSV.write("$(species)_mqdt_matrix_elements_q0.csv", MD)
+CSV.write("$(species)_mqdt_states.csv", st)
+CSV.write("$(species)_mqdt_matrix_elements_d.csv", m1)
+CSV.write("$(species)_mqdt_matrix_elements_q.csv", m2)
+CSV.write("$(species)_mqdt_matrix_elements_mu.csv", mm)
+CSV.write("$(species)_mqdt_matrix_elements_q0.csv", md)
 
 # store tables as parquet files
 using Parquet2
-Parquet2.writefile("$(species)_mqdt_states.parquet", ST)
-Parquet2.writefile("$(species)_mqdt_matrix_elements_d.parquet", M1)
-Parquet2.writefile("$(species)_mqdt_matrix_elements_q.parquet", M2)
-Parquet2.writefile("$(species)_mqdt_matrix_elements_mu.parquet", MM)
-Parquet2.writefile("$(species)_mqdt_matrix_elements_q0.parquet", MD)
+Parquet2.writefile("$(species)_mqdt_states.parquet", st)
+Parquet2.writefile("$(species)_mqdt_matrix_elements_d.parquet", m1)
+Parquet2.writefile("$(species)_mqdt_matrix_elements_q.parquet", m2)
+Parquet2.writefile("$(species)_mqdt_matrix_elements_mu.parquet", mm)
+Parquet2.writefile("$(species)_mqdt_matrix_elements_q0.parquet", md)
