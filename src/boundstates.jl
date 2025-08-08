@@ -306,7 +306,7 @@ Root finding algorithm used from the package `Roots`.
 """
 function mroots(N::Number, M::Model, P::Parameters)
     m(n) = det(mmat(n, M, P))
-    z = find_zeros(m, (N, N+1))
+    z = find_zeros(m, (N-0.5, N+0.5))
     c = Int[]
     for i in eachindex(z)
         mz = m(z[i])
@@ -323,7 +323,7 @@ end
 
 function mroots(N1::Number, N2::Number, M::Model, P::Parameters)
     z = Float64[]
-    for i = N1:(N2-1)
+    for i = N1:N2
         append!(z, mroots(i, M, P))
     end
     return z
@@ -413,9 +413,13 @@ function basisarray(T::EigenStates, M::fModel)
     t = M.unitary[F, F]
     S = get_S(M)
     s = diag(t * diagm(S) * t')
-    for k in eachindex(e)
-        if M.size > 1 || l[1] < n[1, k]
-            push!(B, BasisState(e[k], p, f, n[:, k], l, s, a[:, k], c))
+    for i in eachindex(e)
+        if !isone(M.size) || l[1] < n[1, i]
+            ei = e[i]
+            if abs(ei - round(Int, ei)) < 1e2eps()
+                ei = round(ei)
+            end
+            push!(B, BasisState(ei, p, f, n[:, i], l, s, a[:, i], c))
         end
     end
     return BasisArray(B)
@@ -464,11 +468,15 @@ function databasearray(T::EigenStates, M::fModel)
     B = Vector{DataBaseState}()
     for i in eachindex(e)
         under = sum(a_irr[:, i] .^ 2)
-        if M.size > 1 || l_ryd[1] < n_rel[1, i]
+        if !isone(M.size) || l_ryd[1] < n_rel[1, i]
+            ei = e[i]
+            if abs(ei - round(Int, ei)) < 1e2eps()
+                ei = round(ei)
+            end
             push!(
                 B,
                 DataBaseState(
-                    e[i],
+                    ei,
                     p,
                     f,
                     n_rel[:, i],
