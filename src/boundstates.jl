@@ -412,7 +412,7 @@ function basisarray(T::EigenStates, M::fModel)
     a = T.a[F, :]
     t = M.unitary[F, F]
     S = get_S(M)
-    s = diag(t * diagm(S) * t')
+    s = transform_if_not_equal(S, t)
     for i in eachindex(e)
         if !isone(M.size) || l[1] < n[1, i]
             ei = e[i]
@@ -460,9 +460,9 @@ function databasearray(T::EigenStates, M::fModel)
     S = get_S(M)
     L = get_L(M)
     J = get_J(M)
-    s = diag(t * diagm(S) * t')
-    l = diag(t * diagm(L) * t')
-    j = diag(t * diagm(J) * t')
+    s = transform_if_not_equal(S, t)
+    l = transform_if_not_equal(L, t)
+    j = transform_if_not_equal(J, t)
     l_ryd = get_lr(c)
     j_ryd = get_Jr(c)
     B = Vector{DataBaseState}()
