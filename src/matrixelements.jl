@@ -13,7 +13,7 @@ Get a cached rydberg state from the ryd-numerov package (where the wavefunction 
     logging.getLogger("ryd_numerov").setLevel(logging.ERROR)
 
     energy_au = -0.5 / nu^2  # simple hydrogenic energy with effective principal quantum number nu
-    n = ceil(Int, max(nu, l + 1))  # FIXME
+    n = ceil(Int, max(nu, l + 1))  # FIXME, n is just used for sanity checks of the wavefunction, not for calculating the wavefunction
 
     state = ryd_numerov.RydbergState(species, n, l, j = l + 0.5)
     state.set_energy(energy_au)
@@ -186,7 +186,7 @@ function multipole_moment(k::Int, s1::BasisState, s2::BasisState)
     a2 = s2.coeff
     k2 = s2.channels
     M = 0.0
-    if p1 == p2 && iseven(k) || p1 != p2 && isodd(k)
+    if (p1 == p2 && iseven(k)) || (p1 != p2 && isodd(k))
         R = radial_matrix(k, n1, n2, l1, l2)
         Y = angular_matrix(k, k1, k2)
         M = a1' * (Y .* R) * a2
