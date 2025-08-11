@@ -332,6 +332,14 @@ function good_quantum_number(T::fjChannels)
     end
 end
 
+function transform_if_not_equal(V, T)
+    if allequal(V)
+        return V
+    else
+        return diag(T * diagm(V) * T')
+    end
+end
+
 # --------------------------------------------------------
 # K matrix model structs
 # --------------------------------------------------------
