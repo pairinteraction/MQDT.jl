@@ -1,52 +1,63 @@
 # --------------------------------------------------------
 # radial
 # --------------------------------------------------------
+const lru_get_rydberg_state = LRU{Tuple{String,Float64,Int64},Any}(maxsize = 20_000)
 
 """
-Get a cached rydberg state from the ryd-numerov package (where the wavefunction was already calculated) or create a new one.
+    get_rydberg_state_cached(species::String, nu::Float64, l::Int64)
+
+Get a rydberg state from the ryd-numerov package and calculate its wavefunction.
+This function is cached using the `LRUCache` package.
 """
-@memoize function get_rydberg_state_cached(species, nu, l)
-    ryd_numerov = pyimport("ryd_numerov")
+function get_rydberg_state_cached(species::String, nu::Float64, l::Int64)
+    get!(lru_get_rydberg_state, (species, nu, l)) do
+        ryd_numerov = pyimport("ryd_numerov")
 
-    # disable warnings from ryd_numerov for now
-    logging = pyimport("logging")
-    logging.getLogger("ryd_numerov").setLevel(logging.ERROR)
+        # disable warnings from ryd_numerov for now
+        logging = pyimport("logging")
+        logging.getLogger("ryd_numerov").setLevel(logging.ERROR)
 
-    energy_au = -0.5 / nu^2  # simple hydrogenic energy with effective principal quantum number nu
-    n = ceil(Int, max(nu, l + 1))  # FIXME, n is just used for sanity checks of the wavefunction, not for calculating the wavefunction
+        energy_au = -0.5 / nu^2  # simple hydrogenic energy with effective principal quantum number nu
+        n = ceil(Int, max(nu, l + 1))  # FIXME, n is just used for sanity checks of the wavefunction, not for calculating the wavefunction
 
-    state = ryd_numerov.RydbergState(species, n, l, j = l + 0.5)
-    state.set_energy(energy_au)
-    state.create_model(potential_type = "coulomb")
-    state.create_wavefunction("numerov", sign_convention = "positive_at_outer_bound")
-    return state
+        state = ryd_numerov.RydbergState(species, n, l, j = l + 0.5)
+        state.set_energy(energy_au)
+        state.create_model(potential_type = "coulomb")
+        state.create_wavefunction("numerov", sign_convention = "positive_at_outer_bound")
+        state
+    end
 end
 
+const lru_radial_moment = LRU{Tuple{Int,Float64,Float64,Int,Int},Float64}(maxsize = 500_000)
+
 """
-    radial_moment(order::Int, n1, n2, l1, l2)
+    radial_moment_cached(order::Int, n1, n2, l1, l2)
 
 Calculate the radial matrix element using the python `ryd-numerov` package.
+This function is cached using the `LRUCache` package.
 
 # Examples
 
 ```julia-repl
-MQDT.radial_moment(1, 30, 31, 1, 2)
+MQDT.radial_moment_cached(1, 30, 31, 1, 2)
 329.78054480806406
 ```
 """
-@memoize function radial_moment(order::Int, n1, n2, l1, l2)
-    state_i = get_rydberg_state_cached("H_textbook", n1, l1)
-    state_f = get_rydberg_state_cached("H_textbook", n2, l2)
-    radial = state_i.calc_radial_matrix_element(state_f, order, unit = "a.u.")
-    return pyconvert(Float64, radial)
+function radial_moment_cached(order::Int, n1, n2, l1, l2)
+    get!(lru_radial_moment, (order, n1, n2, l1, l2)) do
+        state_i = get_rydberg_state_cached("H_textbook", n1, l1)
+        state_f = get_rydberg_state_cached("H_textbook", n2, l2)
+        radial = state_i.calc_radial_matrix_element(state_f, order, unit = "a.u.")
+        pyconvert(Float64, radial)
+    end
 end
 
 """
-See also [`radial_moment`](@ref)
+See also [`radial_moment_cached`](@ref)
 
     function radial_matrix(k::Int, n1, n2, l1, l2)
 
-Evaluates `radial_moment` over lists.
+Evaluates radial_moment over lists.
 
 # Examples
 
@@ -67,7 +78,7 @@ function radial_matrix(k::Int, n1, n2, l1, l2)
             lj = l2[j]
             if abs(li-lj) <= k
                 if max(ni, nj) < 25 || abs(ni-nj) < 11 # cut off calculation of matrix elements for F states and higher \ell
-                    R[i, j] = radial_moment(k, ni, nj, li, lj)
+                    R[i, j] = radial_moment_cached(k, ni, nj, li, lj)
                 end
             end
         end
@@ -80,7 +91,7 @@ end
 # ---------------------------------
 
 """
-See also [`angular_matrix`](@ref)
+See also [`angular_matrix_cached`](@ref)
 
     angular_moment(k, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     angular_moment(k, q1::jjQuantumNumbers, q2::jjQuantumNumbers)
@@ -143,25 +154,31 @@ function angular_moment(k, q1::lsQuantumNumbers, q2::lsQuantumNumbers)
     return a
 end
 
+const lru_angular_matrix = LRU{Tuple{Int,Channels,Channels},Any}(maxsize = 1_000)
+
 """
 See also [`angular_moment`](@ref)
 
-    angular_matrix(k::Int, k1::Channels, k2::Channels)
+    angular_matrix_cached(k::Int, k1::Channels, k2::Channels)
 
 Iterates `angular_moment` over Channels, returns a matrix.
-This function is 'memoized' using the `Memoize` package.
+This function is cached using the `LRUCache` package.
 """
-@memoize function angular_matrix(k::Int, k1::Channels, k2::Channels)
-    c1 = k1.i
-    c2 = k2.i
-    A = zeros(length(c1), length(c2))
-    for i in eachindex(c1)
-        for j in eachindex(c2)
-            A[i, j] = angular_moment(k, c1[i], c2[j])
+function angular_matrix_cached(k::Int, k1::Channels, k2::Channels)
+    get!(lru_angular_matrix, (k, k1, k2)) do
+        c1 = k1.i
+        c2 = k2.i
+        A = zeros(length(c1), length(c2))
+        for i in eachindex(c1)
+            for j in eachindex(c2)
+                A[i, j] = angular_moment(k, c1[i], c2[j])
+            end
         end
+        A
     end
-    return A
 end
+
+
 
 # ---------------------------------
 # multipole moments
@@ -188,7 +205,7 @@ function multipole_moment(k::Int, s1::BasisState, s2::BasisState)
     M = 0.0
     if (p1 == p2 && iseven(k)) || (p1 != p2 && isodd(k))
         R = radial_matrix(k, n1, n2, l1, l2)
-        Y = angular_matrix(k, k1, k2)
+        Y = angular_matrix_cached(k, k1, k2)
         M = a1' * (Y .* R) * a2
     end
     return M
@@ -222,7 +239,7 @@ function magnetic_dipole_moment(nd, mp, ic, s1::BasisState, s2::BasisState)
     """
     if p1 == p2
         R = radial_matrix(0, n1, n2, l1, l2)
-        Y = magnetic_matrix(nd, mp, ic, k1, k2)
+        Y = magnetic_matrix_cached(nd, mp, ic, k1, k2)
         M = a1' * (Y .* R) * a2
     end
     return M
@@ -252,31 +269,36 @@ function special_quadrupole_moment(s1::BasisState, s2::BasisState)
     """
     if p1 == p2
         R = radial_matrix(2, n1, n2, l1, l2)
-        Y = angular_matrix(0, k1, k2)
+        Y = angular_matrix_cached(0, k1, k2)
         M = a1' * (Y .* R) * a2
     end
     return M
 end
 
+const lru_magnetic_matrix = LRU{Tuple{Any,Any,Any,Channels,Channels},Any}(maxsize = 1_000)
+
 """
 See also [`magneton`](@ref)
 
-    magnetic_matrix(nd, mp, ic, k1::Channels, k2::Channels)
+    magnetic_matrix_cached(nd, mp, ic, k1::Channels, k2::Channels)
 
 Iterates `magneton` over Channels, returns a matrix.
-This function is 'memoized' using the `Memoize` package.
+This function is cached using the `LRUCache` package.
 """
-@memoize function magnetic_matrix(nd, mp, ic, k1::Channels, k2::Channels)
-    c1 = k1.i
-    c2 = k2.i
-    A = zeros(length(c1), length(c2))
-    for i in eachindex(c1)
-        for j in eachindex(c2)
-            A[i, j] = magneton(nd, mp, ic, c1[i], c2[j])
+function magnetic_matrix_cached(nd, mp, ic, k1::Channels, k2::Channels)
+    get!(lru_magnetic_matrix, (nd, mp, ic, k1, k2)) do
+        c1 = k1.i
+        c2 = k2.i
+        A = zeros(length(c1), length(c2))
+        for i in eachindex(c1)
+            for j in eachindex(c2)
+                A[i, j] = magneton(nd, mp, ic, c1[i], c2[j])
+            end
         end
+        A
     end
-    return A
 end
+
 
 """
     magneton(nd, mp, ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)

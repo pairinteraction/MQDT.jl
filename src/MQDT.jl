@@ -4,9 +4,9 @@ using LinearAlgebra
 using Roots
 using SparseArrays
 using CGcoefficient
-using Memoize
 using DataFrames
 using PythonCall
+using LRUCache
 
 export lsQuantumNumbers,
     jjQuantumNumbers,
