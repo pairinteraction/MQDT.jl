@@ -203,16 +203,21 @@ function get_n(T::DataBaseArray, P::Parameters)
     i0 = findall(iszero, l)
     i1 = findall(iszero, l .- 1)
     i2 = findall(iszero, l .- 2)
+    i3 = findall(iszero, l .- 3)
+    j0 = findall(x->x<2, n)
+    n[j0] .+= 1
     if occursin("Yb", String(P.species))
-        n[i0] .+= 4.5
-        n[i1] .+= 3.9
-        n[i2] .+= 2.8
+        n[i0] .+= 4
+        n[i1] .+= 3
+        n[i2] .+= 2
+        n[i3] .+= 1
     else
-        n[i0] .+= 3.3
-        n[i1] .+= 2.8
-        n[i2] .+= 2.5
+        n[i0] .+= 3
+        n[i1] .+= 2
+        n[i2] .+= 2
+        n[i3] .+= 1
     end
-    return round.(Int, n)
+    return ceil.(Int, n)
 end
 
 function get_nu(T::DataBaseArray)
