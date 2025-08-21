@@ -60,16 +60,16 @@ st = state_data(db, parameters)
 
 # store tables as csv files
 using CSV
-CSV.write("$(species)_mqdt_states.csv", st)
-CSV.write("$(species)_mqdt_matrix_elements_d.csv", m1)
-CSV.write("$(species)_mqdt_matrix_elements_q.csv", m2)
-CSV.write("$(species)_mqdt_matrix_elements_mu.csv", mm)
-CSV.write("$(species)_mqdt_matrix_elements_q0.csv", md)
+CSV.write("Yb174_mqdt_states.csv", st)
+CSV.write("Yb174_mqdt_matrix_elements_d.csv", m1)
+CSV.write("Yb174_mqdt_matrix_elements_q.csv", m2)
+CSV.write("Yb174_mqdt_matrix_elements_mu.csv", mm)
+CSV.write("Yb174_mqdt_matrix_elements_q0.csv", md)
 
 # store tables as parquet files
 using Parquet2
-Parquet2.writefile("$(species)_mqdt_states.parquet", st)
-Parquet2.writefile("$(species)_mqdt_matrix_elements_d.parquet", m1)
-Parquet2.writefile("$(species)_mqdt_matrix_elements_q.parquet", m2)
-Parquet2.writefile("$(species)_mqdt_matrix_elements_mu.parquet", mm)
-Parquet2.writefile("$(species)_mqdt_matrix_elements_q0.parquet", md)
+Parquet2.writefile("Yb174_mqdt_states.parquet", st)
+Parquet2.writefile("Yb174_mqdt_matrix_elements_d.parquet", m1)
+Parquet2.writefile("Yb174_mqdt_matrix_elements_q.parquet", m2)
+Parquet2.writefile("Yb174_mqdt_matrix_elements_mu.parquet", mm)
+Parquet2.writefile("Yb174_mqdt_matrix_elements_q0.parquet", md)
