@@ -3,6 +3,7 @@ module Yb174
 using ..MQDT: Parameters, fModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers
 
 export PARA,
+    FMODEL_LOWN_P1,
     FMODEL_HIGHN_S0,
     FMODEL_HIGHN_S1,
     FMODEL_HIGHN_P0,
@@ -106,6 +107,26 @@ FMODEL_HIGHN_P0 = fModel(
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 0)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0)]),
     [1 0; 0 1],
+)
+
+FMODEL_LOWN_P1 = fModel(
+    "P J=1, 1.7 < ν < 2.7", # fit to NIST data for the 6p states
+    2,
+    ["6snp 1P1", "6snp 3P1"],
+    Bool[1, 1],
+    [50443.070393, 50443.070393],
+    [0.161083 0; 0.920424 0],
+    ["12"],
+    [-0.426128 6.272986],
+    lsChannels([
+        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
+    ]),
+    jjChannels([
+        jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1),
+        jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1),
+    ]),
+    [sqrt(2/3) sqrt(1/3); -sqrt(1/3) sqrt(2/3)],
 )
 
 FMODEL_HIGHN_P1 = fModel(
