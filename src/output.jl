@@ -215,7 +215,6 @@ function get_n(T::DataBaseArray, P::Parameters)
         n[i0] .+= 3
         n[i1] .+= 2
         n[i2] .+= 2
-        n[i3] .+= 1
     end
     return ceil.(Int, n)
 end
