@@ -1,5 +1,6 @@
 using MQDT
 
+# load Yb171 data
 parameters = MQDT.Yb174.PARA
 low_n_models = MQDT.Yb174.FMODEL_LOWN_P1
 low_l_models = [
@@ -19,18 +20,22 @@ low_l_models = [
     MQDT.Yb174.FMODEL_HIGHN_G5,
 ]
 
+# bounds
+n_min = [3, 27, 6, 6, 5, 26, 5, 18, 25, 7, 25, 25, 25, 25]
+n_max = 30
+
 # calculate low \nu MQDT states
 low_n_states = eigenstates(2, 2, low_n_models, parameters)
 
 # calculate high \nu, low \ell MQDT states
-n_min, n_max = 25, 30
-low_l_states = [eigenstates(n_min, n_max, M, parameters) for M in low_l_models]
+low_l_states =
+    [eigenstates(n_min[i], n_max, low_l_models[i], parameters) for i in eachindex(n_min)]
 
 # calculate high \ell SQDT states
 l_max = n_max - 1
 MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol caluclation
 high_l_models = single_channel_models(5:l_max, parameters)
-high_l_states = [eigenstates(n_min, n_max, M, parameters) for M in high_l_models]
+high_l_states = [eigenstates(25, n_max, M, parameters) for M in high_l_models]
 
 # generate state table
 basis = basisarray(
