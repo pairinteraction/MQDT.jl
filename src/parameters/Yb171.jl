@@ -43,6 +43,7 @@ PARA = Parameters(
 
 # MQDT Models
 FMODEL_HIGHN_S05 = fModel(
+    :Yb171,
     "S F=1/2, ν > 26", # [Phys. Rev. X 15, 011009 (2025)]
     7,
     [
@@ -98,6 +99,7 @@ FMODEL_HIGHN_S05 = fModel(
 )
 
 FMODEL_HIGHN_S15 = fModel(
+    :Yb171,
     "S F=3/2, ν > 26", # [Phys. Rev. X 15, 011009 (2025)]
     1,
     ["6sns 3S1"],
@@ -112,6 +114,7 @@ FMODEL_HIGHN_S15 = fModel(
 )
 
 FMODEL_HIGHN_P05 = fModel(
+    :Yb171,
     "P F=1/2, ν > 5.7", # [Phys. Rev. X 15, 011009 (2025)] # fit for ν > 28, but extrapolates nicely down for ν > 5.7
     8,
     [
@@ -173,6 +176,7 @@ FMODEL_HIGHN_P05 = fModel(
 )
 
 FMODEL_HIGHN_P15 = fModel(
+    :Yb171,
     "P F=3/2, ν > 10", # [arXiv:2507.11487v1] # fit for ν > 10
     11,
     [
@@ -259,6 +263,7 @@ FMODEL_HIGHN_P15 = fModel(
 )
 
 FMODEL_HIGHN_D05 = fModel(
+    :Yb171,
     "D F=1/2, ν > 30", # [Phys. Rev. X 15, 011009 (2025)]
     1,
     ["6snd 3D1"],
@@ -273,6 +278,7 @@ FMODEL_HIGHN_D05 = fModel(
 )
 
 FMODEL_HIGHN_D15 = fModel(
+    :Yb171,
     "D F=3/2, ν > 30", # [arXiv:2507.11487v1]
     6,
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D1"],
@@ -318,6 +324,7 @@ FMODEL_HIGHN_D15 = fModel(
 )
 
 FMODEL_HIGHN_D25 = fModel(
+    :Yb171,
     "D F=5/2, ν > 30", # [arXiv:2507.11487v1]
     6,
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D3"],
@@ -363,6 +370,7 @@ FMODEL_HIGHN_D25 = fModel(
 )
 
 FMODEL_HIGHN_D35 = fModel(
+    :Yb171,
     "D F=7/2, ν > 14", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)], provides good match around 18d
     1,
     ["6snd 3D3"],
@@ -377,6 +385,7 @@ FMODEL_HIGHN_D35 = fModel(
 )
 
 FMODEL_HIGHN_F25 = fModel(
+    :Yb171,
     "F F=5/2, ν > 20", # [arXiv:2507.11487v1]
     12,
     [
@@ -485,6 +494,7 @@ FMODEL_HIGHN_F25 = fModel(
 )
 
 FMODEL_HIGHN_F35 = fModel(
+    :Yb171,
     "F F=7/2, ν > 20", # [arXiv:2507.11487v1]
     8,
     [
@@ -546,6 +556,7 @@ FMODEL_HIGHN_F35 = fModel(
 )
 
 FMODEL_HIGHN_F45 = fModel(
+    :Yb171,
     "F F=9/2, ν > 20", # extracted from FMODEL_HIGHN_F35
     1,
     ["6snf 3F4"],
@@ -560,6 +571,7 @@ FMODEL_HIGHN_F45 = fModel(
 )
 
 FMODEL_HIGHN_G25 = fModel(
+    :Yb171,
     "G F=5/2, ν > 25", # [arXiv:2507.11487v1]
     1,
     ["6sng 3G3"],
@@ -574,6 +586,7 @@ FMODEL_HIGHN_G25 = fModel(
 )
 
 FMODEL_HIGHN_G35 = fModel(
+    :Yb171,
     "G F=7/2, ν > 25", # [arXiv:2507.11487v1]
     3,
     ["6sng +G4", "6sng -G4", "6sng 3G3"],
@@ -604,6 +617,7 @@ FMODEL_HIGHN_G35 = fModel(
 )
 
 FMODEL_HIGHN_G45 = fModel(
+    :Yb171,
     "G F=9/2, ν > 25", # [arXiv:2507.11487v1]
     3,
     ["6sng +G4", "6sng -G4", "6sng 3G5"],
@@ -634,6 +648,7 @@ FMODEL_HIGHN_G45 = fModel(
 )
 
 FMODEL_HIGHN_G55 = fModel(
+    :Yb171,
     "G F=11/2, ν > 25", # extracted from FMODEL_HIGHN_G45
     1,
     ["6sng 3G5"],

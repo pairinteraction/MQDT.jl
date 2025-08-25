@@ -38,6 +38,7 @@ PARA = Parameters(
 
 # MQDT Models
 FMODEL_HIGHN_S0 = fModel(
+    :Sr88,
     "S J=0",
     1,
     ["5sns 1S0"],
@@ -52,6 +53,7 @@ FMODEL_HIGHN_S0 = fModel(
 )
 
 FMODEL_HIGHN_S1 = fModel(
+    :Sr88,
     "S J=1",
     1,
     ["5sns 3S1"],
@@ -66,6 +68,7 @@ FMODEL_HIGHN_S1 = fModel(
 )
 
 FMODEL_LOWN_P1 = fModel(
+    :Sr88,
     "recombination",
     2,
     ["5snp 1P1", "5snp 3P1"],
@@ -86,6 +89,7 @@ FMODEL_LOWN_P1 = fModel(
 )
 
 FMODEL_HIGHN_P0 = fModel(
+    :Sr88,
     "P J=0",
     1,
     ["5snp 3P0"],
@@ -100,6 +104,7 @@ FMODEL_HIGHN_P0 = fModel(
 )
 
 FMODEL_HIGHN_P1 = fModel(
+    :Sr88,
     "P J=1",
     2,
     ["5snp 1P1", "5snp 3P1"],
@@ -120,6 +125,7 @@ FMODEL_HIGHN_P1 = fModel(
 )
 
 FMODEL_HIGHN_P2 = fModel(
+    :Sr88,
     "P J=2",
     1,
     ["5snp 3P2"],
@@ -134,6 +140,7 @@ FMODEL_HIGHN_P2 = fModel(
 )
 
 FMODEL_HIGHN_D1 = fModel(
+    :Sr88,
     "D J=1",
     1,
     ["5snd 3D1"],
@@ -148,6 +155,7 @@ FMODEL_HIGHN_D1 = fModel(
 )
 
 FMODEL_HIGHN_D2 = fModel(
+    :Sr88,
     "D J=2",
     2,
     ["5snd 1D2", "5snd 3D2"],
@@ -168,6 +176,7 @@ FMODEL_HIGHN_D2 = fModel(
 )
 
 FMODEL_HIGHN_D3 = fModel(
+    :Sr88,
     "D J=3",
     1,
     ["5snd 3D3"],
@@ -182,6 +191,7 @@ FMODEL_HIGHN_D3 = fModel(
 )
 
 FMODEL_HIGHN_F2 = fModel(
+    :Sr88,
     "F J=2",
     1,
     ["5snd 3F2"],
@@ -196,6 +206,7 @@ FMODEL_HIGHN_F2 = fModel(
 )
 
 FMODEL_HIGHN_F3 = fModel(
+    :Sr88,
     "F J=3",
     2,
     ["5snd 1F3", "5snd 3F3"],
@@ -216,6 +227,7 @@ FMODEL_HIGHN_F3 = fModel(
 )
 
 FMODEL_HIGHN_F4 = fModel(
+    :Sr88,
     "F J=4",
     1,
     ["5snd 3F4"],
@@ -246,6 +258,7 @@ FMODEL_HIGHN_F4 = fModel(
 # test_model(FMODELS)
 
 KMODEL_S0 = kModel(
+    :Sr88,
     "1S0",
     3,
     ["(5s1/2)(ns1/2)", "(4d5/2)(nd5/2)", "(4d3/2)(nd3/2)"],
@@ -270,6 +283,7 @@ KMODEL_S0 = kModel(
 )
 
 KMODEL_S1 = kModel(
+    :Sr88,
     "3S1",
     2,
     ["5sns 3S1", "5pnp 3P1"],
@@ -288,6 +302,7 @@ KMODEL_S1 = kModel(
 )
 
 KMODEL_P0 = kModel(
+    :Sr88,
     "3P0",
     2,
     ["5snp 3P0", "4dnp 3P0"],
@@ -306,6 +321,7 @@ KMODEL_P0 = kModel(
 )
 
 KMODEL_1P1 = kModel(
+    :Sr88,
     "1P1",
     2,
     ["5snp 1P1", "4dnp 1P1"],
@@ -324,6 +340,7 @@ KMODEL_1P1 = kModel(
 )
 
 KMODEL_3P1 = kModel(
+    :Sr88,
     "3P1",
     2,
     ["5snp 3P1", "4dnp 3P1"],
@@ -342,6 +359,7 @@ KMODEL_3P1 = kModel(
 )
 
 KMODEL_P2 = kModel(
+    :Sr88,
     "3P2",
     2,
     ["5snp 3P2", "4dnp 3P2"],
@@ -360,6 +378,7 @@ KMODEL_P2 = kModel(
 )
 
 KMODEL_D1 = kModel(
+    :Sr88,
     "3D1",
     2,
     ["5snd 3D1", "4dns 3D1"],
@@ -378,6 +397,7 @@ KMODEL_D1 = kModel(
 )
 
 KMODEL_D2 = kModel(
+    :Sr88,
     "1D2 / 3D2",
     6,
     [
@@ -418,6 +438,7 @@ KMODEL_D2 = kModel(
 )
 
 KMODEL_D3 = kModel(
+    :Sr88,
     "3D3",
     3,
     ["5snd 3D3", "4dns 3D3", "4dnd 3D3"],
@@ -442,6 +463,7 @@ KMODEL_D3 = kModel(
 )
 
 KMODEL_1F3 = kModel(
+    :Sr88,
     "1F3",
     2,
     ["5snf 1F3", "4dnp 1F3"],

@@ -32,6 +32,7 @@ PARA = Parameters(
 
 # MQDT Models
 FMODEL_HIGHN_S0 = fModel(
+    :Yb174,
     "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
     6,
     [
@@ -82,6 +83,7 @@ FMODEL_HIGHN_S0 = fModel(
 )
 
 FMODEL_HIGHN_S1 = fModel(
+    :Yb174,
     "S J=1, ν > 26", # fit only valid from 28s upward [Phys. Rev. Lett. 128, 033201 (2022)]
     1,
     ["6sns 3S1"],
@@ -96,6 +98,7 @@ FMODEL_HIGHN_S1 = fModel(
 )
 
 FMODEL_HIGHN_P0 = fModel(
+    :Yb174,
     "P J=0, ν > 6", # [Phys. Rev. X 15, 011009 (2025)]
     2,
     ["6snp 3P0", "4f13 5d 6snd"],
@@ -110,6 +113,7 @@ FMODEL_HIGHN_P0 = fModel(
 )
 
 FMODEL_LOWN_P1 = fModel(
+    :Yb174,
     "P J=1, 1.7 < ν < 2.7", # fit to NIST data for the 6p states
     2,
     ["6snp 1P1", "6snp 3P1"],
@@ -130,6 +134,7 @@ FMODEL_LOWN_P1 = fModel(
 )
 
 FMODEL_HIGHN_P1 = fModel(
+    :Yb174,
     "P J=1, ν > 6", # [Phys. Rev. X 15, 011009 (2025)]
     6,
     [
@@ -181,6 +186,7 @@ FMODEL_HIGHN_P1 = fModel(
 )
 
 FMODEL_HIGHN_P2 = fModel(
+    :Yb174,
     "P J=2, ν > 5", # [Phys. Rev. X 15, 011009 (2025)]
     4,
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
@@ -204,6 +210,7 @@ FMODEL_HIGHN_P2 = fModel(
 )
 
 FMODEL_HIGHN_D1 = fModel(
+    :Yb174,
     "D J=1, ν > 26", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)]
     1,
     ["6snd 3D1"],
@@ -218,6 +225,7 @@ FMODEL_HIGHN_D1 = fModel(
 )
 
 FMODEL_HIGHN_D2 = fModel(
+    :Yb174,
     "D J=2, ν > 5", # [Phys. Rev. X 15, 011009 (2025)]
     5,
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2"],
@@ -259,6 +267,7 @@ FMODEL_HIGHN_D2 = fModel(
 )
 
 FMODEL_HIGHN_D3 = fModel(
+    :Yb174,
     "D J=3, ν > 18", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)], provides good match around 21d
     1,
     ["6snd 3D3"],
@@ -273,6 +282,7 @@ FMODEL_HIGHN_D3 = fModel(
 )
 
 FMODEL_HIGHN_F2 = fModel(
+    :Yb174,
     "F J=2, ν > 25", # [arXiv:2507.11487v1]
     1,
     ["6snf 3F2"],
@@ -287,6 +297,7 @@ FMODEL_HIGHN_F2 = fModel(
 )
 
 FMODEL_HIGHN_F3 = fModel(
+    :Yb174,
     "F J=3, ν > 7", # [arXiv:2507.11487v1]
     7,
     [
@@ -343,6 +354,7 @@ FMODEL_HIGHN_F3 = fModel(
 )
 
 FMODEL_HIGHN_F4 = fModel(
+    :Yb174,
     "F J=4, ν > 25", # [arXiv:2507.11487v1]
     1,
     ["6snf 3F4"],
@@ -357,6 +369,7 @@ FMODEL_HIGHN_F4 = fModel(
 )
 
 FMODEL_HIGHN_G3 = fModel(
+    :Yb174,
     "G J=3, ν > 25", # [arXiv:2507.11487v1]
     1,
     ["6sng 3G3"],
@@ -371,6 +384,7 @@ FMODEL_HIGHN_G3 = fModel(
 )
 
 FMODEL_HIGHN_G4 = fModel(
+    :Yb174,
     "G J=4, ν > 25", # [arXiv:2507.11487v1]
     2,
     ["6sng +G4", "6sng -G4"],
@@ -391,6 +405,7 @@ FMODEL_HIGHN_G4 = fModel(
 )
 
 FMODEL_HIGHN_G5 = fModel(
+    :Yb174,
     "G J=5, ν > 25", # [arXiv:2507.11487v1]
     1,
     ["6snf 3G5"],
