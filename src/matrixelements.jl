@@ -4,12 +4,12 @@
 const lru_get_rydberg_state = LRU{Tuple{String,Float64,Int64},Any}(maxsize = 20_000)
 
 """
-    get_rydberg_state_cached(species::String, nu::Float64, l::Int64)
+    get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
 
 Get a rydberg state from the ryd-numerov package and calculate its wavefunction.
 This function is cached using the `LRUCache` package.
 """
-function get_rydberg_state_cached(species::String, nu::Float64, l::Int64)
+function get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
     get!(lru_get_rydberg_state, (species, nu, l)) do
         ryd_numerov = pyimport("ryd_numerov")
 
@@ -17,17 +17,18 @@ function get_rydberg_state_cached(species::String, nu::Float64, l::Int64)
         logging = pyimport("logging")
         logging.getLogger("ryd_numerov").setLevel(logging.ERROR)
 
-        state = ryd_numerov.RydbergStateMQDT(species, nu = nu, l = l)
+        state = ryd_numerov.RydbergStateMQDT(String(species), nu = nu, l = l)
         state.create_model(potential_type = "coulomb")
         state.create_wavefunction("numerov", sign_convention = "positive_at_outer_bound")
         state
     end
 end
 
-const lru_radial_moment = LRU{Tuple{Int,Float64,Float64,Int,Int},Float64}(maxsize = 500_000)
+const lru_radial_moment =
+    LRU{Tuple{Symbol,Float64,Int,Float64,Int,Int},Float64}(maxsize = 500_000)
 
 """
-    radial_moment_cached(order::Int, n1, n2, l1, l2)
+    radial_moment_cached(species::Symbol, nu1::Float64, l1::Int, nu2::Float64, l2::Int, order::Int)
 
 Calculate the radial matrix element using the python `ryd-numerov` package.
 This function is cached using the `LRUCache` package.
@@ -35,14 +36,21 @@ This function is cached using the `LRUCache` package.
 # Examples
 
 ```julia-repl
-MQDT.radial_moment_cached(1, 30, 31, 1, 2)
+MQDT.radial_moment_cached(:H_textbook, 30, 1, 31, 2, order=1)
 329.78054480806406
 ```
 """
-function radial_moment_cached(order::Int, n1, n2, l1, l2)
-    get!(lru_radial_moment, (order, n1, n2, l1, l2)) do
-        state_i = get_rydberg_state_cached("H_textbook", n1, l1)
-        state_f = get_rydberg_state_cached("H_textbook", n2, l2)
+function radial_moment_cached(
+    species::Symbol,
+    nu1::Float64,
+    l1::Int,
+    nu2::Float64,
+    l2::Int,
+    order::Int,
+)
+    get!(lru_radial_moment, (species, nu1, l1, nu2, l2, order)) do
+        state_i = get_rydberg_state_cached(species, nu1, l1)
+        state_f = get_rydberg_state_cached(species, nu2, l2)
         radial = state_i.calc_radial_matrix_element(state_f, order, unit = "a.u.")
         pyconvert(Float64, radial)
     end
@@ -51,36 +59,35 @@ end
 """
 See also [`radial_moment_cached`](@ref)
 
-    function radial_matrix(k::Int, n1, n2, l1, l2)
+    function radial_matrix(s1::BasisState, s2::BasisState, order::Int)
 
-Evaluates radial_moment over lists.
+Evaluates radial_moment over two BasisStates, returns a matrix,
+where each entry corresponds to a pair of sqdt states from the two BasisStates.
 
-# Examples
-
-```julia-repl
-MQDT.radial_matrix(1, [30, 30], [31, 31], [1, 2], [2, 1])
-2×2 Matrix{Float64}:
-  329.781  -302.282
- -302.278   276.085
-```
 """
-function radial_matrix(k::Int, n1, n2, l1, l2)
-    R = zeros(length(n1), length(n2))
-    for i in eachindex(n1)
-        ni = n1[i]
-        li = l1[i]
-        for j in eachindex(n2)
-            nj = n2[j]
-            lj = l2[j]
-            if abs(li-lj) <= k
-                if max(ni, nj) < 25 || abs(ni-nj) < 11 # cut off calculation of matrix elements for F states and higher \ell
-                    R[i, j] = radial_moment_cached(k, ni, nj, li, lj)
+function radial_matrix(s1::BasisState, s2::BasisState, order::Int)
+    @assert s1.species == s2.species "Species mismatch: s1.species ($(s1.species)) != s2.species ($(s2.species))"
+    R = zeros(length(s1.nu), length(s2.nu))
+
+    for i in eachindex(s1.nu)
+        nui = s1.nu[i]
+        li = s1.lr[i]
+        for j in eachindex(s2.nu)
+            nuj = s2.nu[j]
+            lj = s2.lr[j]
+
+            if abs(li-lj) <= order
+                if max(nui, nuj) < 25 || abs(nui-nuj) < 11 # cut off calculation of matrix elements for F states and higher \ell
+                    R[i, j] = radial_moment_cached(s1.species, nui, li, nuj, lj, order)
                 end
             end
+
         end
     end
+
     return R
 end
+
 
 # ---------------------------------
 # angular
@@ -458,35 +465,25 @@ end
 Returns the reduced matrix elements for electric dipole, electric quadrupole, magnetic dipole, and electric dipole squared.
 """
 function multipole_moments(s1::BasisState, s2::BasisState, P::Parameters)
-    p1 = s1.parity
-    n1 = s1.nu
-    l1 = s1.lr
-    a1 = s1.coeff
-    k1 = s1.channels
-    p2 = s2.parity
-    n2 = s2.nu
-    l2 = s2.lr
-    a2 = s2.coeff
-    k2 = s2.channels
     M = zeros(4)
-    if p1 != p2
+    if s1.parity != s2.parity
         # electric dipole
-        R = radial_matrix(1, n1, n2, l1, l2)
-        Y = angular_matrix_cached(1, k1, k2)
-        M[1] = a1' * (Y .* R) * a2
+        R = radial_matrix(s1, s2, 1)
+        Y = angular_matrix_cached(1, s1.channels, s2.channels)
+        M[1] = s1.coeff' * (Y .* R) * s2.coeff
     end
-    if p1 == p2
+    if s1.parity == s2.parity
         # electric quadrupole
-        R = radial_matrix(2, n1, n2, l1, l2)
-        Y = angular_matrix_cached(2, k1, k2)
-        M[2] = a1' * (Y .* R) * a2
+        R = radial_matrix(s1, s2, 2)
+        Y = angular_matrix_cached(2, s1.channels, s2.channels)
+        M[2] = s1.coeff' * (Y .* R) * s2.coeff
         # electric dipole squared
-        Y = angular_matrix_cached(0, k1, k2)
-        M[3] = a1' * (Y .* R) * a2
+        Y = angular_matrix_cached(0, s1.channels, s2.channels)
+        M[3] = s1.coeff' * (Y .* R) * s2.coeff
         # magnetic dipole
-        R = radial_matrix(0, n1, n2, l1, l2)
-        Y = magnetic_matrix_cached(P.dipole, P.mass, P.spin, k1, k2)
-        M[4] = a1' * (Y .* R) * a2
+        R = radial_matrix(s1, s2, 0)
+        Y = magnetic_matrix_cached(P.dipole, P.mass, P.spin, s1.channels, s2.channels)
+        M[4] = s1.coeff' * (Y .* R) * s2.coeff
     end
     return M
 end
