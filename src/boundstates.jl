@@ -442,7 +442,20 @@ function basisarray(T::EigenStates, M::fModel)
             end
             push!(
                 B,
-                BasisState(ei, p, f, n[:, i], l, a[:, i], c, term[i], lead[i], L[i], S[i]),
+                BasisState(
+                    M.species,
+                    ei,
+                    p,
+                    f,
+                    n[:, i],
+                    l,
+                    a[:, i],
+                    c,
+                    term[i],
+                    lead[i],
+                    L[i],
+                    S[i],
+                ),
             )
         end
     end
