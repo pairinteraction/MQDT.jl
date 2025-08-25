@@ -40,6 +40,7 @@ PARA = Parameters(
 
 # MQDT Models
 FMODEL_HIGHN_S15 = fModel(
+    :Yb173,
     "S F=3/2",
     1,
     ["6sns 3S1"],
@@ -55,6 +56,7 @@ FMODEL_HIGHN_S15 = fModel(
 )
 
 FMODEL_HIGHN_S25 = fModel(
+    :Yb173,
     "S F=5/2",
     7,
     [
@@ -111,6 +113,7 @@ FMODEL_HIGHN_S25 = fModel(
 )
 
 FMODEL_HIGHN_S35 = fModel(
+    :Yb173,
     "S F=7/2",
     1,
     ["6sns 3S1"],
@@ -126,6 +129,7 @@ FMODEL_HIGHN_S35 = fModel(
 )
 
 FMODEL_HIGHN_P05 = fModel(
+    :Yb173,
     "P F=1/2",
     4,
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
@@ -146,6 +150,7 @@ FMODEL_HIGHN_P05 = fModel(
 )
 
 FMODEL_HIGHN_P15 = fModel(
+    :Yb173,
     "P F=3/2",
     10,
     [
@@ -226,6 +231,7 @@ FMODEL_HIGHN_P15 = fModel(
 )
 
 FMODEL_HIGHN_P25 = fModel(
+    :Yb173,
     "P F=5/2",
     12,
     [
@@ -317,6 +323,7 @@ FMODEL_HIGHN_P25 = fModel(
 )
 
 FMODEL_HIGHN_P35 = fModel(
+    :Yb173,
     "P F=7/2",
     10,
     [
@@ -397,6 +404,7 @@ FMODEL_HIGHN_P35 = fModel(
 )
 
 FMODEL_HIGHN_P45 = fModel(
+    :Yb173,
     "P F=9/2",
     4,
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],

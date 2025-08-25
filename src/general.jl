@@ -347,6 +347,7 @@ abstract type Model end
 See also [`kModel`](@ref)
 
     fModel(
+        species::Symbol,
         name::String,
         size::Int,
         terms::Vector{String},
@@ -367,6 +368,7 @@ Contains all relevant parameters to form the K matrix and calculate the spectrum
 
 ```julia-repl
 RYDBERG_S0 = fModel(
+    :Yb174,
     "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
     6,
     ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
@@ -390,6 +392,7 @@ RYDBERG_S0 = fModel(
 ```
 """
 struct fModel <: Model
+    species::Symbol
     name::String
     size::Int
     terms::Vector{String}
@@ -407,6 +410,7 @@ end
 See also [`fModel`](@ref)
 
     kModel(
+        species::Symbol
         name::String
         size::Int
         terms::Vector{String}
@@ -425,6 +429,7 @@ Contains all relevant parameters to form the K matrix and calculate the spectrum
 
 ```julia-repl
 KMODEL_S0 = kModel(
+    :Sr88,
     "1S0",
     3,
     ["(5s1/2)(ns1/2)", "(4d5/2)(nd5/2)", "(4d3/2)(nd3/2)"],
@@ -446,6 +451,7 @@ KMODEL_S0 = kModel(
 ```
 """
 struct kModel <: Model
+    species::Symbol
     name::String
     size::Int
     terms::Vector{String}
@@ -491,13 +497,14 @@ function get_J(T::fModel)
     return get_J(T.inner_channels)
 end
 
-function single_channel_models(l::Integer, p::Parameters)
+function single_channel_models(species::String, l::Integer, p::Parameters)
     @assert l > 0 "l must be positive and nonzero for this function"
     jr = [l-1/2, l-1/2, l+1/2, l+1/2]
     jt = [l-1, l, l, l+1]
     m = Vector{fModel}(undef, 4)
     for i in eachindex(jt)
         m[i] = fModel(
+            species,
             "L=$l, J=$(jt[i]), Jr=$(jr[i])",
             1,
             [""],
@@ -514,10 +521,10 @@ function single_channel_models(l::Integer, p::Parameters)
     return m
 end
 
-function single_channel_models(l_list::UnitRange{Int64}, p::Parameters)
+function single_channel_models(species::String, l_list::UnitRange{Int64}, p::Parameters)
     m = Vector{fModel}()
     for l in l_list
-        append!(m, single_channel_models(l, p))
+        append!(m, single_channel_models(species, l, p))
     end
     return m
 end

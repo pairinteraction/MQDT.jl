@@ -41,6 +41,7 @@ PARA = Parameters(
 
 # MQDT Models
 FMODEL_HIGHN_S35 = fModel(
+    :Sr87,
     "S F=7/2",
     1,
     ["5sns 3S1"],
@@ -56,6 +57,7 @@ FMODEL_HIGHN_S35 = fModel(
 )
 
 FMODEL_HIGHN_S45 = fModel(
+    :Sr87,
     "S F=9/2",
     2,
     ["5sns 1S0", "5sns 3S1"],
@@ -77,6 +79,7 @@ FMODEL_HIGHN_S45 = fModel(
 )
 
 FMODEL_HIGHN_S55 = fModel(
+    :Sr87,
     "S F=11/2",
     1,
     ["5sns 3S1"],
@@ -92,6 +95,7 @@ FMODEL_HIGHN_S55 = fModel(
 )
 
 FMODEL_LOWN_P45 = fModel(
+    :Sr87,
     "clock",
     4,
     ["5snp 1P1", "5snp 3P0", "5snp 3P1", "5snp 3P2"],
@@ -122,6 +126,7 @@ FMODEL_LOWN_P45 = fModel(
 )
 
 FMODEL_HIGHN_P25 = fModel(
+    :Sr87,
     "P F=5/2",
     1,
     ["5snp 3P2"],
@@ -137,6 +142,7 @@ FMODEL_HIGHN_P25 = fModel(
 )
 
 FMODEL_HIGHN_P35 = fModel(
+    :Sr87,
     "P F=7/2",
     3,
     ["5snp 1P1", "5snp 3P1", "5snp 3P2"],
@@ -160,6 +166,7 @@ FMODEL_HIGHN_P35 = fModel(
 )
 
 FMODEL_HIGHN_P45 = fModel(
+    :Sr87,
     "P F=9/2",
     4,
     ["5snp 1P1", "5snp 3P0", "5snp 3P1", "5snp 3P2"],
@@ -190,6 +197,7 @@ FMODEL_HIGHN_P45 = fModel(
 )
 
 FMODEL_HIGHN_P55 = fModel(
+    :Sr87,
     "P F=11/2",
     3,
     ["5snp 1P1", "5snp 3P1", "5snp 3P2"],
@@ -213,6 +221,7 @@ FMODEL_HIGHN_P55 = fModel(
 )
 
 FMODEL_HIGHN_P65 = fModel(
+    :Sr87,
     "P F=13/2",
     1,
     ["5snp 3P2"],
@@ -228,6 +237,7 @@ FMODEL_HIGHN_P65 = fModel(
 )
 
 FMODEL_HIGHN_D15 = fModel(
+    :Sr87,
     "D F=3/2",
     1,
     ["5snd 3D3"],
@@ -243,6 +253,7 @@ FMODEL_HIGHN_D15 = fModel(
 )
 
 FMODEL_HIGHN_D25 = fModel(
+    :Sr87,
     "D F=5/2",
     3,
     ["5snd 1D2", "5snd 3D2", "5snd 3D3"],
@@ -266,6 +277,7 @@ FMODEL_HIGHN_D25 = fModel(
 )
 
 FMODEL_HIGHN_D35 = fModel(
+    :Sr87,
     "D F=7/2",
     4,
     ["5snd 1D2", "5snd 3D1", "5snd 3D2", "5snd 3D3"],
@@ -296,6 +308,7 @@ FMODEL_HIGHN_D35 = fModel(
 )
 
 FMODEL_HIGHN_D45 = fModel(
+    :Sr87,
     "D F=9/2",
     4,
     ["5snd 1D2", "5snd 3D1", "5snd 3D2", "5snd 3D3"],
@@ -326,6 +339,7 @@ FMODEL_HIGHN_D45 = fModel(
 )
 
 FMODEL_HIGHN_D55 = fModel(
+    :Sr87,
     "D F=11/2",
     4,
     ["5snd 1D2", "5snd 3D1", "5snd 3D2", "5snd 3D3"],
@@ -356,6 +370,7 @@ FMODEL_HIGHN_D55 = fModel(
 )
 
 FMODEL_HIGHN_D65 = fModel(
+    :Sr87,
     "D F=13/2",
     3,
     ["5snd 1D2", "5snd 3D2", "5snd 3D3"],
@@ -379,6 +394,7 @@ FMODEL_HIGHN_D65 = fModel(
 )
 
 FMODEL_HIGHN_D75 = fModel(
+    :Sr87,
     "D F=15/2",
     1,
     ["5snd 3D3"],
@@ -394,6 +410,7 @@ FMODEL_HIGHN_D75 = fModel(
 )
 
 FMODEL_HIGHN_F45 = fModel(
+    :Sr87,
     "F F=9/2",
     4,
     ["5snf 1F3", "5snf 3F2", "5snf 3F3", "5snf 3F4"],
