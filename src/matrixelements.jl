@@ -1,7 +1,7 @@
 # --------------------------------------------------------
 # radial
 # --------------------------------------------------------
-const lru_get_rydberg_state = LRU{Tuple{String,Float64,Int64},Any}(maxsize = 20_000)
+const lru_get_rydberg_state = LRU{Tuple{Symbol,Float64,Int64},Any}(maxsize = 20_000)
 
 """
     get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
@@ -13,12 +13,12 @@ function get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
     get!(lru_get_rydberg_state, (species, nu, l)) do
         ryd_numerov = pyimport("ryd_numerov")
 
-        # disable warnings from ryd_numerov for now
+        # enable warnings from ryd_numerov
         logging = pyimport("logging")
-        logging.getLogger("ryd_numerov").setLevel(logging.ERROR)
+        logging.getLogger("ryd_numerov").setLevel(logging.WARNING)
 
         state = ryd_numerov.RydbergStateMQDT(String(species), nu = nu, l = l)
-        state.create_model(potential_type = "coulomb")
+        state.create_model(potential_type = "model_potential_fei_2009")
         state.create_wavefunction("numerov", sign_convention = "positive_at_outer_bound")
         state
     end
