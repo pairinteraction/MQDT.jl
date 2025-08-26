@@ -23,9 +23,8 @@ export lsQuantumNumbers,
     eigenstates,
     basisarray,
     databasearray,
-    matrix_element,
+    matrix_elements,
     state_data,
-    matrix_data,
     single_channel_models
 
 include("general.jl")
