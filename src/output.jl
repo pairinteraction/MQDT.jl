@@ -3,8 +3,6 @@
 # --------------------------------------------------------
 
 """
-See also [`matrix_data`](@ref)
-
     state_data(T::BasisArray, P::Parameters)
     state_data(T::DataBaseArray, P::Parameters)
 
