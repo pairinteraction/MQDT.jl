@@ -62,15 +62,15 @@ st = state_data(db, parameters)
 # store tables as csv files
 using CSV
 CSV.write("Yb174_mqdt_states.csv", st)
-CSV.write("Yb174_mqdt_matrix_elements_d.csv", m1)
-CSV.write("Yb174_mqdt_matrix_elements_q.csv", m2)
-CSV.write("Yb174_mqdt_matrix_elements_mu.csv", mm)
-CSV.write("Yb174_mqdt_matrix_elements_q0.csv", md)
+CSV.write("Yb174_mqdt_matrix_elements_d.csv", e1)
+CSV.write("Yb174_mqdt_matrix_elements_q.csv", e2)
+CSV.write("Yb174_mqdt_matrix_elements_mu.csv", m1)
+CSV.write("Yb174_mqdt_matrix_elements_q0.csv", m2)
 
 # store tables as parquet files
 using Parquet2
 Parquet2.writefile("Yb174_mqdt_states.parquet", st)
-Parquet2.writefile("Yb174_mqdt_matrix_elements_d.parquet", m1)
-Parquet2.writefile("Yb174_mqdt_matrix_elements_q.parquet", m2)
-Parquet2.writefile("Yb174_mqdt_matrix_elements_mu.parquet", mm)
-Parquet2.writefile("Yb174_mqdt_matrix_elements_q0.parquet", md)
+Parquet2.writefile("Yb174_mqdt_matrix_elements_d.parquet", e1)
+Parquet2.writefile("Yb174_mqdt_matrix_elements_q.parquet", e2)
+Parquet2.writefile("Yb174_mqdt_matrix_elements_mu.parquet", m1)
+Parquet2.writefile("Yb174_mqdt_matrix_elements_q0.parquet", m2)
