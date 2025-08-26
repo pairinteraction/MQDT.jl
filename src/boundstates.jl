@@ -393,6 +393,26 @@ end
 # basis array
 # --------------------------------------------------------
 
+function exp_LS(A::Matrix{Float64}, T::Matrix{Float64}, V)
+    if allequal(V)
+        return repeat([V[1]], size(A, 2))
+    else
+        t = T' * A
+        return sum(t .^ 2 .* V, dims = 1)[:]
+    end
+end
+
+function find_leading_term(A::Matrix{Float64}, T::Matrix{Float64}, L::Vector{String})
+    term = Vector{String}(undef, size(A, 2))
+    lead = Vector{Float64}(undef, size(A, 2))
+    for i in axes(A, 2)
+        val, ind = findmax((T' * A[:, i]) .^ 2)
+        term[i] = L[ind]
+        lead[i] = val
+    end
+    return term, lead
+end
+
 """
     basisarray(T::EigenStates, M::fModel)
     basisarray(T::Vector{EigenStates}, M::Vector{fModel})
@@ -411,15 +431,19 @@ function basisarray(T::EigenStates, M::fModel)
     l = get_lr(c)
     a = T.a[F, :]
     t = M.unitary[F, F]
-    S = get_S(M)
-    s = transform_if_not_equal(S, t)
+    L = exp_LS(a, t, get_L(M))
+    S = exp_LS(a, t, get_S(M))
+    term, lead = find_leading_term(T.a, M.unitary, M.terms)
     for i in eachindex(e)
         if !isone(M.size) || l[1] < n[1, i]
             ei = e[i]
             if abs(ei - round(Int, ei)) < 1e2eps()
                 ei = round(ei)
             end
-            push!(B, BasisState(ei, p, f, n[:, i], l, s, a[:, i], c))
+            push!(
+                B,
+                BasisState(ei, p, f, n[:, i], l, a[:, i], c, term[i], lead[i], L[i], S[i]),
+            )
         end
     end
     return BasisArray(B)
@@ -460,11 +484,9 @@ function databasearray(T::EigenStates, M::fModel)
     S = get_S(M)
     L = get_L(M)
     J = get_J(M)
-    s = transform_if_not_equal(S, t)
-    l = transform_if_not_equal(L, t)
-    j = transform_if_not_equal(J, t)
     l_ryd = get_lr(c)
     j_ryd = get_Jr(c)
+    term, lead = find_leading_term(T.a, M.unitary, M.terms)
     B = Vector{DataBaseState}()
     for i in eachindex(e)
         under = sum(a_irr[:, i] .^ 2)
@@ -483,11 +505,14 @@ function databasearray(T::EigenStates, M::fModel)
                     n_all[:, i],
                     a_rel[:, i],
                     a_all[:, i],
-                    s,
-                    l,
-                    j,
+                    S,
+                    L,
+                    J,
                     l_ryd,
                     j_ryd,
+                    t,
+                    term[i],
+                    lead[i],
                     under,
                 ),
             )
