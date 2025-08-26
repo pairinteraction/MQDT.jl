@@ -1,6 +1,6 @@
 using MQDT
 
-# load Yb171 data
+# load Yb174 data
 parameters = MQDT.Yb174.PARA
 low_n_models = MQDT.Yb174.FMODEL_LOWN_P1
 low_l_models = [
@@ -37,26 +37,22 @@ MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol caluclation
 high_l_models = single_channel_models(5:l_max, parameters)
 high_l_states = [eigenstates(25, n_max, M, parameters) for M in high_l_models]
 
-# generate state table
+# generate basis and calculate matrix elements
 basis = basisarray(
     vcat(low_n_states, low_l_states, high_l_states),
     vcat(low_n_models, low_l_models, high_l_models),
 )
-state_table = state_data(basis, parameters)
+@time me = matrix_elements(basis, parameters)
 
-# calculate matrix elements
-@time d1 = matrix_element(1, basis) # dipole
-@time d2 = matrix_element(2, basis) # quadrupole
-@time dm = matrix_element(parameters, basis) # Zeeman
-@time dd = matrix_element(basis) # diamagnetic
+# prepare PAIRINTERACTION tables
+using DataFrames
+col_names = [:id_initial, :id_final, :value]
 
-# generate matrix element table
-m1 = matrix_data(d1)
-m2 = matrix_data(d2)
-mm = matrix_data(dm)
-md = matrix_data(dd)
+e1 = DataFrame(me["dipole"], col_names)
+e2 = DataFrame(me["quadrupole"], col_names)
+m1 = DataFrame(me["paramagnetic"], col_names)
+m2 = DataFrame(me["diamagnetic"], col_names)
 
-# prepare PAIRINTERACTION state table
 db = databasearray(
     vcat(low_n_states, low_l_states, high_l_states),
     vcat(low_n_models, low_l_models, high_l_models),
