@@ -178,102 +178,9 @@ function angular_matrix_cached(k::Int, k1::Channels, k2::Channels)
     end
 end
 
-
-
-# ---------------------------------
-# multipole moments
-# ---------------------------------
-
-"""
-See also [`magnetic_dipole_moment`](@ref), [`special_quadrupole_moment`](@ref)
-
-    multipole_moment(k::Int, s1::BasisState, s2::BasisState)
-
-Returns the reduced electric multipole matrix elements of order `k` of multi-channel wave functions.
-"""
-function multipole_moment(k::Int, s1::BasisState, s2::BasisState)
-    p1 = s1.parity
-    n1 = s1.nu
-    l1 = s1.lr
-    a1 = s1.coeff
-    k1 = s1.channels
-    p2 = s2.parity
-    n2 = s2.nu
-    l2 = s2.lr
-    a2 = s2.coeff
-    k2 = s2.channels
-    M = 0.0
-    if (p1 == p2 && iseven(k)) || (p1 != p2 && isodd(k))
-        R = radial_matrix(k, n1, n2, l1, l2)
-        Y = angular_matrix_cached(k, k1, k2)
-        M = a1' * (Y .* R) * a2
-    end
-    return M
-end
-
 # --------------------------------------------------------
 # magnetic field
 # --------------------------------------------------------
-
-"""
-See also [`multipole_moment`](@ref), [`special_quadrupole_moment`](@ref)
-
-    magnetic_dipole_moment(nd, mp, ic, s1::BasisState, s2::BasisState)
-
-Returns the reduced magentic dipole moment matrix elements of multi-channel wave functions, relevant for the Zeeman Hamiltonian.
-"""
-function magnetic_dipole_moment(nd, mp, ic, s1::BasisState, s2::BasisState)
-    p1 = s1.parity
-    n1 = s1.nu
-    l1 = s1.lr
-    a1 = s1.coeff
-    k1 = s1.channels
-    p2 = s2.parity
-    n2 = s2.nu
-    l2 = s2.lr
-    a2 = s2.coeff
-    k2 = s2.channels
-    M = 0.0
-    """
-    this combination of radial and angular terms is for paramagnetic interaction (Zeeman term)
-    """
-    if p1 == p2
-        R = radial_matrix(0, n1, n2, l1, l2)
-        Y = magnetic_matrix_cached(nd, mp, ic, k1, k2)
-        M = a1' * (Y .* R) * a2
-    end
-    return M
-end
-
-"""
-See also [`multipole_moment`](@ref), [`magnetic_dipole_moment`](@ref)
-
-    special_quadrupole_moment(s1::BasisState, s2::BasisState)
-
-Returns the special electric quadrupole moment matrix elements (i.e. r^2Y_{00}) of multi-channel wave functions, relevant for the diamagnetic Hamiltonian.
-"""
-function special_quadrupole_moment(s1::BasisState, s2::BasisState)
-    p1 = s1.parity
-    n1 = s1.nu
-    l1 = s1.lr
-    a1 = s1.coeff
-    k1 = s1.channels
-    p2 = s2.parity
-    n2 = s2.nu
-    l2 = s2.lr
-    a2 = s2.coeff
-    k2 = s2.channels
-    M = 0.0
-    """
-    this combination of radial and angular terms is for diamagentic interaction
-    """
-    if p1 == p2
-        R = radial_matrix(2, n1, n2, l1, l2)
-        Y = angular_matrix_cached(0, k1, k2)
-        M = a1' * (Y .* R) * a2
-    end
-    return M
-end
 
 const lru_magnetic_matrix = LRU{Tuple{Any,Any,Any,Channels,Channels},Any}(maxsize = 1_000)
 
@@ -298,7 +205,6 @@ function magnetic_matrix_cached(nd, mp, ic, k1::Channels, k2::Channels)
         A
     end
 end
-
 
 """
     magneton(nd, mp, ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
@@ -546,89 +452,73 @@ function G8(q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     return g
 end
 
-# --------------------------------------------------------
-# matrix elements for multipole and magnetic interactions
-# --------------------------------------------------------
+# ---------------------------------
+# multipole moments
+# ---------------------------------
 
 """
-See also [`multipole_moment`](@ref), [`magnetic_dipole_moment`](@ref), [`special_quadrupole_moment`](@ref)
+    multipole_moment(s1::BasisState, s2::BasisState, P::Paramaters)
 
-    matrix_element(k::Int, B::BasisArray)
-    matrix_element(B::BasisArray)
-    matrix_element(A::Parameters, B::BasisArray)
-
-Iterates `multipole_moment`, `magnetic_dipole_moment`, and `special_quadrupole_moment` over a list of states passed as `BasisArray`
-in order to calculate reduced elements.
+Returns the reduced matrix elements for electric dipole, electric quadrupole, magnetic dipole, and electric dipole squared.
 """
-function matrix_element(k::Int, B::BasisArray)
-    """
-    for general multipole couplings of order k
-    """
-    st = B.states
-    M = spzeros(length(st), length(st))
-    for i in eachindex(st)
-        b1 = st[i]
-        f1 = b1.f
-        for j = i:length(st)
-            b2 = st[j]
-            f2 = b2.f
-            m = multipole_moment(k, b1, b2)
-            if !iszero(m)
-                M[i, j] = m
-                if j != i
-                    M[j, i] = (-1)^(f2-f1) * m
-                end
-            end
-        end
+function multipole_moments(s1::BasisState, s2::BasisState, P::Parameters)
+    p1 = s1.parity
+    n1 = s1.nu
+    l1 = s1.lr
+    a1 = s1.coeff
+    k1 = s1.channels
+    p2 = s2.parity
+    n2 = s2.nu
+    l2 = s2.lr
+    a2 = s2.coeff
+    k2 = s2.channels
+    M = zeros(4)
+    if p1 != p2
+        # electric dipole
+        R = radial_matrix(1, n1, n2, l1, l2)
+        Y = angular_matrix_cached(1, k1, k2)
+        M[1] = a1' * (Y .* R) * a2
+    end
+    if p1 == p2
+        # electric quadrupole
+        R = radial_matrix(2, n1, n2, l1, l2)
+        Y = angular_matrix_cached(2, k1, k2)
+        M[2] = a1' * (Y .* R) * a2
+        # electric dipole squared
+        Y = angular_matrix_cached(0, k1, k2)
+        M[3] = a1' * (Y .* R) * a2
+        # magnetic dipole
+        R = radial_matrix(0, n1, n2, l1, l2)
+        Y = magnetic_matrix_cached(P.dipole, P.mass, P.spin, k1, k2)
+        M[4] = a1' * (Y .* R) * a2
     end
     return M
 end
 
-function matrix_element(B::BasisArray)
-    """
-    for diamagnetic couplings (quadratic in the magnetic field)
-    """
+function matrix_elements(B::BasisArray, P::Parameters)
+    M = Dict(
+        "dipole" => Tuple{Int64,Int64,Float64}[],
+        "quadrupole" => Tuple{Int64,Int64,Float64}[],
+        "diamagnetic" => Tuple{Int64,Int64,Float64}[],
+        "paramagnetic" => Tuple{Int64,Int64,Float64}[],
+    )
     st = B.states
-    M = spzeros(length(st), length(st))
     for i in eachindex(st)
         b1 = st[i]
-        f1 = b1.f
         for j = i:length(st)
             b2 = st[j]
-            f2 = b2.f
-            m = special_quadrupole_moment(b1, b2)
-            if !iszero(m)
-                M[i, j] = m
-                if j != i
-                    M[j, i] = (-1)^(f2-f1) * m
-                end
+            m = multipole_moments(b1, b2, P)
+            if !iszero(m[1])
+                push!(M["dipole"], (i, j, m[1]))
             end
-        end
-    end
-    return M
-end
-
-function matrix_element(A::Parameters, B::BasisArray)
-    """
-    for paramagnetic couplings (linear in the magnetic field)
-    """
-    nd = A.dipole
-    mp = A.mass
-    ic = A.spin
-    st = B.states
-    M = spzeros(size(st, 1), size(st, 1))
-    for i in eachindex(st)
-        b1 = st[i]
-        f1 = b1.f
-        for j = i:length(st)
-            b2 = st[j]
-            f2 = b2.f
-            m = magnetic_dipole_moment(nd, mp, ic, b1, b2)
-            if !iszero(m)
-                M[i, j] = m
-                if j != i
-                    M[j, i] = (-1)^(f2-f1) * m
-                end
+            if !iszero(m[2])
+                push!(M["quadrupole"], (i, j, m[2]))
+            end
+            if !iszero(m[3])
+                push!(M["diamagnetic"], (i, j, m[3]))
+            end
+            if !iszero(m[4])
+                push!(M["paramagnetic"], (i, j, m[4]))
             end
         end
     end
