@@ -18,7 +18,10 @@ function state_data(T::BasisArray, P::Parameters)
         f = get_f(T),
         nu = get_nu(T),
         l = exp_l(T),
-        S = exp_S(T),
+        term = get_term(T),
+        lead = get_lead(T),
+        L = get_L(T),
+        S = get_S(T),
     )
     return sort!(df, [:nu, :l])
 end
@@ -46,50 +49,11 @@ function state_data(T::DataBaseArray, P::Parameters)
         is_j_total_momentum = is_J(T, P),
         is_calculated_with_mqdt = is_mqdt(T),
         underspecified_channel_contribution = get_neg(T),
+        leading_term = get_term(T),
+        leading_percentage = get_percentage(T),
     )
     return sort!(df, [:nu, :exp_l_ryd])
 end
-
-"""
-See also [`state_data`](@ref)
-
-    matrix_data(T::SparseMatrixCSC{Float64, Int64})
-
-Store a reduced matrix elements as a data frame as used by the PAIRINTERACTION software.
-"""
-function matrix_data(T::SparseMatrixCSC{Float64,Int64})
-    m = findnz(T) # non-zero elements
-    df = DataFrame(id_initial = m[1], id_final = m[2], value = m[3])
-    return df
-end
-
-# """
-# See also [`matrix_data`](@ref)
-
-#     tri_to_full(M::DataFrame, S::DataFrame)
-
-# Converts a reduced matrix elements data frame storing the upper triangle to a data frame
-# storing the full matrix including the wigner phase convention (-1)^(f_final-f_initial).
-# """
-# function tri_to_full(M::DataFrame, S::DataFrame)
-#     s = size(S, 1)
-#     f = S.f
-#     i1 = M.id_initial
-#     i2 = M.id_final
-#     val = M.value
-#     D = sparse(i1, i2, val, s, s)
-#     for i in axes(D, 1)
-#         for j = i:s
-#             d = D[i, j]
-#             if !iszero(d)
-#                 D[j, i] = d * (-1)^(f[i]-f[j])
-#             end
-#         end
-#     end
-#     nz = findnz(D)
-#     df = DataFrame(:id_initial => nz[1], :id_final => nz[2], :val => nz[3])
-#     return df
-# end
 
 # --------------------------------------------------------
 # get basis state properties
@@ -127,6 +91,38 @@ function get_nu(T::BasisArray)
     return t
 end
 
+function get_term(T::BasisArray)
+    t = Vector{String}(undef, size(T))
+    for i in eachindex(t)
+        t[i] = T.states[i].term
+    end
+    return t
+end
+
+function get_lead(T::BasisArray)
+    t = Vector{Float64}(undef, size(T))
+    for i in eachindex(t)
+        t[i] = T.states[i].lead
+    end
+    return t
+end
+
+function get_L(T::BasisArray)
+    t = Vector{Float64}(undef, size(T))
+    for i in eachindex(t)
+        t[i] = T.states[i].L
+    end
+    return t
+end
+
+function get_S(T::BasisArray)
+    t = Vector{Float64}(undef, size(T))
+    for i in eachindex(t)
+        t[i] = T.states[i].S
+    end
+    return t
+end
+
 function exp_q(q::Vector, n::Vector)
     if allequal(q)
         return Float64(q[1])
@@ -159,20 +155,6 @@ function exp_l(T::BasisArray)
     t = Vector{Float64}(undef, size(T))
     for i in eachindex(t)
         t[i] = exp_l(T.states[i])
-    end
-    return t
-end
-
-function exp_S(T::BasisState)
-    S = T.S
-    n = T.coeff
-    return exp_q(S, n)
-end
-
-function exp_S(T::BasisArray)
-    t = Vector{Float64}(undef, size(T))
-    for i in eachindex(t)
-        t[i] = exp_S(T.states[i])
     end
     return t
 end
@@ -273,7 +255,7 @@ end
 
 function exp_L(T::DataBaseState)
     l = T.L
-    n = T.ai
+    n = T.transform' * T.ai
     return exp_q(l, n)
 end
 
@@ -287,7 +269,7 @@ end
 
 function std_L(T::DataBaseState)
     l = T.L
-    n = T.ai
+    n = T.transform' * T.ai
     return std_q(l, n)
 end
 
@@ -301,7 +283,7 @@ end
 
 function exp_J(T::DataBaseState)
     j = T.J
-    n = T.ai
+    n = T.transform' * T.ai
     return exp_q(j, n)
 end
 
@@ -315,7 +297,7 @@ end
 
 function std_J(T::DataBaseState)
     j = T.J
-    n = T.ai
+    n = T.transform' * T.ai
     return std_q(j, n)
 end
 
@@ -329,7 +311,7 @@ end
 
 function exp_S(T::DataBaseState)
     s = T.S
-    n = T.ai
+    n = T.transform' * T.ai
     return exp_q(s, n)
 end
 
@@ -343,7 +325,7 @@ end
 
 function std_S(T::DataBaseState)
     s = T.S
-    n = T.ai
+    n = T.transform' * T.ai
     return std_q(s, n)
 end
 
@@ -415,6 +397,30 @@ function is_J(T::DataBaseArray, P::Parameters)
     return repeat([iszero(P.spin)], size(T))
 end
 
+function is_mqdt(T::DataBaseState)
+    return !isone(length(T.nui_all))
+end
+
 function is_mqdt(T::DataBaseArray)
-    return repeat([true], size(T))
+    t = Vector{Bool}(undef, size(T))
+    for i in eachindex(t)
+        t[i] = is_mqdt(T.states[i])
+    end
+    return t
+end
+
+function get_term(T::DataBaseArray)
+    t = Vector{String}(undef, size(T))
+    for i in eachindex(t)
+        t[i] = T.states[i].term
+    end
+    return t
+end
+
+function get_percentage(T::DataBaseArray)
+    t = Vector{Float64}(undef, size(T))
+    for i in eachindex(t)
+        t[i] = T.states[i].lead
+    end
+    return t
 end
