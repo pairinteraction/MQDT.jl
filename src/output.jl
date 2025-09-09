@@ -188,25 +188,29 @@ function get_p(T::DataBaseArray)
 end
 
 function get_n(T::DataBaseArray, P::Parameters)
-    n = get_nu(T)
+    nu = get_nu(T)
     l = round.(Int, exp_lr(T))
+    return get_n(nu, l, P.species)
+end
+
+function get_n(nu::Vector{Float64}, l::Vector{Int}, species::Symbol)
     i0 = findall(iszero, l)
     i1 = findall(iszero, l .- 1)
     i2 = findall(iszero, l .- 2)
     i3 = findall(iszero, l .- 3)
-    j0 = findall(x->x<2, n)
-    n[j0] .+= 1
-    if occursin("Yb", String(P.species))
-        n[i0] .+= 4
-        n[i1] .+= 3
-        n[i2] .+= 2
-        n[i3] .+= 1
+    j0 = findall(x->x<2, nu)
+    nu[j0] .+= 1
+    if occursin("Yb", String(species))
+        nu[i0] .+= 4
+        nu[i1] .+= 3
+        nu[i2] .+= 2
+        nu[i3] .+= 1
     else
-        n[i0] .+= 3
-        n[i1] .+= 2
-        n[i2] .+= 2
+        nu[i0] .+= 3
+        nu[i1] .+= 2
+        nu[i2] .+= 2
     end
-    return ceil.(Int, n)
+    return ceil.(Int, nu)
 end
 
 function get_nu(T::DataBaseArray)

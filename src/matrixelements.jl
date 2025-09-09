@@ -17,7 +17,8 @@ function get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
         logging = pyimport("logging")
         logging.getLogger("ryd_numerov").setLevel(logging.WARNING)
 
-        state = ryd_numerov.RydbergStateMQDT(String(species), nu = nu, l = l)
+        n = get_n([nu], [l], species)[1]
+        state = ryd_numerov.RydbergStateMQDT(String(species), nu = nu, l = l, n = n)
         state.create_model(potential_type = "model_potential_fei_2009")
         state.create_wavefunction("numerov", sign_convention = "positive_at_outer_bound")
         state
