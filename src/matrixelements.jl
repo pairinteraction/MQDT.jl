@@ -17,11 +17,7 @@ function get_rydberg_state_cached(species::String, nu::Float64, l::Int64)
         logging = pyimport("logging")
         logging.getLogger("ryd_numerov").setLevel(logging.ERROR)
 
-        energy_au = -0.5 / nu^2  # simple hydrogenic energy with effective principal quantum number nu
-        n = ceil(Int, max(nu, l + 1))  # FIXME, n is just used for sanity checks of the wavefunction, not for calculating the wavefunction
-
-        state = ryd_numerov.RydbergState(species, n, l, j = l + 0.5)
-        state.set_energy(energy_au)
+        state = ryd_numerov.RydbergStateMQDT(species, nu = nu, l = l)
         state.create_model(potential_type = "coulomb")
         state.create_wavefunction("numerov", sign_convention = "positive_at_outer_bound")
         state
