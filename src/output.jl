@@ -125,7 +125,12 @@ function exp_q(q::Vector, n::Vector)
     if allequal(q)
         return Float64(q[1])
     else
-        return dot(q, n .^ 2)
+        m = n .^ 2
+        M = sum(m)
+        if M > 1
+            m /= M
+        end
+        return dot(q, m)
     end
 end
 
@@ -133,8 +138,13 @@ function std_q(q::Vector, n::Vector)
     if allequal(q)
         return 0.0
     else
-        e1 = dot(q, n .^ 2)^2
-        e2 = dot(q .^ 2, n .^ 2)
+        m = n .^ 2
+        M = sum(m)
+        if M > 1
+            m /= M
+        end
+        e1 = dot(q, m)^2
+        e2 = dot(q .^ 2, m)
         if abs(e1 - e2) < 1e-11
             return 0.0
         else
