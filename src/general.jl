@@ -574,17 +574,17 @@ function test_unitary(T::fModel, P::Parameters)
         end
     elseif typeof(T.outer_channels) == fjChannels
         if typeof(T.inner_channels) == jjChannels
-            t1 = matrix_jj_to_fj(T.inner_channels, T.outer_channels, P.spin)' # generalize for nuclear spin
+            t1 = matrix_jj_to_fj(T.inner_channels, T.outer_channels, P.spin)'
         else
             lc = unique(get_lc(T.inner_channels))
             lr = unique(get_lr(T.inner_channels))
             ft = unique(get_F(T.outer_channels))[1]
-            qn = mqdt.AngularMomenta(lc, lr, P.spin) # generalize for nuclear spin
+            qn = mqdt.AngularMomenta(lc, lr, P.spin)
             jj = jj_channels(qn)
             fj = [unique.(get_F.(jj))[i][1] for i = 1:length(jj)]
             i = findfirst(isequal(ft), fj)
             tjj = matrix_ls_to_jj(T.inner_channels, jj[i])
-            tfj = matrix_jj_to_fj(jj[i], T.outer_channels, P.spin) # generalize for nuclear spin
+            tfj = matrix_jj_to_fj(jj[i], T.outer_channels, P.spin)
             t1 = (tjj * tfj)'
         end
     end
