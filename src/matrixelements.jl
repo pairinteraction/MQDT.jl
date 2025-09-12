@@ -549,7 +549,14 @@ function ls_channels(Q::AngularMomenta)
             end
         end
     end
-    return lsChannels(out)
+    C = lsChannels(out)
+    F = get_F(C)
+    channels = Vector{lsChannels}()
+    for j in sort(unique(F))
+        c = F .== f
+        push!(channels, lsChannels(C.i[c]))
+    end
+    return channels
 end
 
 function jj_channels(Q::AngularMomenta)
@@ -567,7 +574,14 @@ function jj_channels(Q::AngularMomenta)
             end
         end
     end
-    return jjChannels(out)
+    C = jjChannels(out)
+    F = get_F(C)
+    channels = Vector{jjChannels}()
+    for f in sort(unique(F))
+        c = F .== f
+        push!(channels, jjChannels(C.i[c]))
+    end
+    return channels
 end
 
 function fj_channels(Q::AngularMomenta)
@@ -585,40 +599,14 @@ function fj_channels(Q::AngularMomenta)
             end
         end
     end
-    return fjChannels(out)
-end
-
-function ls_channels(C::lsChannels)
-    J = get_J(C)
-    values = sort(unique(J))
-    channels = Vector{lsChannels}()
-    for j in values
-        c = J .== j
-        push!(channels, lsChannels(C.i[c]))
-    end
-    return values, channels
-end
-
-function jj_channels(C::jjChannels)
-    J = get_J(C)
-    values = sort(unique(J))
-    channels = Vector{jjChannels}()
-    for j in values
-        c = J .== j
-        push!(channels, jjChannels(C.i[c]))
-    end
-    return values, channels
-end
-
-function fj_channels(C::fjChannels)
+    C = fjChannels(out)
     F = get_F(C)
-    values = sort(unique(F))
     channels = Vector{fjChannels}()
-    for f in values
+    for f in sort(unique(F))
         c = F .== f
         push!(channels, fjChannels(C.i[c]))
     end
-    return values, channels
+    return channels
 end
 
 function ls_to_jj(q1::lsQuantumNumbers, q2::jjQuantumNumbers)
@@ -626,7 +614,10 @@ function ls_to_jj(q1::lsQuantumNumbers, q2::jjQuantumNumbers)
     if (q1.sc, q1.lc, q1.lr, q1.J) == (q2.sc, q2.lc, q2.lr, q2.J)
         sq = square_brakets([q1.S, q1.L, q2.Jc, q2.Jr])
         qn = Vector{Int64}(2*[q1.sc, 0.5, q1.S, q1.lc, q1.lr, q1.L, q2.Jc, q2.Jr, q1.J])
-        res = sq * f9j(qn...)
+        res = sq*sf_coupling_9j(qn...)
+        if isapprox(round(2res), 2res, rtol = 1e-14)
+            res = round(res, digits = 14)
+        end
     end
     return res
 end
@@ -634,10 +625,13 @@ end
 function jj_to_fj(q1::jjQuantumNumbers, q2::fjQuantumNumbers, ic)
     res = 0.0
     if (q1.sc, q1.lc, q1.lr, q1.Jc, q1.Jr) == (q2.sc, q2.lc, q2.lr, q2.Jc, q2.Jr)
-        Λ = q1.Jr + q2.Fc - ic - q1.J
+        Λ_io = q1.Jr + q2.Fc + ic + q1.J
         sq = square_brakets([q1.J, q2.Fc])
         qn = Vector{Int64}(2*[q1.Jr, q1.Jc, q1.J, ic, q2.F, q2.Fc])
-        res = (-1.0)^Λ * sq * f6j(qn...)
+        res = (-1.0)^Λ_io*sq*sf_coupling_6j(qn...)
+        if isapprox(round(2res), 2res, rtol = 1e-14)
+            res = round(res, digits = 14)
+        end
     end
     return res
 end
@@ -660,4 +654,29 @@ function matrix_jj_to_fj(in::jjChannels, out::fjChannels, ic::Number)
         end
     end
     return t
+end
+
+function jj_frame_transformation(l::Integer)
+    am = AngularMomenta([0], [l], 0)
+    ls = ls_channels(am)
+    jj = jj_channels(am)
+    t = Vector{Matrix{Float64}}(undef, length(ls))
+    for k in eachindex(ls)
+        t[k] = matrix_ls_to_jj(ls[k], jj[k])'
+    end
+    return ls, jj, t
+end
+
+function fj_frame_transformation(l::Integer, ic::Number)
+    am = AngularMomenta([0], [l], ic)
+    ls = ls_channels(am)
+    jj = jj_channels(am)
+    fj = fj_channels(am)
+    t = Vector{Matrix{Float64}}(undef, length(ls))
+    for k in eachindex(ls)
+        t1 = matrix_ls_to_jj(ls[k], jj[k])
+        t2 = matrix_jj_to_fj(jj[k], fj[k], ic)
+        t[k] = t2' * t1'
+    end
+    return ls, fj, t
 end

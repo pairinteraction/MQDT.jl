@@ -562,7 +562,7 @@ function test_model(T::Union{Vector{fModel},Vector{kModel}})
     end
 end
 
-function test_unitary(T::fModel)
+function test_unitary(T::fModel, P::Parameters)
     c = findall(T.core)
     t0 = T.unitary[c, c]
     if typeof(T.outer_channels) == jjChannels
@@ -574,17 +574,18 @@ function test_unitary(T::fModel)
         end
     elseif typeof(T.outer_channels) == fjChannels
         if typeof(T.inner_channels) == jjChannels
-            t1 = -matrix_jj_to_fj(T.inner_channels, T.outer_channels, 1/2)' # generalize for nuclear spin
+            t1 = matrix_jj_to_fj(T.inner_channels, T.outer_channels, P.spin)' # generalize for nuclear spin
         else
             lc = unique(get_lc(T.inner_channels))
             lr = unique(get_lr(T.inner_channels))
             ft = unique(get_F(T.outer_channels))[1]
-            qn = MQDT.AngularMomenta(lc, lr, 1/2) # generalize for nuclear spin
-            jj = jj_channels(jj_channels(qn))
-            i = findall(x->x==ft, jj[1])[1]
-            tjj = matrix_ls_to_jj(T.inner_channels, jj[2][i])
-            tfj = matrix_jj_to_fj(jj[2][i], T.outer_channels, 1/2) # generalize for nuclear spin
-            t1 = -(tjj * tfj)'
+            qn = mqdt.AngularMomenta(lc, lr, P.spin) # generalize for nuclear spin
+            jj = jj_channels(qn)
+            fj = [unique.(get_F.(jj))[i][1] for i = 1:length(jj)]
+            i = findfirst(isequal(ft), fj)
+            tjj = matrix_ls_to_jj(T.inner_channels, jj[i])
+            tfj = matrix_jj_to_fj(jj[i], T.outer_channels, P.spin) # generalize for nuclear spin
+            t1 = (tjj * tfj)'
         end
     end
     return isapprox(t0, t1), t0, t1
