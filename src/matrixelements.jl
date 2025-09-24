@@ -35,8 +35,11 @@ This function is cached using the `LRUCache` package.
 
 # Examples
 
-```julia-repl
+```jldoctest
 MQDT.radial_moment_cached(:H_textbook, 30, 1, 31, 2, order=1)
+
+# output
+
 329.78054480806406
 ```
 """
@@ -292,8 +295,11 @@ Auxiliary function to calculate reduced matrix elements for the magnetic moment 
 
 # Examples
 
-```julia-repl
+```jldoctest
 MQDT.Λ(5)
+
+# output
+
 18.16590212458495
 ```
 """
@@ -308,8 +314,11 @@ Auxiliary function to calculate angular overlaps (Robicheaux2018 Eq. 11)
 
 # Examples
 
-```julia-repl
+```jldoctest
 MQDT.square_brakets([1, 2, 3])
+
+# output
+
 10.246950765959598
 ```
 """
