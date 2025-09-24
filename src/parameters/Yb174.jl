@@ -35,14 +35,7 @@ FMODEL_HIGHN_S0 = fModel(
     :Yb174,
     "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
     6,
-    [
-        "6sns 1S0",
-        "4f13 5d 6snl a",
-        "6pnp 1S0",
-        "4f13 5d 6snl b",
-        "6pnp 3P0",
-        "4f13 5d 6snl c",
-    ],
+    ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
     Bool[1, 0, 1, 0, 1, 0],
     [50443.070393, 83967.7, 80835.39, 83967.7, 77504.98, 83967.7],
     [
@@ -122,14 +115,8 @@ FMODEL_LOWN_P1 = fModel(
     [0.161083 0; 0.920424 0],
     ["12"],
     [-0.426128 6.272986],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1),
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 1, 1, 1), lsQuantumNumbers(0.5, 1, 0, 1, 1, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1), jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1)]),
     [sqrt(2/3) sqrt(1/3); -sqrt(1/3) sqrt(2/3)],
 )
 
@@ -137,14 +124,7 @@ FMODEL_HIGHN_P1 = fModel(
     :Yb174,
     "P J=1, ν > 6", # [Phys. Rev. X 15, 011009 (2025)]
     6,
-    [
-        "6snp 1P1",
-        "6snp 3P1",
-        "4f13 5d 6snl a",
-        "4f13 5d 6snl b",
-        "4f13 5d 6snl c",
-        "4f13 5d 6snl d",
-    ],
+    ["6snp 1P1", "6snp 3P1", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d"],
     Bool[1, 1, 0, 0, 0, 0],
     [50443.070393, 50443.070393, 83967.7, 83967.7, 83967.7, 83967.7],
     [
@@ -167,14 +147,8 @@ FMODEL_HIGHN_P1 = fModel(
         0.0860644 0 0;
         0.04993818 0 0
     ],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1),
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 1, 1, 1), lsQuantumNumbers(0.5, 1, 0, 1, 1, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1), jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1)]),
     [
         sqrt(2/3) sqrt(1/3) 0 0 0 0;
         -sqrt(1/3) sqrt(2/3) 0 0 0 0;
@@ -300,15 +274,7 @@ FMODEL_HIGHN_F3 = fModel(
     :Yb174,
     "F J=3, ν > 7", # [arXiv:2507.11487v1]
     7,
-    [
-        "6snf 1F3",
-        "6snf 3F3",
-        "4f13 5d 6snl a",
-        "4f13 5d 6snl b",
-        "4f13 5d 6snl c",
-        "4f13 5d 6snl d",
-        "4f13 5d 6snl e",
-    ],
+    ["6snf 1F3", "6snf 3F3", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d", "4f13 5d 6snl e"],
     Bool[1, 1, 0, 0, 0, 0, 0],
     [50443.070393, 50443.070393, 83967.7, 83967.7, 83967.7, 83967.7, 83967.7],
     [
@@ -334,14 +300,8 @@ FMODEL_HIGHN_F3 = fModel(
         -0.0521244126 0;
         0.0349516329 0
     ],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 3, 3, 3),
-        lsQuantumNumbers(0.5, 1, 0, 3, 3, 3),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 3, 3.5, 3),
-        jjQuantumNumbers(0.5, 0, 0.5, 3, 2.5, 3),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 3, 3, 3), lsQuantumNumbers(0.5, 1, 0, 3, 3, 3)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 3, 3.5, 3), jjQuantumNumbers(0.5, 0, 0.5, 3, 2.5, 3)]),
     [
         sqrt(4/7) sqrt(3/7) 0 0 0 0 0;
         -sqrt(3/7) sqrt(4/7) 0 0 0 0 0;
@@ -393,14 +353,8 @@ FMODEL_HIGHN_G4 = fModel(
     [0.0262659964 -0.148808463; 0.0254568575 -0.134219071],
     ["12"],
     [-0.08222676 0],
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4),
-        jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4),
-        jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4),
-    ]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4), jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4), jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4)]),
     [1 0; 0 1], # this series is well described in jj coupling. singlet-triplet mixing is approximately atan(sqrt(4/5))
 )
 

@@ -23,7 +23,7 @@ MQDT.theta(60, [0.4 10 100; 0.4 1 0])
 function theta(N::Number, M::Matrix)
     l, w = size(M)
     t = zeros(l)
-    for i = 1:w
+    for i in 1:w
         t .+= M[:, i] * (1/N^2)^(i-1)
     end
     return t
@@ -32,7 +32,7 @@ end
 function theta(N::Vector, M::Matrix)
     l, w = size(M)
     t = zeros(l)
-    for i = 1:w
+    for i in 1:w
         t .+= M[:, i] .* (1 ./ N .^ 2) .^ (i-1)
     end
     return t
@@ -323,7 +323,7 @@ end
 
 function mroots(N1::Number, N2::Number, M::Model, P::Parameters)
     z = Float64[]
-    for i = N1:N2
+    for i in N1:N2
         append!(z, mroots(i, M, P))
     end
     return z
@@ -398,7 +398,7 @@ function exp_LS(A::Matrix{Float64}, T::Matrix{Float64}, V)
         return repeat([V[1]], size(A, 2))
     else
         t = T' * A
-        return sum(t .^ 2 .* V, dims = 1)[:]
+        return sum(t .^ 2 .* V, dims=1)[:]
     end
 end
 

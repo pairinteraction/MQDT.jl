@@ -1,14 +1,7 @@
 module Yb171
 
 using ..MQDT:
-    Parameters,
-    fModel,
-    lsChannels,
-    jjChannels,
-    fjChannels,
-    lsQuantumNumbers,
-    jjQuantumNumbers,
-    fjQuantumNumbers
+    Parameters, fModel, lsChannels, jjChannels, fjChannels, lsQuantumNumbers, jjQuantumNumbers, fjQuantumNumbers
 
 export PARA,
     FMODEL_HIGHN_S05,
@@ -46,15 +39,7 @@ FMODEL_HIGHN_S05 = fModel(
     :Yb171,
     "S F=1/2, ν > 26", # [Phys. Rev. X 15, 011009 (2025)]
     7,
-    [
-        "6sns 1S0",
-        "4f13 5d 6snl a",
-        "6pnp 1S0",
-        "4f13 5d 6snl b",
-        "6pnp 3P0",
-        "4f13 5d 6snl c",
-        "6sns 3S1",
-    ],
+    ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c", "6sns 3S1"],
     Bool[1, 0, 1, 0, 1, 0, 1],
     [50442.795744, 83967.7, 80835.39, 83967.7, 77504.98, 83967.7, 50443.217463],
     [
@@ -431,23 +416,7 @@ FMODEL_HIGHN_F25 = fModel(
         0.184824687 0 0;
         0.0718810048 -1.08216233 -38.2507093
     ],
-    [
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "23",
-        "24",
-        "25",
-        "26",
-        "27",
-        "89",
-        "810",
-        "118",
-        "128",
-    ],
+    ["12", "13", "14", "15", "16", "17", "23", "24", "25", "26", "27", "89", "810", "118", "128"],
     [
         -0.0208481417 0.239045493;
         -0.0593782568 0;

@@ -1,7 +1,7 @@
 # --------------------------------------------------------
 # radial
 # --------------------------------------------------------
-const lru_get_rydberg_state = LRU{Tuple{Symbol,Float64,Int64},Any}(maxsize = 20_000)
+const lru_get_rydberg_state = LRU{Tuple{Symbol,Float64,Int64},Any}(maxsize=20_000)
 
 """
     get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
@@ -18,15 +18,14 @@ function get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
         logging.getLogger("ryd_numerov").setLevel(logging.WARNING)
 
         n = get_n([nu], [l], species)[1]
-        state = ryd_numerov.RydbergStateMQDT(String(species), nu = nu, l = l, n = n)
-        state.create_model(potential_type = "model_potential_fei_2009")
-        state.create_wavefunction("numerov", sign_convention = "positive_at_outer_bound")
-        state
+        state = ryd_numerov.RydbergStateMQDT(String(species), nu=nu, l=l, n=n)
+        state.create_model(potential_type="model_potential_fei_2009")
+        state.create_wavefunction("numerov", sign_convention="positive_at_outer_bound")
+        return state
     end
 end
 
-const lru_radial_moment =
-    LRU{Tuple{Symbol,Float64,Int,Float64,Int,Int},Float64}(maxsize = 500_000)
+const lru_radial_moment = LRU{Tuple{Symbol,Float64,Int,Float64,Int,Int},Float64}(maxsize=500_000)
 
 """
     radial_moment_cached(species::Symbol, nu1::Float64, l1::Int, nu2::Float64, l2::Int, order::Int)
@@ -41,19 +40,12 @@ MQDT.radial_moment_cached(:H_textbook, 30, 1, 31, 2, order=1)
 329.78054480806406
 ```
 """
-function radial_moment_cached(
-    species::Symbol,
-    nu1::Float64,
-    l1::Int,
-    nu2::Float64,
-    l2::Int,
-    order::Int,
-)
+function radial_moment_cached(species::Symbol, nu1::Float64, l1::Int, nu2::Float64, l2::Int, order::Int)
     get!(lru_radial_moment, (species, nu1, l1, nu2, l2, order)) do
         state_i = get_rydberg_state_cached(species, nu1, l1)
         state_f = get_rydberg_state_cached(species, nu2, l2)
-        radial = state_i.calc_radial_matrix_element(state_f, order, unit = "a.u.")
-        pyconvert(Float64, radial)
+        radial = state_i.calc_radial_matrix_element(state_f, order, unit="a.u.")
+        return pyconvert(Float64, radial)
     end
 end
 
@@ -64,7 +56,6 @@ See also [`radial_moment_cached`](@ref)
 
 Evaluates radial_moment over two BasisStates, returns a matrix,
 where each entry corresponds to a pair of sqdt states from the two BasisStates.
-
 """
 function radial_matrix(s1::BasisState, s2::BasisState, order::Int)
     @assert s1.species == s2.species "Species mismatch: s1.species ($(s1.species)) != s2.species ($(s2.species))"
@@ -82,13 +73,11 @@ function radial_matrix(s1::BasisState, s2::BasisState, order::Int)
                     R[i, j] = radial_moment_cached(s1.species, nui, li, nuj, lj, order)
                 end
             end
-
         end
     end
 
     return R
 end
-
 
 # ---------------------------------
 # angular
@@ -107,10 +96,7 @@ Formula is found in Robicheaux2018 Eq. 20 and in Vaillant2014 Eq. C3
 function angular_moment(k, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
     a = 0.0
     if (q1.sc, q1.lc, q1.Jc, q1.Fc) == (q2.sc, q2.lc, q2.Jc, q2.Fc)
-        if iseven(q1.lr+q2.lr+k) &&
-           abs(q1.F-q2.F) <= k &&
-           abs(q1.lr-q2.lr) <= k &&
-           abs(q1.Jr-q2.Jr) <= k
+        if iseven(q1.lr+q2.lr+k) && abs(q1.F-q2.F) <= k && abs(q1.lr-q2.lr) <= k && abs(q1.Jr-q2.Jr) <= k
             Λ = q1.F + q1.Fc + q1.Jr + q2.Jr + q1.lr + q2.lr + 0.5
             sq = square_brakets([q1.F, q2.F, q1.Jr, q2.Jr, q1.lr, q2.lr])
             qn1 = Vector{Int64}(2*[q1.lr, k, q2.lr, 0, 0, 0])
@@ -158,7 +144,7 @@ function angular_moment(k, q1::lsQuantumNumbers, q2::lsQuantumNumbers)
     return a
 end
 
-const lru_angular_matrix = LRU{Tuple{Int,Channels,Channels},Any}(maxsize = 1_000)
+const lru_angular_matrix = LRU{Tuple{Int,Channels,Channels},Any}(maxsize=1_000)
 
 """
 See also [`angular_moment`](@ref)
@@ -178,7 +164,7 @@ function angular_matrix_cached(k::Int, k1::Channels, k2::Channels)
                 A[i, j] = angular_moment(k, c1[i], c2[j])
             end
         end
-        A
+        return A
     end
 end
 
@@ -186,7 +172,7 @@ end
 # magnetic field
 # --------------------------------------------------------
 
-const lru_magnetic_matrix = LRU{Tuple{Any,Any,Any,Channels,Channels},Any}(maxsize = 1_000)
+const lru_magnetic_matrix = LRU{Tuple{Any,Any,Any,Channels,Channels},Any}(maxsize=1_000)
 
 """
 See also [`magneton`](@ref)
@@ -206,7 +192,7 @@ function magnetic_matrix_cached(nd, mp, ic, k1::Channels, k2::Channels)
                 A[i, j] = magneton(nd, mp, ic, c1[i], c2[j])
             end
         end
-        A
+        return A
     end
 end
 
@@ -499,7 +485,7 @@ function matrix_elements(B::BasisArray, P::Parameters)
     st = B.states
     for i in eachindex(st)
         b1 = st[i]
-        for j = i:length(st)
+        for j in i:length(st)
             b2 = st[j]
             m = multipole_moments(b1, b2, P)
             if !iszero(m[1])
@@ -534,12 +520,12 @@ end
 
 function ls_channels(Q::AngularMomenta)
     out = Vector{lsQuantumNumbers}()
-    for S = 0:1
+    for S in 0:1
         for lc in Q.lc
             for lr in Q.lr
-                for L = abs(lc-lr):(lc+lr)
-                    for J = abs(L-S):(L+S)
-                        for F = abs(J-Q.ic):(J+Q.ic)
+                for L in abs(lc - lr):(lc + lr)
+                    for J in abs(L - S):(L + S)
+                        for F in abs(J - Q.ic):(J + Q.ic)
                             push!(out, lsQuantumNumbers(0.5, S, lc, lr, L, J, F))
                         end
                     end
@@ -560,11 +546,11 @@ end
 function jj_channels(Q::AngularMomenta)
     out = Vector{jjQuantumNumbers}()
     for lc in Q.lc
-        for jc = abs(lc-0.5):(lc+0.5)
+        for jc in abs(lc - 0.5):(lc + 0.5)
             for lr in Q.lr
-                for jr = abs(lr-0.5):(lr+0.5)
-                    for J = abs(jc-jr):(jc+jr)
-                        for F = abs(J-Q.ic):(J+Q.ic)
+                for jr in abs(lr - 0.5):(lr + 0.5)
+                    for J in abs(jc - jr):(jc + jr)
+                        for F in abs(J - Q.ic):(J + Q.ic)
                             push!(out, jjQuantumNumbers(0.5, lc, jc, lr, jr, J, F))
                         end
                     end
@@ -585,11 +571,11 @@ end
 function fj_channels(Q::AngularMomenta)
     out = Vector{fjQuantumNumbers}()
     for lc in Q.lc
-        for jc = abs(lc-0.5):(lc+0.5)
-            for fc = abs(Q.ic-jc):(Q.ic+jc)
+        for jc in abs(lc - 0.5):(lc + 0.5)
+            for fc in abs(Q.ic - jc):(Q.ic + jc)
                 for lr in Q.lr
-                    for jr = abs(lr-0.5):(lr+0.5)
-                        for F = abs(fc-jr):(fc+jr)
+                    for jr in abs(lr - 0.5):(lr + 0.5)
+                        for F in abs(fc - jr):(fc + jr)
                             push!(out, fjQuantumNumbers(0.5, lc, jc, fc, lr, jr, F))
                         end
                     end
@@ -613,8 +599,8 @@ function ls_to_jj(q1::lsQuantumNumbers, q2::jjQuantumNumbers)
         sq = square_brakets([q1.S, q1.L, q2.Jc, q2.Jr])
         qn = Vector{Int64}(2*[q1.sc, 0.5, q1.S, q1.lc, q1.lr, q1.L, q2.Jc, q2.Jr, q1.J])
         res = sq*sf_coupling_9j(qn...)
-        if isapprox(round(2res), 2res, rtol = 1e-14)
-            res = round(res, digits = 14)
+        if isapprox(round(2res), 2res, rtol=1e-14)
+            res = round(res, digits=14)
         end
     end
     return res
@@ -627,8 +613,8 @@ function jj_to_fj(q1::jjQuantumNumbers, q2::fjQuantumNumbers, ic)
         sq = square_brakets([q1.J, q2.Fc])
         qn = Vector{Int64}(2*[q1.Jr, q1.Jc, q1.J, ic, q2.F, q2.Fc])
         res = (-1.0)^Λ_io*sq*sf_coupling_6j(qn...)
-        if isapprox(round(2res), 2res, rtol = 1e-14)
-            res = round(res, digits = 14)
+        if isapprox(round(2res), 2res, rtol=1e-14)
+            res = round(res, digits=14)
         end
     end
     return res

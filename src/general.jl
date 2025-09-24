@@ -18,7 +18,7 @@ PARA = Parameters(
     109736.9695858, # Rydberg constant in 1/cm
     50443.070393, # lowest ionization threshold in 1/cm
     0, # hyperfine constant in 1/cm
-    2.1 # nuclear dipole
+    2.1, # nuclear dipole
 )
 ```
 """
@@ -80,7 +80,9 @@ struct jjQuantumNumbers <: QuantumNumbers
     F::Float64
 end
 
-jjQuantumNumbers(sc, lc, Jc, lr, Jr, J) = jjQuantumNumbers(sc, lc, Jc, lr, Jr, J, J)
+function jjQuantumNumbers(sc, lc, Jc, lr, Jr, J)
+    return jjQuantumNumbers(sc, lc, Jc, lr, Jr, J, J)
+end
 
 """
 See also [`jjQuantumNumbers`](@ref), [`fjQuantumNumbers`](@ref)
@@ -100,7 +102,9 @@ struct lsQuantumNumbers <: QuantumNumbers
     F::Float64
 end
 
-lsQuantumNumbers(sc, S, lc, lr, L, J) = lsQuantumNumbers(sc, S, lc, lr, L, J, J)
+function lsQuantumNumbers(sc, S, lc, lr, L, J)
+    return lsQuantumNumbers(sc, S, lc, lr, L, J, J)
+end
 
 # --------------------------------------------------------
 # Base functions for QuantumNumbers structs
@@ -374,20 +378,34 @@ RYDBERG_S0 = fModel(
     ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
     Bool[1, 0, 1, 0, 1, 0],
     [50443.070393, 83967.7, 80835.39, 83967.7, 77504.98, 83967.7],
-    [0.355097325 0.278368431; 0.204537279 0; 0.116394359 0; 0.295432196 0; 0.25765161 0; 0.155807042 0],
+    [
+        0.355097325 0.278368431;
+        0.204537279 0;
+        0.116394359 0;
+        0.295432196 0;
+        0.25765161 0;
+        0.155807042 0
+    ],
     ["12", "13", "14", "34", "35", "16"],
     [0.12654859 0; 0.30010744 0; 0.05703381 0; 0.11439805 0; 0.09864375 0; 0.14248210 0],
     lsChannels([
         lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
         lsQuantumNumbers(0.5, 0, 1, 1, 0, 0),
-        lsQuantumNumbers(0.5, 1, 1, 1, 1, 0)]
-        ),
+        lsQuantumNumbers(0.5, 1, 1, 1, 1, 0),
+    ]),
     jjchannels([
         jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0),
         jjQuantumNumbers(0.5, 1, 0.5, 1, 1.5, 0),
-        jjQuantumNumbers(0.5, 1, 0.5, 1, 0.5, 0)]
-        ),
-    [1 0 0 0 0 0; 0 1 0 0 0 0; 0 0 -sqrt(2/3) 0 sqrt(1/3) 0; 0 0 0 1 0 0; 0 0 sqrt(1/3) 0 sqrt(2/3) 0; 0 0 0 0 0 1]
+        jjQuantumNumbers(0.5, 1, 0.5, 1, 0.5, 0),
+    ]),
+    [
+        1 0 0 0 0 0;
+        0 1 0 0 0 0;
+        0 0 -sqrt(2/3) 0 sqrt(1/3) 0;
+        0 0 0 1 0 0;
+        0 0 sqrt(1/3) 0 sqrt(2/3) 0;
+        0 0 0 0 0 1
+    ],
 )
 ```
 """
@@ -437,16 +455,20 @@ KMODEL_S0 = kModel(
     lsChannels([
         lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
         lsQuantumNumbers(0.5, 0, 2, 2, 0, 0),
-        lsQuantumNumbers(0.5, 0, 2, 2, 0, 0)
+        lsQuantumNumbers(0.5, 0, 2, 2, 0, 0),
     ]),
     jjChannels([
         jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0),
         jjQuantumNumbers(0.5, 2, 2.5, 2, 2.5, 0),
-        jjQuantumNumbers(0.5, 2, 1.5, 2, 1.5, 0)
+        jjQuantumNumbers(0.5, 2, 1.5, 2, 1.5, 0),
     ]),
     [45932.2002, 60768.43, 60488.09],
-    [1.051261 0.3759864 -0.02365485; 0.3759864 -0.6400925 -0.0002063825; -0.02365485 -0.0002063825 3.009087],
-    [0.8763911, 0.4042584, 17.22631]
+    [
+        1.051261 0.3759864 -0.02365485;
+        0.3759864 -0.6400925 -0.0002063825;
+        -0.02365485 -0.0002063825 3.009087
+    ],
+    [0.8763911, 0.4042584, 17.22631],
 )
 ```
 """
@@ -530,11 +552,7 @@ function single_channel_models(species::Symbol, l_list::UnitRange{Int64}, p::Par
 end
 
 function test_model(T::fModel)
-    if T.size !=
-       length(T.terms) !=
-       length(T.core) !=
-       length(T.thresholds) !=
-       size(T.defects, 1)
+    if T.size != length(T.terms) != length(T.core) != length(T.thresholds) != size(T.defects, 1)
         return println("Model size does not correspond to provided parameters.")
     elseif size(T.unitary) != (T.size, T.size)
         return println("Frame transformation matrix does not have the correct dimensions.")
@@ -588,7 +606,7 @@ function test_unitary(T::fModel, P::Parameters)
             ft = unique(get_F(T.outer_channels))[1]
             qn = mqdt.AngularMomenta(lc, lr, P.spin)
             jj = jj_channels(qn)
-            fj = [unique.(get_F.(jj))[i][1] for i = 1:length(jj)]
+            fj = [unique.(get_F.(jj))[i][1] for i in 1:length(jj)]
             i = findfirst(isequal(ft), fj)
             tjj = matrix_ls_to_jj(T.inner_channels, jj[i])
             tfj = matrix_jj_to_fj(jj[i], T.outer_channels, P.spin)

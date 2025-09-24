@@ -1,14 +1,6 @@
 module Sr88
 
-using ..MQDT:
-    Parameters,
-    fModel,
-    kModel,
-    lsChannels,
-    jjChannels,
-    lsQuantumNumbers,
-    jjQuantumNumbers,
-    test_model
+using ..MQDT: Parameters, fModel, kModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers, test_model
 
 export PARA,
     FMODEL_LOWN_P1,
@@ -77,14 +69,8 @@ FMODEL_LOWN_P1 = fModel(
     [0.87199081 0; 0.13140955 0],
     [""],
     [1.31169947 -4.48280597;],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1),
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 1, 1, 1), lsQuantumNumbers(0.5, 1, 0, 1, 1, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1), jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1)]),
     [-sqrt(1/3) sqrt(2/3); sqrt(2/3) sqrt(1/3)],
 )
 
@@ -113,14 +99,8 @@ FMODEL_HIGHN_P1 = fModel(
     [2.724 -4.67 -157; 2.8826 0.407 -1.3],
     [""],
     [0;;],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1),
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 1, 1, 1), lsQuantumNumbers(0.5, 1, 0, 1, 1, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1), jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1)]),
     [-sqrt(1/3) sqrt(2/3); sqrt(2/3) sqrt(1/3)],
 )
 
@@ -164,14 +144,8 @@ FMODEL_HIGHN_D2 = fModel(
     [2.3847 -39.41 -1090; 2.66149 -16.77 -6656],
     [""],
     [0;;],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 2),
-        jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 2),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 2, 2, 2), lsQuantumNumbers(0.5, 1, 0, 2, 2, 2)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 2), jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 2)]),
     [-sqrt(2/5) sqrt(3/5); sqrt(3/5) sqrt(2/5)],
 )
 
@@ -215,14 +189,8 @@ FMODEL_HIGHN_F3 = fModel(
     [0.089 -2 30; 0.12 -2.2 120],
     [""],
     [0;;],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 3, 3, 3),
-        lsQuantumNumbers(0.5, 1, 0, 3, 3, 3),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 3, 2.5, 3),
-        jjQuantumNumbers(0.5, 0, 0.5, 3, 3.5, 3),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 3, 3, 3), lsQuantumNumbers(0.5, 1, 0, 3, 3, 3)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 3, 2.5, 3), jjQuantumNumbers(0.5, 0, 0.5, 3, 3.5, 3)]),
     [-sqrt(3/7) sqrt(4/7); sqrt(4/7) sqrt(3/7)],
 )
 
@@ -288,14 +256,8 @@ KMODEL_S1 = kModel(
     2,
     ["5sns 3S1", "5pnp 3P1"],
     Bool[0, 0],
-    lsChannels([
-        lsQuantumNumbers(0.5, 1, 0, 0, 0, 1),
-        lsQuantumNumbers(0.5, 1, 1, 1, 1, 1),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 1),
-        jjQuantumNumbers(0.5, 1, NaN, 1, NaN, 1),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 0, 0, 1), lsQuantumNumbers(0.5, 1, 1, 1, 1, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 1), jjQuantumNumbers(0.5, 1, NaN, 1, NaN, 1)]),
     [45932.2002, 70048.11],
     [-103.9244 -133.4517; -133.4517 -168.0452],
     [-27.66912, 55.17184],
@@ -307,14 +269,8 @@ KMODEL_P0 = kModel(
     2,
     ["5snp 3P0", "4dnp 3P0"],
     Bool[0, 0],
-    lsChannels([
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 0),
-        lsQuantumNumbers(0.5, 1, 2, 1, 1, 0),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0),
-        jjQuantumNumbers(0.5, 2, 1.5, 1, 1.5, 0),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 0), lsQuantumNumbers(0.5, 1, 2, 1, 1, 0)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0), jjQuantumNumbers(0.5, 2, 1.5, 1, 1.5, 0)]),
     [45932.2002, 60628.26],
     [-0.4009565 -0.2220569; -0.2220569 0.4025180],
     [1.039923, -1.021696],
@@ -326,14 +282,8 @@ KMODEL_1P1 = kModel(
     2,
     ["5snp 1P1", "4dnp 1P1"],
     Bool[0, 0],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 0, 2, 1, 1, 1),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 1, NaN, 1),
-        jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 1),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 1, 1, 1), lsQuantumNumbers(0.5, 0, 2, 1, 1, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, NaN, 1), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 1)]),
     [45932.2002, 60628.26],
     [11.16809 16.16933; 16.16933 22.39617],
     [-0.9097862, 4.272626],
@@ -345,14 +295,8 @@ KMODEL_3P1 = kModel(
     2,
     ["5snp 3P1", "4dnp 3P1"],
     Bool[0, 0],
-    lsChannels([
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 2, 1, 1, 1),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 1, NaN, 1),
-        jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 1),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 1), lsQuantumNumbers(0.5, 1, 2, 1, 1, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, NaN, 1), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 1)]),
     [45932.2002, 60628.26],
     [-0.4199067 -0.2292304; -0.2292304 -0.3526179],
     [1.082615, -1.304779],
@@ -364,14 +308,8 @@ KMODEL_P2 = kModel(
     2,
     ["5snp 3P2", "4dnp 3P2"],
     Bool[0, 0],
-    lsChannels([
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2),
-        lsQuantumNumbers(0.5, 1, 2, 1, 1, 2),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 2),
-        jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 2),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 2), lsQuantumNumbers(0.5, 1, 2, 1, 1, 2)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 2), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 2)]),
     [45932.2002, 60628.26],
     [-0.4531133 -0.2179619; -0.2179619 -0.5285102],
     [1.050866, -0.4051199],
@@ -383,14 +321,8 @@ KMODEL_D1 = kModel(
     2,
     ["5snd 3D1", "4dns 3D1"],
     Bool[0, 0],
-    lsChannels([
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 1),
-        lsQuantumNumbers(0.5, 1, 2, 0, 2, 1),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 1),
-        jjQuantumNumbers(0.5, 2, 1.5, 0, 0.5, 1),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 1), lsQuantumNumbers(0.5, 1, 2, 0, 2, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 1), jjQuantumNumbers(0.5, 2, 1.5, 0, 0.5, 1)]),
     [45932.2002, 60628.26],
     [-0.7403359 0.5504572; 0.5504572 1.461400],
     [0.9684681, 0.2777353],
@@ -400,14 +332,7 @@ KMODEL_D2 = kModel(
     :Sr88,
     "1D2 / 3D2",
     6,
-    [
-        "(5s1/2)(nd5/2)",
-        "(5s1/2)(nd3/2)",
-        "(4d5/2)(ns1/2)",
-        "(4d3/2)(ns1/2)",
-        "5pnp 1D2",
-        "4dnd 3P2",
-    ],
+    ["(5s1/2)(nd5/2)", "(5s1/2)(nd3/2)", "(4d5/2)(ns1/2)", "(4d3/2)(ns1/2)", "5pnp 1D2", "4dnd 3P2"],
     Bool[1, 1, 1, 1, 0, 0],
     lsChannels([
         lsQuantumNumbers(0.5, NaN, 0, 2, 2, 2),
@@ -468,14 +393,8 @@ KMODEL_1F3 = kModel(
     2,
     ["5snf 1F3", "4dnp 1F3"],
     Bool[0, 0],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 3, 3, 3),
-        lsQuantumNumbers(0.5, 0, 2, 1, 3, 3),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 3, NaN, 3),
-        jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 3),
-    ]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 3, 3, 3), lsQuantumNumbers(0.5, 0, 2, 1, 3, 3)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 3, NaN, 3), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 3)]),
     [45932.2002, 60628.26],
     [0.1711631 0.4505951; 0.4505951 -0.6978294],
     [-0.3530368, -1.318505],

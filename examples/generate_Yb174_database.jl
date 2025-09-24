@@ -28,8 +28,7 @@ n_max = 30
 low_n_states = eigenstates(2, 2, low_n_models, parameters)
 
 # calculate high \nu, low \ell MQDT states
-low_l_states =
-    [eigenstates(n_min[i], n_max, low_l_models[i], parameters) for i in eachindex(n_min)]
+low_l_states = [eigenstates(n_min[i], n_max, low_l_models[i], parameters) for i in eachindex(n_min)]
 
 # calculate high \ell SQDT states
 l_max = n_max - 1
@@ -38,10 +37,7 @@ high_l_models = single_channel_models(:Yb174, 5:l_max, parameters)
 high_l_states = [eigenstates(25, n_max, M, parameters) for M in high_l_models]
 
 # generate basis and calculate matrix elements
-basis = basisarray(
-    vcat(low_n_states, low_l_states, high_l_states),
-    vcat(low_n_models, low_l_models, high_l_models),
-)
+basis = basisarray(vcat(low_n_states, low_l_states, high_l_states), vcat(low_n_models, low_l_models, high_l_models))
 @time me = matrix_elements(basis, parameters)
 
 # prepare PAIRINTERACTION tables
@@ -53,10 +49,7 @@ e2 = DataFrame(me["quadrupole"], col_names)
 m1 = DataFrame(me["paramagnetic"], col_names)
 m2 = DataFrame(me["diamagnetic"], col_names)
 
-db = databasearray(
-    vcat(low_n_states, low_l_states, high_l_states),
-    vcat(low_n_models, low_l_models, high_l_models),
-)
+db = databasearray(vcat(low_n_states, low_l_states, high_l_states), vcat(low_n_models, low_l_models, high_l_models))
 st = state_data(db, parameters)
 
 # store tables as csv files
