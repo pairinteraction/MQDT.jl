@@ -10,16 +10,17 @@ file in the parameters folder of the mqdt module initializes this type.
 
 # Examples
 
-```julia-repl
-PARA = Parameters(
-    :Yb174,
-    1822.88848628*173.9388621, # nuclear mass
-    0, # nuclear spin
-    109736.9695858, # Rydberg constant in 1/cm
-    50443.070393, # lowest ionization threshold in 1/cm
-    0, # hyperfine constant in 1/cm
-    2.1, # nuclear dipole
-)
+```jldoctest
+julia> PARA = Parameters(
+           :Yb174,
+           1822.88848628*173.9388621, # nuclear mass
+           0, # nuclear spin
+           109736.9695858, # Rydberg constant in 1/cm
+           50443.070393, # lowest ionization threshold in 1/cm
+           0, # hyperfine constant in 1/cm
+           2.1, # nuclear dipole
+       );
+
 ```
 """
 struct Parameters
@@ -370,43 +371,44 @@ Contains all relevant parameters to form the K matrix and calculate the spectrum
 
 # Examples
 
-```julia-repl
-RYDBERG_S0 = fModel(
-    :Yb174,
-    "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
-    6,
-    ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
-    Bool[1, 0, 1, 0, 1, 0],
-    [50443.070393, 83967.7, 80835.39, 83967.7, 77504.98, 83967.7],
-    [
-        0.355097325 0.278368431;
-        0.204537279 0;
-        0.116394359 0;
-        0.295432196 0;
-        0.25765161 0;
-        0.155807042 0
-    ],
-    ["12", "13", "14", "34", "35", "16"],
-    [0.12654859 0; 0.30010744 0; 0.05703381 0; 0.11439805 0; 0.09864375 0; 0.14248210 0],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
-        lsQuantumNumbers(0.5, 0, 1, 1, 0, 0),
-        lsQuantumNumbers(0.5, 1, 1, 1, 1, 0),
-    ]),
-    jjchannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0),
-        jjQuantumNumbers(0.5, 1, 0.5, 1, 1.5, 0),
-        jjQuantumNumbers(0.5, 1, 0.5, 1, 0.5, 0),
-    ]),
-    [
-        1 0 0 0 0 0;
-        0 1 0 0 0 0;
-        0 0 -sqrt(2/3) 0 sqrt(1/3) 0;
-        0 0 0 1 0 0;
-        0 0 sqrt(1/3) 0 sqrt(2/3) 0;
-        0 0 0 0 0 1
-    ],
-)
+```jldoctest
+julia> RYDBERG_S0 = fModel(
+           :Yb174,
+           "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
+           6,
+           ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
+           Bool[1, 0, 1, 0, 1, 0],
+           [50443.070393, 83967.7, 80835.39, 83967.7, 77504.98, 83967.7],
+           [
+               0.355097325 0.278368431;
+               0.204537279 0;
+               0.116394359 0;
+               0.295432196 0;
+               0.25765161 0;
+               0.155807042 0
+           ],
+           ["12", "13", "14", "34", "35", "16"],
+           [0.12654859 0; 0.30010744 0; 0.05703381 0; 0.11439805 0; 0.09864375 0; 0.14248210 0],
+           lsChannels([
+               lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
+               lsQuantumNumbers(0.5, 0, 1, 1, 0, 0),
+               lsQuantumNumbers(0.5, 1, 1, 1, 1, 0),
+           ]),
+           jjChannels([
+               jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0),
+               jjQuantumNumbers(0.5, 1, 0.5, 1, 1.5, 0),
+               jjQuantumNumbers(0.5, 1, 0.5, 1, 0.5, 0),
+           ]),
+           [
+               1 0 0 0 0 0;
+               0 1 0 0 0 0;
+               0 0 -sqrt(2/3) 0 sqrt(1/3) 0;
+               0 0 0 1 0 0;
+               0 0 sqrt(1/3) 0 sqrt(2/3) 0;
+               0 0 0 0 0 1
+           ],
+       );
+
 ```
 """
 struct fModel <: Model
@@ -445,31 +447,32 @@ Contains all relevant parameters to form the K matrix and calculate the spectrum
 
 # Examples
 
-```julia-repl
-KMODEL_S0 = kModel(
-    :Sr88,
-    "1S0",
-    3,
-    ["(5s1/2)(ns1/2)", "(4d5/2)(nd5/2)", "(4d3/2)(nd3/2)"],
-    Bool[1, 1, 1],
-    lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
-        lsQuantumNumbers(0.5, 0, 2, 2, 0, 0),
-        lsQuantumNumbers(0.5, 0, 2, 2, 0, 0),
-    ]),
-    jjChannels([
-        jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0),
-        jjQuantumNumbers(0.5, 2, 2.5, 2, 2.5, 0),
-        jjQuantumNumbers(0.5, 2, 1.5, 2, 1.5, 0),
-    ]),
-    [45932.2002, 60768.43, 60488.09],
-    [
-        1.051261 0.3759864 -0.02365485;
-        0.3759864 -0.6400925 -0.0002063825;
-        -0.02365485 -0.0002063825 3.009087
-    ],
-    [0.8763911, 0.4042584, 17.22631],
-)
+```jldoctest
+julia> KMODEL_S0 = kModel(
+           :Sr88,
+           "1S0",
+           3,
+           ["(5s1/2)(ns1/2)", "(4d5/2)(nd5/2)", "(4d3/2)(nd3/2)"],
+           Bool[1, 1, 1],
+           lsChannels([
+               lsQuantumNumbers(0.5, 0, 0, 0, 0, 0),
+               lsQuantumNumbers(0.5, 0, 2, 2, 0, 0),
+               lsQuantumNumbers(0.5, 0, 2, 2, 0, 0),
+           ]),
+           jjChannels([
+               jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0),
+               jjQuantumNumbers(0.5, 2, 2.5, 2, 2.5, 0),
+               jjQuantumNumbers(0.5, 2, 1.5, 2, 1.5, 0),
+           ]),
+           [45932.2002, 60768.43, 60488.09],
+           [
+               1.051261 0.3759864 -0.02365485;
+               0.3759864 -0.6400925 -0.0002063825;
+               -0.02365485 -0.0002063825 3.009087
+           ],
+           [0.8763911, 0.4042584, 17.22631],
+       );
+
 ```
 """
 struct kModel <: Model

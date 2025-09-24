@@ -13,8 +13,11 @@ this function returns the specific quantum defect at principal quantum number `N
 
 # Examples
 
-```julia-repl
+```jldoctest
 MQDT.theta(60, [0.4 10 100; 0.4 1 0])
+
+# output
+
 2-element Vector{Float64}:
  0.4027854938271605
  0.4002777777777778
@@ -49,8 +52,11 @@ this function returns the specific quantum defect at principal quantum number `N
 
 # Examples
 
-```julia-repl
+```jldoctest
 MQDT.theta_rr(60, [0.4 10 100; 0.4 1 0], 1)
+
+# output
+
 0.4002815188505022
 ```
 """
@@ -81,8 +87,11 @@ Given a principal quantum number, return the channel-dependent principal quantum
 
 # Examples
 
-```julia-repl
+```jldoctest
 MQDT.nu(60, [50442.795744, 83967.7, 80835.39, 77504.98, 50443.217463], 50443.217463, 109736.9635066)
+
+# output
+
 5-element Vector{Float64}:
  60.41940064523729
   1.80841488964728
@@ -118,8 +127,11 @@ Given a principal quantum number, return the energy, depending on the ionization
 
 # Examples
 
-```julia-repl
+```jldoctest
 ϵ = MQDT.epsilon(60, 50443.217463, 109736.9635066)
+
+# output
+
 50412.734973137056
 ```
 """
@@ -178,8 +190,11 @@ With this method, maximum for j is 10.
 
 # Examples
 
-```julia-repl
+```jldoctest
 MQDT.couple("710")
+
+# output
+
 (7, 10)
 ```
 """
@@ -207,14 +222,16 @@ Works for subsequent rotations passed as vectors.
 
 # Examples
 
-```julia-repl
+```jldoctest
 MQDT.rot(0.4, "23", 3)
+MQDT.rot([0.4, 0.2], ["23", "12"], 3)
+
+# output
+
 3×3 Matrix{Float64}:
  1.0  0.0        0.0
  0.0  0.921061  -0.389418
  0.0  0.389418   0.921061
-
-MQDT.rot([0.4, 0.2], ["23", "12"], 3)
 3×3 Matrix{Float64}:
  0.980067   -0.198669   0.0
  0.182987    0.902701  -0.389418
