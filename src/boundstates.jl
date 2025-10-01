@@ -322,9 +322,7 @@ function mroots(N::Number, M::Model, P::Parameters)
     for i in eachindex(z)
         mz = m(z[i])
         if abs(mz) > 1e-10
-            println(
-                "Warning: skipped a root that seems inaccurate. Value was $(mz) at n=$(z[i]) for $(M.name).",
-            )
+            println("Warning: skipped a root that seems inaccurate. Value was $(mz) at n=$(z[i]) for $(M.name).")
         else
             push!(c, i)
         end
@@ -365,16 +363,12 @@ function LinearAlgebra.nullspace(n::Vector{Float64}, M::Matrix)
     i = s[1]
     f = e.values[i]
     if abs(f) > 1e-11
-        println(
-            "Warning: nullspace may not be accurate. Smallest eigenvalue is $f for nu=$(n[1]).",
-        )
+        println("Warning: nullspace may not be accurate. Smallest eigenvalue is $f for nu=$(n[1]).")
     end
     if length(s) > 1
         g = e.values[s[2]]
         if abs(g) < 1e-14
-            println(
-                "Warning: nullspace may not be unique. Second smallest eigenvalue is $g for nu=$(n[1]).",
-            )
+            println("Warning: nullspace may not be unique. Second smallest eigenvalue is $g for nu=$(n[1]).")
         end
     end
     return e.vectors[:, i]
@@ -451,23 +445,7 @@ function basisarray(T::EigenStates, M::fModel)
             if abs(ei - round(Int, ei)) < 1e2eps()
                 ei = round(ei)
             end
-            push!(
-                B,
-                BasisState(
-                    M.species,
-                    ei,
-                    p,
-                    f,
-                    n[:, i],
-                    l,
-                    a[:, i],
-                    c,
-                    term[i],
-                    lead[i],
-                    L[i],
-                    S[i],
-                ),
-            )
+            push!(B, BasisState(M.species, ei, p, f, n[:, i], l, a[:, i], c, term[i], lead[i], L[i], S[i]))
         end
     end
     return BasisArray(B)
