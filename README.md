@@ -29,6 +29,7 @@ From within the `docs` directory, you can build the documentation with:
 ```bash
 julia --project=. -e 'import Pkg; Pkg.develop(path=".."); Pkg.instantiate(); include("make.jl")'
 ```
+This will also automatically run the doctests in the documentation.
 
 ## Running examples
 
