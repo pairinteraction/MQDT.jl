@@ -36,11 +36,12 @@ This function is cached using the `LRUCache` package.
 # Examples
 
 ```jldoctest
-MQDT.radial_moment_cached(:H_textbook, 30, 1, 31, 2, order=1)
+radial_moment = MQDT.radial_moment_cached(:Yb174, 70.2667, 1, 71.2638, 2, 1)
+isapprox(radial_moment, 1712.16, rtol=1e-5)
 
 # output
 
-329.78054480806406
+true
 ```
 """
 function radial_moment_cached(species::Symbol, nu1::Float64, l1::Int, nu2::Float64, l2::Int, order::Int)
