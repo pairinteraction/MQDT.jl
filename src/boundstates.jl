@@ -403,7 +403,7 @@ function exp_LS(A::Matrix{Float64}, T::Matrix{Float64}, V)
         return repeat([V[1]], size(A, 2))
     else
         t = T' * A
-        return sum(t .^ 2 .* V, dims=1)[:]
+        return sum(t .^ 2 .* V; dims=1)[:]
     end
 end
 

@@ -9,7 +9,7 @@
 Store a bound state data as a data frame as used by the PAIRINTERACTION software.
 """
 function state_data(T::BasisArray, P::Parameters)
-    df = DataFrame(
+    df = DataFrame(;
         id=collect(1:size(T)),
         energy=get_e(T, P),
         parity=get_p(T),
@@ -25,7 +25,7 @@ function state_data(T::BasisArray, P::Parameters)
 end
 
 function state_data(T::DataBaseArray, P::Parameters)
-    df = DataFrame(
+    df = DataFrame(;
         id=collect(1:size(T)),
         energy=get_e(T, P),
         parity=get_p(T),

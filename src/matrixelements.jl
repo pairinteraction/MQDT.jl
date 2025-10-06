@@ -1,7 +1,7 @@
 # --------------------------------------------------------
 # radial
 # --------------------------------------------------------
-const lru_get_rydberg_state = LRU{Tuple{Symbol,Float64,Int64},Any}(maxsize=20_000)
+const lru_get_rydberg_state = LRU{Tuple{Symbol,Float64,Int64},Any}(; maxsize=20_000)
 
 """
     get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
@@ -18,14 +18,14 @@ function get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
         logging.getLogger("ryd_numerov").setLevel(logging.WARNING)
 
         n = get_n([nu], [l], species)[1]
-        state = ryd_numerov.RydbergStateMQDT(String(species), nu=nu, l=l, n=n)
-        state.create_model(potential_type="model_potential_fei_2009")
-        state.create_wavefunction("numerov", sign_convention="positive_at_outer_bound")
+        state = ryd_numerov.RydbergStateMQDT(String(species); nu=nu, l=l, n=n)
+        state.create_model(; potential_type="model_potential_fei_2009")
+        state.create_wavefunction("numerov"; sign_convention="positive_at_outer_bound")
         return state
     end
 end
 
-const lru_radial_moment = LRU{Tuple{Symbol,Float64,Int,Float64,Int,Int},Float64}(maxsize=500_000)
+const lru_radial_moment = LRU{Tuple{Symbol,Float64,Int,Float64,Int,Int},Float64}(; maxsize=500_000)
 
 """
     radial_moment_cached(species::Symbol, nu1::Float64, l1::Int, nu2::Float64, l2::Int, order::Int)
@@ -37,7 +37,7 @@ This function is cached using the `LRUCache` package.
 
 ```jldoctest
 radial_moment = MQDT.radial_moment_cached(:Yb174, 70.2667, 1, 71.2638, 2, 1)
-isapprox(radial_moment, 1712.16, rtol=1e-5)
+isapprox(radial_moment, 1712.16; rtol=1e-5)
 
 # output
 
@@ -48,7 +48,7 @@ function radial_moment_cached(species::Symbol, nu1::Float64, l1::Int, nu2::Float
     get!(lru_radial_moment, (species, nu1, l1, nu2, l2, order)) do
         state_i = get_rydberg_state_cached(species, nu1, l1)
         state_f = get_rydberg_state_cached(species, nu2, l2)
-        radial = state_i.calc_radial_matrix_element(state_f, order, unit="a.u.")
+        radial = state_i.calc_radial_matrix_element(state_f, order; unit="a.u.")
         return pyconvert(Float64, radial)
     end
 end
@@ -148,7 +148,7 @@ function angular_moment(k, q1::lsQuantumNumbers, q2::lsQuantumNumbers)
     return a
 end
 
-const lru_angular_matrix = LRU{Tuple{Int,Channels,Channels},Any}(maxsize=1_000)
+const lru_angular_matrix = LRU{Tuple{Int,Channels,Channels},Any}(; maxsize=1_000)
 
 """
 See also [`angular_moment`](@ref)
@@ -176,7 +176,7 @@ end
 # magnetic field
 # --------------------------------------------------------
 
-const lru_magnetic_matrix = LRU{Tuple{Any,Any,Any,Channels,Channels},Any}(maxsize=1_000)
+const lru_magnetic_matrix = LRU{Tuple{Any,Any,Any,Channels,Channels},Any}(; maxsize=1_000)
 
 """
 See also [`magneton`](@ref)
@@ -609,8 +609,8 @@ function ls_to_jj(q1::lsQuantumNumbers, q2::jjQuantumNumbers)
         sq = square_brakets([q1.S, q1.L, q2.Jc, q2.Jr])
         qn = Vector{Int64}(2*[q1.sc, 0.5, q1.S, q1.lc, q1.lr, q1.L, q2.Jc, q2.Jr, q1.J])
         res = sq*sf_coupling_9j(qn...)
-        if isapprox(round(2res), 2res, rtol=1e-14)
-            res = round(res, digits=14)
+        if isapprox(round(2res), 2res; rtol=1e-14)
+            res = round(res; digits=14)
         end
     end
     return res
@@ -623,8 +623,8 @@ function jj_to_fj(q1::jjQuantumNumbers, q2::fjQuantumNumbers, ic)
         sq = square_brakets([q1.J, q2.Fc])
         qn = Vector{Int64}(2*[q1.Jr, q1.Jc, q1.J, ic, q2.F, q2.Fc])
         res = (-1.0)^Λ_io*sq*sf_coupling_6j(qn...)
-        if isapprox(round(2res), 2res, rtol=1e-14)
-            res = round(res, digits=14)
+        if isapprox(round(2res), 2res; rtol=1e-14)
+            res = round(res; digits=14)
         end
     end
     return res
