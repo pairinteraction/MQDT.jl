@@ -98,16 +98,16 @@ end
 
 function get_neg(T::BasisArray)
     t = Vector{Float64}(undef, size(T))
-    for i in eachindex(t)
-        t[i] = 0
-        # t[i] = T.states[i].neg  # TODO
+    for (i, state) in enumerate(T.states)
+        neglected_inds = findall(iszero, state.core)
+        ai_neglected = state.ai_all[neglected_inds]
+        neglected = sum(ai_neglected .^ 2)
+        t[i] = neglected
     end
     return t
 end
 
 function exp_nui(T::BasisState)
-    return 0
-    # TODO
     nu = T.nui_all
     n = T.ai_all
     return exp_q(nu, n)
@@ -122,8 +122,6 @@ function exp_nui(T::BasisArray)
 end
 
 function std_nui(T::BasisState)
-    return 0
-    # TODO
     nu = T.nui_all
     n = T.ai_all
     return std_q(nu, n)
@@ -142,8 +140,6 @@ function is_J(T::BasisArray, P::Parameters)
 end
 
 function is_mqdt(T::BasisState)
-    return true
-    # TODO
     return !isone(length(T.nui_all))
 end
 
