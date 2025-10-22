@@ -636,8 +636,9 @@ See also [`basisarray`](@ref), [`BasisArray`](@ref), [`EigenStates`](@ref)
         channels::Channels,
         term::String,
         lead::Float64,
-        L::Float64,
-        S::Float64,
+        nui_all::Vector{Float64},
+        ai_all::Vector{Float64},
+        core::Vector{Bool},
     )
 
 Type to store all relevant information of multi-channel bound states for a given Rydberg series.
@@ -654,8 +655,9 @@ struct BasisState
     channels::Channels
     term::String
     lead::Float64
-    L::Float64
-    S::Float64
+    nui_all::Vector{Float64}
+    ai_all::Vector{Float64}
+    core::Vector{Bool}
 end
 
 """
