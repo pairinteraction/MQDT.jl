@@ -522,7 +522,7 @@ function get_J(T::fModel)
     return get_J(T.inner_channels)
 end
 
-function single_channel_models(species::Symbol, l::Integer, p::Parameters)
+function single_channel_jj_models(species::Symbol, l::Integer, p::Parameters)
     @assert l > 0 "l must be positive and nonzero for this function"
     jr = [l-1/2, l-1/2, l+1/2, l+1/2]
     jt = [l-1, l, l, l+1]
@@ -546,10 +546,46 @@ function single_channel_models(species::Symbol, l::Integer, p::Parameters)
     return m
 end
 
-function single_channel_models(species::Symbol, l_list::UnitRange{Int64}, p::Parameters)
+function single_channel_jj_models(species::Symbol, l_list::UnitRange{Int64}, p::Parameters)
     m = Vector{fModel}()
     for l in l_list
-        append!(m, single_channel_models(species, l, p))
+        append!(m, single_channel_jj_models(species, l, p))
+    end
+    return m
+end
+
+function single_channel_fj_models(species::Symbol, l_ryd::Integer, p::Parameters)
+    j_ryd_list = collect(abs(l_ryd - 1 / 2):1:(l_ryd + 1 / 2))
+    f_core_list = collect(abs(p.spin - 1 / 2):1:(p.spin + 1 / 2))
+    model_list = Vector{fModel}()
+    for j_ryd in j_ryd_list
+        for f_core in f_core_list
+            for f_tot in abs(f_core - j_ryd):1:(f_core + j_ryd)
+                model = fModel(
+                    species,
+                    "Lr=$l_ryd, Jr=$j_ryd, Fc=$f_core, F=$f_tot",
+                    1,
+                    [""],
+                    Bool[1],
+                    [p.threshold],
+                    [0;;],
+                    [""],
+                    [0;;],
+                    fjChannels([fjQuantumNumbers(0.5, 0, 0.5, f_core, l_ryd, j_ryd, f_tot)]),
+                    fjChannels([fjQuantumNumbers(0.5, 0, 0.5, f_core, l_ryd, j_ryd, f_tot)]),
+                    [1;;],
+                )
+                push!(model_list, model)
+            end
+        end
+    end
+    return model_list
+end
+
+function single_channel_fj_models(species::Symbol, l_ryd_list::UnitRange{Int64}, p::Parameters)
+    m = Vector{fModel}()
+    for l_ryd in l_ryd_list
+        append!(m, single_channel_fj_models(species, l_ryd, p))
     end
     return m
 end
