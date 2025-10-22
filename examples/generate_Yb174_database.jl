@@ -40,7 +40,7 @@ high_l_states = [eigenstates(25, n_max, M, parameters) for M in high_l_models]
 basis = basisarray(vcat(low_n_states, low_l_states, high_l_states), vcat(low_n_models, low_l_models, high_l_models))
 @time me = matrix_elements(basis, parameters)
 
-# prepare PAIRINTERACTION tables
+# prepare tables
 using DataFrames
 col_names = [:id_initial, :id_final, :value]
 
@@ -49,12 +49,23 @@ e2 = DataFrame(me["quadrupole"], col_names)
 m1 = DataFrame(me["paramagnetic"], col_names)
 m2 = DataFrame(me["diamagnetic"], col_names)
 
-db = databasearray(vcat(low_n_states, low_l_states, high_l_states), vcat(low_n_models, low_l_models, high_l_models))
-st = state_data(db, parameters)
+states_table = DataFrame(;
+    id=collect(1:size(basis)),
+    energy=MQDT.get_e(basis, parameters),
+    parity=MQDT.get_p(basis),
+    f=MQDT.get_f(basis),
+    nu=MQDT.get_nu(basis),
+    l=MQDT.exp_l(basis),
+    term=MQDT.get_term(basis),
+    lead=MQDT.get_lead(basis),
+    L=MQDT.get_L(basis),
+    S=MQDT.get_S(basis),
+)
+sort!(states_table, [:nu, :l])
 
 # store tables as csv files
 using CSV
-CSV.write("Yb174_mqdt_states.csv", st)
+CSV.write("Yb174_mqdt_states.csv", states_table)
 CSV.write("Yb174_mqdt_matrix_elements_d.csv", e1)
 CSV.write("Yb174_mqdt_matrix_elements_q.csv", e2)
 CSV.write("Yb174_mqdt_matrix_elements_mu.csv", m1)
@@ -62,7 +73,7 @@ CSV.write("Yb174_mqdt_matrix_elements_q0.csv", m2)
 
 # store tables as parquet files
 using Parquet2
-Parquet2.writefile("Yb174_mqdt_states.parquet", st)
+Parquet2.writefile("Yb174_mqdt_states.parquet", states_table)
 Parquet2.writefile("Yb174_mqdt_matrix_elements_d.parquet", e1)
 Parquet2.writefile("Yb174_mqdt_matrix_elements_q.parquet", e2)
 Parquet2.writefile("Yb174_mqdt_matrix_elements_mu.parquet", m1)
