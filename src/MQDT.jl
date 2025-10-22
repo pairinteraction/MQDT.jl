@@ -29,6 +29,7 @@ export lsQuantumNumbers,
     single_channel_fj_models
 
 include("general.jl")
+include("angular.jl")
 include("boundstates.jl")
 include("matrixelements.jl")
 include("output.jl")
