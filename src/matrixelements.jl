@@ -4,12 +4,12 @@
 const lru_get_rydberg_state = LRU{Tuple{Symbol,Float64,Int64},Any}(; maxsize=20_000)
 
 """
-    get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
+    get_radial_state_cached(species::Symbol, nu::Float64, l::Int64)
 
 Get a rydberg state from the ryd-numerov package and calculate its wavefunction.
 This function is cached using the `LRUCache` package.
 """
-function get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
+function get_radial_state_cached(species::Symbol, nu::Float64, l::Int64)
     get!(lru_get_rydberg_state, (species, nu, l)) do
         ryd_numerov = pyimport("ryd_numerov")
 
@@ -18,7 +18,7 @@ function get_rydberg_state_cached(species::Symbol, nu::Float64, l::Int64)
         logging.getLogger("ryd_numerov").setLevel(logging.WARNING)
 
         n = get_n([nu], [l], species)[1]
-        state = ryd_numerov.RydbergStateMQDT(String(species); nu=nu, l=l, n=n)
+        state = ryd_numerov.radial.RadialState(String(species); n=n, nu=nu, l_r=l)
         state.create_model(; potential_type="model_potential_fei_2009")
         state.create_wavefunction("numerov"; sign_convention="positive_at_outer_bound")
         return state
@@ -46,9 +46,9 @@ true
 """
 function radial_moment_cached(species::Symbol, nu1::Float64, l1::Int, nu2::Float64, l2::Int, order::Int)
     get!(lru_radial_moment, (species, nu1, l1, nu2, l2, order)) do
-        state_i = get_rydberg_state_cached(species, nu1, l1)
-        state_f = get_rydberg_state_cached(species, nu2, l2)
-        radial = state_i.calc_radial_matrix_element(state_f, order; unit="a.u.")
+        state_i = get_radial_state_cached(species, nu1, l1)
+        state_f = get_radial_state_cached(species, nu2, l2)
+        radial = state_f.calc_matrix_element(state_i, order; unit="a.u.")
         return pyconvert(Float64, radial)
     end
 end
