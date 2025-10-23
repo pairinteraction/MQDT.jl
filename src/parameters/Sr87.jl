@@ -1,6 +1,6 @@
 module Sr87
 
-using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers, test_model
+using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers
 
 export PARA,
     FMODEL_HIGHN_S35,
@@ -428,25 +428,5 @@ FMODEL_HIGHN_F45 = fModel(
 )
 
 # TODO: other F state models
-
-# MODELS = [
-#     FMODEL_LOWN_P45,
-#     FMODEL_HIGHN_S35,
-#     FMODEL_HIGHN_S45,
-#     FMODEL_HIGHN_S55,
-#     FMODEL_HIGHN_P25,
-#     FMODEL_HIGHN_P35,
-#     FMODEL_HIGHN_P45,
-#     FMODEL_HIGHN_P55,
-#     FMODEL_HIGHN_P65,
-#     FMODEL_HIGHN_D15,
-#     FMODEL_HIGHN_D25,
-#     FMODEL_HIGHN_D35,
-#     FMODEL_HIGHN_D45,
-#     FMODEL_HIGHN_D55,
-#     FMODEL_HIGHN_D65,
-#     FMODEL_HIGHN_D75,
-# ]
-# test_model(MODELS)
 
 end
