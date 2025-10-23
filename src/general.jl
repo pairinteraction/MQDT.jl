@@ -183,36 +183,6 @@ function Base.size(T::Channels)
     return length(T.i)
 end
 
-function get_S(T::lsChannels)
-    t = T.i
-    r = Vector{Int}(undef, length(t))
-    for i in eachindex(t)
-        r[i] = t[i].S
-    end
-    return r
-end
-
-function get_S(T::jjChannels)
-    t = T.i
-    r = Vector{Float64}(undef, length(t))
-    for i in eachindex(t)
-        lr = t[i].lr
-        jr = t[i].Jr
-        jt = t[i].J
-        theta = atan(sqrt(lr/(lr+1)))
-        if jt == lr
-            if jr > lr
-                r[i] = cos(theta)^2
-            else
-                r[i] = sin(theta)^2
-            end
-        else
-            r[i] = 1.0
-        end
-    end
-    return r
-end
-
 function get_lc(T::Channels)
     t = T.i
     r = Vector{Int}(undef, length(t))
@@ -227,28 +197,6 @@ function get_lr(T::Channels)
     r = Vector{Int}(undef, length(t))
     for i in eachindex(t)
         r[i] = t[i].lr
-    end
-    return r
-end
-
-function get_L(T::lsChannels)
-    t = T.i
-    r = Vector{Int}(undef, length(t))
-    for i in eachindex(t)
-        r[i] = t[i].L
-    end
-    return r
-end
-
-function get_L(T::jjChannels)
-    return get_lr(T)
-end
-
-function get_Jr(T::Channels)
-    t = T.i
-    r = Vector{Float64}(undef, length(t))
-    for i in eachindex(t)
-        r[i] = t[i].Jr
     end
     return r
 end
@@ -510,19 +458,11 @@ function get_lr(T::kModel)
     return get_lr(T.jjchannels)
 end
 
-function get_S(T::fModel)
-    return get_S(T.inner_channels)
-end
-
-function get_L(T::fModel)
-    return get_L(T.inner_channels)
-end
-
 function get_J(T::fModel)
     return get_J(T.inner_channels)
 end
 
-function single_channel_models(species::Symbol, l::Integer, p::Parameters)
+function single_channel_jj_models(species::Symbol, l::Integer, p::Parameters)
     @assert l > 0 "l must be positive and nonzero for this function"
     jr = [l-1/2, l-1/2, l+1/2, l+1/2]
     jt = [l-1, l, l, l+1]
@@ -546,83 +486,48 @@ function single_channel_models(species::Symbol, l::Integer, p::Parameters)
     return m
 end
 
-function single_channel_models(species::Symbol, l_list::UnitRange{Int64}, p::Parameters)
+function single_channel_jj_models(species::Symbol, l_list::UnitRange{Int64}, p::Parameters)
     m = Vector{fModel}()
     for l in l_list
-        append!(m, single_channel_models(species, l, p))
+        append!(m, single_channel_jj_models(species, l, p))
     end
     return m
 end
 
-function test_model(T::fModel)
-    if T.size != length(T.terms) != length(T.core) != length(T.thresholds) != size(T.defects, 1)
-        return println("Model size does not correspond to provided parameters.")
-    elseif size(T.unitary) != (T.size, T.size)
-        return println("Frame transformation matrix does not have the correct dimensions.")
-    elseif length(findall(T.core)) != size(T.outer_channels) != size(T.inner_channels)
-        return println("Wrong number of channels.")
-    elseif length(T.mixing) != size(T.angles, 1)
-        return println("Wrong number of close-coupling rotations.")
-    else
-        return println("Model $(T.name) passed.")
-    end
-end
-
-function test_model(T::kModel)
-    if T.size !=
-       length(T.terms) !=
-       length(jjscheme) !=
-       length(T.lschannels) !=
-       length(T.jjchannels) !=
-       length(T.thresholds) !=
-       length(T.K1)
-        return println("Model size does not correspond to provided parameters.")
-    elseif size(T.K0) != (T.size, T.size)
-        return println("Frame transformation matrix does not have the correct dimensions.")
-    else
-        return println("Model $(T.name) passed.")
-    end
-end
-
-function test_model(T::Union{Vector{fModel},Vector{kModel}})
-    for i in eachindex(T)
-        test_model(T[i])
-    end
-end
-
-function test_unitary(T::fModel, P::Parameters)
-    c = findall(T.core)
-    t0 = T.unitary[c, c]
-    if typeof(T.outer_channels) == jjChannels
-        if typeof(T.inner_channels) == lsChannels
-            t1 = matrix_ls_to_jj(T.inner_channels, T.outer_channels)'
-        else
-            s = size(T.inner_channels)
-            t1 = diagm(repeat([1.0], s))
-        end
-    elseif typeof(T.outer_channels) == fjChannels
-        if typeof(T.inner_channels) == jjChannels
-            t1 = matrix_jj_to_fj(T.inner_channels, T.outer_channels, P.spin)'
-        else
-            lc = unique(get_lc(T.inner_channels))
-            lr = unique(get_lr(T.inner_channels))
-            ft = unique(get_F(T.outer_channels))[1]
-            qn = mqdt.AngularMomenta(lc, lr, P.spin)
-            jj = jj_channels(qn)
-            fj = [unique.(get_F.(jj))[i][1] for i in 1:length(jj)]
-            i = findfirst(isequal(ft), fj)
-            tjj = matrix_ls_to_jj(T.inner_channels, jj[i])
-            tfj = matrix_jj_to_fj(jj[i], T.outer_channels, P.spin)
-            t1 = (tjj * tfj)'
+function single_channel_fj_models(species::Symbol, l_ryd::Integer, p::Parameters)
+    j_ryd_list = collect(abs(l_ryd - 1 / 2):1:(l_ryd + 1 / 2))
+    f_core_list = collect(abs(p.spin - 1 / 2):1:(p.spin + 1 / 2))
+    model_list = Vector{fModel}()
+    for j_ryd in j_ryd_list
+        for f_core in f_core_list
+            for f_tot in abs(f_core - j_ryd):1:(f_core + j_ryd)
+                model = fModel(
+                    species,
+                    "Lr=$l_ryd, Jr=$j_ryd, Fc=$f_core, F=$f_tot",
+                    1,
+                    [""],
+                    Bool[1],
+                    [p.threshold],
+                    [0;;],
+                    [""],
+                    [0;;],
+                    fjChannels([fjQuantumNumbers(0.5, 0, 0.5, f_core, l_ryd, j_ryd, f_tot)]),
+                    fjChannels([fjQuantumNumbers(0.5, 0, 0.5, f_core, l_ryd, j_ryd, f_tot)]),
+                    [1;;],
+                )
+                push!(model_list, model)
+            end
         end
     end
-    return isapprox(t0, t1), t0, t1
+    return model_list
 end
 
-function test_unitary(T::kModel)
-    t1 = eigen(T.K0).vectors
-    t2 = matrix_ls_to_jj(T.lschannels, T.jjchannels)'
-    return t1, t2
+function single_channel_fj_models(species::Symbol, l_ryd_list::UnitRange{Int64}, p::Parameters)
+    m = Vector{fModel}()
+    for l_ryd in l_ryd_list
+        append!(m, single_channel_fj_models(species, l_ryd, p))
+    end
+    return m
 end
 
 # --------------------------------------------------------
@@ -660,8 +565,9 @@ See also [`basisarray`](@ref), [`BasisArray`](@ref), [`EigenStates`](@ref)
         channels::Channels,
         term::String,
         lead::Float64,
-        L::Float64,
-        S::Float64,
+        nui_all::Vector{Float64},
+        ai_all::Vector{Float64},
+        core::Vector{Bool},
     )
 
 Type to store all relevant information of multi-channel bound states for a given Rydberg series.
@@ -678,8 +584,9 @@ struct BasisState
     channels::Channels
     term::String
     lead::Float64
-    L::Float64
-    S::Float64
+    nui_all::Vector{Float64}
+    ai_all::Vector{Float64}
+    core::Vector{Bool}
 end
 
 """
@@ -692,62 +599,6 @@ Type to store a basis. A basis is a list of `BasisState` types, typically corres
 """
 struct BasisArray
     states::Vector{BasisState}
-end
-
-"""
-See also [`databasearray`](@ref), [`DataBaseArray`](@ref), [`EigenStates`](@ref), [`BasisState`](@ref)
-
-    DataBaseState(
-        nu::Float64,
-        parity::Int,
-        f::Float64,
-        nui::Vector{Float64},
-        nui_all::Vector{Float64},
-        ai::Vector{Float64},
-        ai_all::Vector{Float64},
-        S::Vector{Float64},
-        L::Vector{Float64},
-        J::Vector{Float64},
-        lr::Vector{Int},
-        Jr::Vector{Float64},
-        transform::Matrix{Float64},
-        term::String,
-        lead::Float64,
-        neg::Float64,
-    )
-
-Type to store all relevant to the PAIRINTERACTION database for a given Rydberg series.
-`DataBaseState` is generated by the `databasearray` function using a `Model` and `EigenStates`.
-"""
-struct DataBaseState
-    nu::Float64
-    parity::Int
-    f::Float64
-    nui::Vector{Float64}
-    nui_all::Vector{Float64}
-    ai::Vector{Float64}
-    ai_all::Vector{Float64}
-    S::Vector{Float64}
-    L::Vector{Int}
-    J::Vector{Float64}
-    lr::Vector{Int}
-    Jr::Vector{Float64}
-    transform::Matrix{Float64}
-    term::String
-    lead::Float64
-    neg::Float64
-end
-
-"""
-See also [`DataBaseState`](@ref), [`databasearray`](@ref), [`basisarray`](@ref), [`BasisArray`](@ref)
-
-    DataBaseArray(states::Vector{DataBaseState})
-
-Type to store a bound state data as a list of `DataBaseState` types as used by the PAIRINTERACTION software.
-`DataBaseArray` is generated by the `databasearray` function using lists of `Model` and `EigenStates`.
-"""
-struct DataBaseArray
-    states::Vector{DataBaseState}
 end
 
 # --------------------------------------------------------
@@ -772,16 +623,4 @@ end
 
 function Base.union(T1::BasisArray, T2::BasisArray, T3::BasisArray)
     return BasisArray(vcat(T1.states, T2.states, T3.states))
-end
-
-function Base.size(T::DataBaseArray)
-    return length(T.states)
-end
-
-function Base.union(T1::DataBaseArray, T2::DataBaseArray)
-    return DataBaseArray(vcat(T1.states, T2.states))
-end
-
-function Base.union(T1::DataBaseArray, T2::DataBaseArray, T3::DataBaseArray)
-    return DataBaseArray(vcat(T1.states, T2.states, T3.states))
 end

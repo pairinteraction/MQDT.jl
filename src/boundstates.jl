@@ -398,15 +398,6 @@ end
 # basis array
 # --------------------------------------------------------
 
-function exp_LS(A::Matrix{Float64}, T::Matrix{Float64}, V)
-    if allequal(V)
-        return repeat([V[1]], size(A, 2))
-    else
-        t = T' * A
-        return sum(t .^ 2 .* V; dims=1)[:]
-    end
-end
-
 function find_leading_term(A::Matrix{Float64}, T::Matrix{Float64}, L::Vector{String})
     term = Vector{String}(undef, size(A, 2))
     lead = Vector{Float64}(undef, size(A, 2))
@@ -435,9 +426,6 @@ function basisarray(T::EigenStates, M::fModel)
     n = T.nu[F, :]
     l = get_lr(c)
     a = T.a[F, :]
-    t = M.unitary[F, F]
-    L = exp_LS(a, t, get_L(M))
-    S = exp_LS(a, t, get_S(M))
     term, lead = find_leading_term(T.a, M.unitary, M.terms)
     for i in eachindex(e)
         if !isone(M.size) || l[1] < n[1, i]
@@ -445,7 +433,24 @@ function basisarray(T::EigenStates, M::fModel)
             if abs(ei - round(Int, ei)) < 1e2eps()
                 ei = round(ei)
             end
-            push!(B, BasisState(M.species, ei, p, f, n[:, i], l, a[:, i], c, term[i], lead[i], L[i], S[i]))
+            push!(
+                B,
+                BasisState(
+                    M.species,
+                    ei,
+                    p,
+                    f,
+                    n[:, i],
+                    l,
+                    a[:, i],
+                    c,
+                    term[i],
+                    lead[i],
+                    T.nu[:, i],
+                    T.a[:, i],
+                    M.core,
+                ),
+            )
         end
     end
     return BasisArray(B)
@@ -458,76 +463,4 @@ function basisarray(T::Vector{EigenStates}, M::Vector{fModel})
     end
     ordered = sortperm(get_nu(BasisArray(B)))
     return BasisArray(B[ordered])
-end
-
-# --------------------------------------------------------
-# database array
-# --------------------------------------------------------
-
-"""
-    dbstates(T::EigenStates, M::fModel)
-    dbstates(T::Vector{EigenStates}, M::Vector{fModel})
-
-Function that generates all relevant bound-state data specifically for the PAIRINTERACTION database.
-"""
-function databasearray(T::EigenStates, M::fModel)
-    F = findall(M.core)
-    U = findall(iszero, M.core)
-    c = M.outer_channels
-    e = T.n
-    p = unique_parity(c)
-    f = good_quantum_number(c)
-    n_all = T.nu
-    n_rel = T.nu[F, :]
-    a_all = T.a
-    a_rel = T.a[F, :]
-    a_irr = T.a[U, :]
-    t = M.unitary[F, F]
-    S = get_S(M)
-    L = get_L(M)
-    J = get_J(M)
-    l_ryd = get_lr(c)
-    j_ryd = get_Jr(c)
-    term, lead = find_leading_term(T.a, M.unitary, M.terms)
-    B = Vector{DataBaseState}()
-    for i in eachindex(e)
-        under = sum(a_irr[:, i] .^ 2)
-        if !isone(M.size) || l_ryd[1] < n_rel[1, i]
-            ei = e[i]
-            if abs(ei - round(Int, ei)) < 1e2eps()
-                ei = round(ei)
-            end
-            push!(
-                B,
-                DataBaseState(
-                    ei,
-                    p,
-                    f,
-                    n_rel[:, i],
-                    n_all[:, i],
-                    a_rel[:, i],
-                    a_all[:, i],
-                    S,
-                    L,
-                    J,
-                    l_ryd,
-                    j_ryd,
-                    t,
-                    term[i],
-                    lead[i],
-                    under,
-                ),
-            )
-        end
-    end
-    return DataBaseArray(B)
-end
-
-function databasearray(T::Vector{EigenStates}, M::Vector{fModel})
-    B = Vector{DataBaseState}()
-    for i in eachindex(T)
-        append!(B, databasearray(T[i], M[i]).states)
-    end
-    ordered = sortperm(get_nu(DataBaseArray(B)))
-    return DataBaseArray(B[ordered])
 end

@@ -19,15 +19,14 @@ export lsQuantumNumbers,
     Parameters,
     EigenStates,
     BasisArray,
-    DataBaseArray,
     eigenstates,
     basisarray,
-    databasearray,
     matrix_elements,
-    state_data,
-    single_channel_models
+    single_channel_jj_models,
+    single_channel_fj_models
 
 include("general.jl")
+include("angular.jl")
 include("boundstates.jl")
 include("matrixelements.jl")
 include("output.jl")
