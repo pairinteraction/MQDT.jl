@@ -235,7 +235,7 @@ FMODEL_HIGHN_D15 = fModel(
     [""],
     [0;;],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 3)]),
-    fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 5, 2, 2.5, 1.5)]),
+    fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 4, 2, 2.5, 1.5)]),
     [1;;],
 )
 
