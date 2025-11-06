@@ -13,12 +13,7 @@ function get_radial_state_cached(species::Symbol, nu::Float64, l::Int64)
     get!(lru_get_rydberg_state, (species, nu, l)) do
         ryd_numerov = pyimport("ryd_numerov")
 
-        # enable warnings from ryd_numerov
-        logging = pyimport("logging")
-        logging.getLogger("ryd_numerov").setLevel(logging.WARNING)
-
-        n = get_n([nu], [l], species)[1]
-        state = ryd_numerov.radial.RadialState(String(species); n=n, nu=nu, l_r=l)
+        state = ryd_numerov.radial.RadialState(String(species); nu=nu, l_r=l)
         state.create_model(; potential_type="model_potential_fei_2009")
         state.create_wavefunction("numerov"; sign_convention="positive_at_outer_bound")
         return state
