@@ -603,7 +603,7 @@ function ls_to_jj(q1::lsQuantumNumbers, q2::jjQuantumNumbers)
     if (q1.sc, q1.lc, q1.lr, q1.J) == (q2.sc, q2.lc, q2.lr, q2.J)
         sq = square_brakets([q1.S, q1.L, q2.Jc, q2.Jr])
         qn = Vector{Int64}(2*[q1.sc, 0.5, q1.S, q1.lc, q1.lr, q1.L, q2.Jc, q2.Jr, q1.J])
-        res = sq*sf_coupling_9j(qn...)
+        res = sq*f9j(qn...)
         if isapprox(round(2res), 2res; rtol=1e-14)
             res = round(res; digits=14)
         end
@@ -617,7 +617,7 @@ function jj_to_fj(q1::jjQuantumNumbers, q2::fjQuantumNumbers, ic)
         Λ_io = q1.Jr + q2.Fc + ic + q1.J
         sq = square_brakets([q1.J, q2.Fc])
         qn = Vector{Int64}(2*[q1.Jr, q1.Jc, q1.J, ic, q2.F, q2.Fc])
-        res = (-1.0)^Λ_io*sq*sf_coupling_6j(qn...)
+        res = (-1.0)^Λ_io*sq*f6j(qn...)
         if isapprox(round(2res), 2res; rtol=1e-14)
             res = round(res; digits=14)
         end
