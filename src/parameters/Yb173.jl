@@ -1,6 +1,6 @@
 module Yb173
 
-using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers, test_model
+using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers
 
 export PARA,
     FMODEL_HIGHN_S15,
@@ -386,17 +386,5 @@ FMODEL_HIGHN_P45 = fModel(
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 3, 1, 1.5, 4.5)]),
     [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1],
 )
-
-# MODELS = [
-#     FMODEL_HIGHN_S15,
-#     FMODEL_HIGHN_S25,
-#     FMODEL_HIGHN_S35,
-#     FMODEL_HIGHN_P05,
-#     FMODEL_HIGHN_P15,
-#     FMODEL_HIGHN_P25,
-#     FMODEL_HIGHN_P35,
-#     FMODEL_HIGHN_P45,
-# ]
-# test_model(MODELS)
 
 end
