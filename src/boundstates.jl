@@ -397,16 +397,6 @@ end
 # --------------------------------------------------------
 # basis array
 # --------------------------------------------------------
-
-function exp_LS(A::Matrix{Float64}, T::Matrix{Float64}, V)
-    if allequal(V)
-        return repeat([V[1]], size(A, 2))
-    else
-        t = T' * A
-        return sum(t .^ 2 .* V; dims=1)[:]
-    end
-end
-
 function find_leading_term(A::Matrix{Float64}, T::Matrix{Float64}, L::Vector{String})
     term = Vector{String}(undef, size(A, 2))
     lead = Vector{Float64}(undef, size(A, 2))
@@ -435,9 +425,6 @@ function basisarray(T::EigenStates, M::fModel)
     n = T.nu[F, :]
     l = get_lr(c)
     a = T.a[F, :]
-    t = M.unitary[F, F]
-    L = exp_LS(a, t, get_L(M))
-    S = exp_LS(a, t, get_S(M))
     term, lead = find_leading_term(T.a, M.unitary, M.terms)
     for i in eachindex(e)
         if !isone(M.size) || l[1] < n[1, i]
@@ -445,7 +432,7 @@ function basisarray(T::EigenStates, M::fModel)
             if abs(ei - round(Int, ei)) < 1e2eps()
                 ei = round(ei)
             end
-            push!(B, BasisState(M.species, ei, p, f, n[:, i], l, a[:, i], c, term[i], lead[i], L[i], S[i]))
+            push!(B, BasisState(M.species, ei, p, f, n[:, i], l, a[:, i], c, term[i], lead[i]))
         end
     end
     return BasisArray(B)
