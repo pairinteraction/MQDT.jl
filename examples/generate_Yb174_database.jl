@@ -58,8 +58,6 @@ states_table = DataFrame(;
     l=MQDT.exp_l(basis),
     term=MQDT.get_term(basis),
     lead=MQDT.get_lead(basis),
-    L=MQDT.get_L(basis),
-    S=MQDT.get_S(basis),
 )
 sort!(states_table, [:nu, :l])
 
