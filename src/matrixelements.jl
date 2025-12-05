@@ -73,9 +73,7 @@ function radial_matrix(s1::BasisState, s2::BasisState, order::Int)
             lj = s2.lr[j]
 
             if abs(li-lj) <= order
-                if max(nui, nuj) < 25 || abs(nui-nuj) < 11 # cut off calculation of matrix elements for F states and higher \ell
-                    R[i, j] = radial_moment_cached(s1.species, nui, li, nuj, lj, order)
-                end
+                R[i, j] = radial_moment_cached(s1.species, nui, li, nuj, lj, order)
             end
         end
     end
