@@ -20,7 +20,6 @@ jobs:
         version:
           - '1.11'
           - 'lts'
-          - 'pre'
         os:
           - ubuntu-latest
         arch:
@@ -52,7 +51,6 @@ jobs:
         version:
           - '1.11'
           - 'lts'
-          - 'pre'
         os:
           - ubuntu-latest
         arch:
