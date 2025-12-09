@@ -50,22 +50,6 @@ function get_lead(T::BasisArray)
     return t
 end
 
-function get_L(T::BasisArray)
-    t = Vector{Float64}(undef, size(T))
-    for i in eachindex(t)
-        t[i] = T.states[i].L
-    end
-    return t
-end
-
-function get_S(T::BasisArray)
-    t = Vector{Float64}(undef, size(T))
-    for i in eachindex(t)
-        t[i] = T.states[i].S
-    end
-    return t
-end
-
 function exp_q(q::Vector, n::Vector)
     if allequal(q)
         return Float64(q[1])
