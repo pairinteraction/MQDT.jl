@@ -258,7 +258,7 @@ FMODEL_HIGHN_D05 = fModel(
     [0;;],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 1, 0.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 1.5, 0.5)]),
-    [1;;],
+    [-1;;],
 )
 
 FMODEL_HIGHN_D15 = fModel(
@@ -340,7 +340,7 @@ FMODEL_HIGHN_D25 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 2.5, 2.5),
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 1.5, 2.5),
-        fjQuantumNumbers(0.5, 1, 1.5, 1, 1, 1.5, 2.5),
+        fjQuantumNumbers(0.5, 1, 1.5, 1, 1, 1.5, 2.5), # Fc of the 1D2 state could be both 0 or 1
         fjQuantumNumbers(0.5, 0, 0.5, 0, 2, 2.5, 2.5),
     ]),
     [
@@ -550,7 +550,7 @@ FMODEL_HIGHN_G25 = fModel(
     [0;;],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 4, 4, 3, 2.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 1, 4, 3.5, 2.5)]),
-    [1;;],
+    [-1;;],
 )
 
 FMODEL_HIGHN_G35 = fModel(
