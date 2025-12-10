@@ -46,7 +46,7 @@ FMODEL_HIGHN_S35 = fModel(
     [0;;],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 0, 0, 1)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 4, 0, 0.5, 3.5)]),
-    [1;;],
+    [-1;;],
 )
 
 FMODEL_HIGHN_S45 = fModel(
@@ -125,7 +125,7 @@ FMODEL_HIGHN_P25 = fModel(
     [0;;],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 2)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 4, 1, 1.5, 2.5)]),
-    [1;;],
+    [-1;;],
 )
 
 FMODEL_HIGHN_P35 = fModel(
@@ -236,7 +236,7 @@ FMODEL_HIGHN_D15 = fModel(
     [0;;],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 3)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 4, 2, 2.5, 1.5)]),
-    [1;;],
+    [-1;;],
 )
 
 FMODEL_HIGHN_D25 = fModel(
