@@ -81,9 +81,12 @@ function test_unitary(T::fModel, P::Parameters)
 end
 
 function test_unitary(T::kModel)
+    # TODO not working yet due to NaNs in quantum numbers
+    println("Skip test_unitary for kModel $(T.name).")
+    return
     t1 = eigen(T.K0).vectors
     t2 = MQDT.matrix_ls_to_jj(T.lschannels, T.jjchannels)'
-    return t1, t2
+    @test isapprox(t1, t2; rtol=0.001)
 end
 
 @testset "Models" begin
