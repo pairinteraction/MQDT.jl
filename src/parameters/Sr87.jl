@@ -60,7 +60,7 @@ FMODEL_HIGHN_S45 = fModel(
     [3.26896 -0.138 0.9; 3.370778 0.418 -0.3],
     [""],
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 0, 0, 0, 0, 1), lsQuantumNumbers(0.5, 1, 0, 0, 0, 1)]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 0, 0, 0), lsQuantumNumbers(0.5, 1, 0, 0, 0, 1)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 4, 0, 0.5, 4.5), fjQuantumNumbers(0.5, 0, 0.5, 5, 0, 0.5, 4.5)]),
     [3/2/sqrt(5) sqrt(11)/2/sqrt(5); sqrt(11)/2/sqrt(5) -3/2/sqrt(5)],
 )
