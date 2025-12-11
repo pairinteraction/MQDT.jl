@@ -354,7 +354,7 @@ end
 """
     nullspace(n::Vector{Float64}, M::Matrix)
 
-Returns the nullspace of the M matrix, which corresponds to the channel coefficents for an MQDT bound state.
+Returns the nullspace of the M matrix, which corresponds to the channel coefficients for an MQDT bound state.
 """
 function LinearAlgebra.nullspace(n::Vector{Float64}, M::Matrix)
     m = M ./ n' .^ (3/2)
@@ -426,25 +426,27 @@ Function that generates all relevant bound-state data.
 Returns a `BasisArray`, which is a list of `BasisState` instances.
 """
 function basisarray(T::EigenStates, M::fModel)
-    F = findall(M.core)
-    B = Vector{BasisState}()
     c = M.outer_channels
-    e = T.n
     p = unique_parity(c)
     f = good_quantum_number(c)
-    n = T.nu[F, :]
-    l = get_lr(c)
-    a = T.a[F, :]
+    lr_list = Vector{Union{Int,Nothing}}(nothing, length(M.core))
+    for (idx, lr) in zip(findall(M.core), get_lr(c))
+        lr_list[idx] = lr
+    end
     term, lead = find_leading_term(T.a, M.unitary, M.terms)
-    for i in eachindex(e)
-        if !isone(M.size) || l[1] < n[1, i]
-            ei = e[i]
+    first_relevant_channel = findall(M.core)[1]
+
+    B = Vector{BasisState}()
+    for i in eachindex(T.n)
+        if !isone(M.size) || lr_list[first_relevant_channel] < T.nu[first_relevant_channel, i]
+            ei = T.n[i]
             if abs(ei - round(Int, ei)) < 1e2eps()
                 ei = round(ei)
             end
-            push!(B, BasisState(M.species, ei, p, f, n[:, i], l, a[:, i], c, term[i], lead[i]))
+            push!(B, BasisState(M.species, ei, p, f, T.nu[:, i], lr_list, T.a[:, i], c, term[i], lead[i], M))
         end
     end
+
     return BasisArray(B)
 end
 
