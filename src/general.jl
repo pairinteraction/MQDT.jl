@@ -201,7 +201,7 @@ function get_S(T::jjChannels)
         jt = t[i].J
         theta = atan(sqrt(lr/(lr+1)))
         if jt == lr
-            if jr > lr
+            if jr < lr
                 r[i] = cos(theta)^2
             else
                 r[i] = sin(theta)^2
