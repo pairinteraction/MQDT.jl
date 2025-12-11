@@ -601,7 +601,7 @@ struct BasisState
     parity::Int
     f::Float64
     nu_list::Vector{Float64}
-    lr_list::Vector{Union{Int, Nothing}}
+    lr_list::Vector{Union{Int,Nothing}}
     coefficients::Vector{Float64}
     channels::Channels
     term::String

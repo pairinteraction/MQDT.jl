@@ -429,7 +429,7 @@ function basisarray(T::EigenStates, M::fModel)
     c = M.outer_channels
     p = unique_parity(c)
     f = good_quantum_number(c)
-    lr_list = Vector{Union{Int, Nothing}}(nothing, length(M.core))
+    lr_list = Vector{Union{Int,Nothing}}(nothing, length(M.core))
     for (idx, lr) in zip(findall(M.core), get_lr(c))
         lr_list[idx] = lr
     end
