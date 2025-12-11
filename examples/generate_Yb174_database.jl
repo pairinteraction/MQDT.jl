@@ -55,13 +55,10 @@ states_table = DataFrame(;
     parity=MQDT.get_p(basis),
     f=MQDT.get_f(basis),
     nu=MQDT.get_nu(basis),
-    l=MQDT.exp_l(basis),
     term=MQDT.get_term(basis),
     lead=MQDT.get_lead(basis),
-    L=MQDT.get_L(basis),
-    S=MQDT.get_S(basis),
 )
-sort!(states_table, [:nu, :l])
+sort!(states_table, [:nu])
 
 # store tables as csv files
 using CSV
