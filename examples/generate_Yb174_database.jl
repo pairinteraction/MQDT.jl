@@ -32,7 +32,7 @@ low_l_states = [eigenstates(n_min[i], n_max, low_l_models[i], parameters) for i 
 
 # calculate high \ell SQDT states
 l_max = n_max - 1
-MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol caluclation
+MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol calculation
 high_l_models = single_channel_models(:Yb174, 5:l_max, parameters)
 high_l_states = [eigenstates(25, n_max, M, parameters) for M in high_l_models]
 
