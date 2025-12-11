@@ -58,17 +58,17 @@ where each entry corresponds to a pair of sqdt states from the two BasisStates.
 """
 function radial_matrix(s1::BasisState, s2::BasisState, order::Int)
     @assert s1.species == s2.species "Species mismatch: s1.species ($(s1.species)) != s2.species ($(s2.species))"
-    R = zeros(length(s1.nu), length(s2.nu))
+    R = zeros(length(findall(s1.model.core)), length(findall(s2.model.core)))
 
-    for i in eachindex(s1.nu)
-        nui = s1.nu[i]
-        li = s1.lr[i]
-        for j in eachindex(s2.nu)
-            nuj = s2.nu[j]
-            lj = s2.lr[j]
+    for (idi, i) in enumerate(findall(s1.model.core))
+        nui = s1.nu_list[i]
+        li = s1.lr_list[i]
+        for (idj, j) in enumerate(findall(s2.model.core))
+            nuj = s2.nu_list[j]
+            lj = s2.lr_list[j]
 
             if abs(li-lj) <= order
-                R[i, j] = radial_moment_cached(s1.species, nui, li, nuj, lj, order)
+                R[idi, idj] = radial_moment_cached(s1.species, nui, li, nuj, lj, order)
             end
         end
     end
@@ -459,25 +459,28 @@ end
 Returns the reduced matrix elements for electric dipole, electric quadrupole, magnetic dipole, and electric dipole squared.
 """
 function multipole_moments(s1::BasisState, s2::BasisState, P::Parameters)
+    coeff1 = s1.coefficients[findall(s1.model.core)]
+    coeff2 = s2.coefficients[findall(s2.model.core)]
+
     M = zeros(4)
     if s1.parity != s2.parity
         # electric dipole
         R = radial_matrix(s1, s2, 1)
         Y = angular_matrix_cached(1, s1.channels, s2.channels)
-        M[1] = s1.coeff' * (Y .* R) * s2.coeff
+        M[1] = coeff1' * (Y .* R) * coeff2
     end
     if s1.parity == s2.parity
         # electric quadrupole
         R = radial_matrix(s1, s2, 2)
         Y = angular_matrix_cached(2, s1.channels, s2.channels)
-        M[2] = s1.coeff' * (Y .* R) * s2.coeff
+        M[2] = coeff1' * (Y .* R) * coeff2
         # electric dipole squared
         Y = angular_matrix_cached(0, s1.channels, s2.channels)
-        M[3] = s1.coeff' * (Y .* R) * s2.coeff
+        M[3] = coeff1' * (Y .* R) * coeff2
         # magnetic dipole
         R = radial_matrix(s1, s2, 0)
         Y = magnetic_matrix_cached(P.dipole, P.mass, P.spin, s1.channels, s2.channels)
-        M[4] = s1.coeff' * (Y .* R) * s2.coeff
+        M[4] = coeff1' * (Y .* R) * coeff2
     end
     return M
 end

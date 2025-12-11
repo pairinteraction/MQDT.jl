@@ -704,12 +704,13 @@ See also [`basisarray`](@ref), [`BasisArray`](@ref), [`EigenStates`](@ref)
         energy::Float64,
         parity::Int,
         f::Float64,
-        nu::Vector{Float64},
-        lr::Vector{Int},
-        coeff::Vector{Float64},
+        nu_list::Vector{Float64},
+        lr_list::Vector{Union{Int, Nothing}},
+        coefficients::Vector{Float64},
         channels::Channels,
         term::String,
         lead::Float64,
+        model::fModel,
     )
 
 Type to store all relevant information of multi-channel bound states for a given Rydberg series.
@@ -720,12 +721,13 @@ struct BasisState
     energy::Float64
     parity::Int
     f::Float64
-    nu::Vector{Float64}
-    lr::Vector{Int}
-    coeff::Vector{Float64}
+    nu_list::Vector{Float64}
+    lr_list::Vector{Union{Int,Nothing}}
+    coefficients::Vector{Float64}
     channels::Channels
     term::String
     lead::Float64
+    model::fModel
 end
 
 """
