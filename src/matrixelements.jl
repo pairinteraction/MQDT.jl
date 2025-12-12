@@ -542,7 +542,7 @@ function ls_channels(Q::AngularMomenta)
     F = get_F(C)
     channels = Vector{lsChannels}()
     for j in sort(unique(F))
-        c = F .== f
+        c = F .== j
         push!(channels, lsChannels(C.i[c]))
     end
     return channels
