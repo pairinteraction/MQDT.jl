@@ -543,6 +543,56 @@ function get_J(T::fModel)
     return get_J(T.inner_channels)
 end
 
+function get_thresholds(M::fModel, P::Parameters)
+    threshold_dict = P.threshold_dict
+    if !isnothing(M.thresholds_dict)
+        threshold_dict = merge(threshold_dict, M.thresholds_dict)
+    end
+
+    thresholds = Vector{Float64}(undef, length(M.terms))
+
+    i_rel = 0
+    for (i, term) in enumerate(M.terms)
+        relevant = M.core[i]
+        if !relevant
+            if sum(occursin.(keys(threshold_dict), term)) != 1
+                error("get_thresholds: no or multiple threshold found for term $term")
+            end
+            for (key, value) in threshold_dict
+                if occursin(key, term)
+                    thresholds[i] = value
+                    break
+                end
+            end
+            continue
+        end
+
+        # else
+        i_rel += 1
+        outer_channel = M.outer_channels.i[i_rel]
+        lc = outer_channel.lc
+        if isa(outer_channel, jjQuantumNumbers)
+            Jc = outer_channel.Jc
+            key = "l_c=$lc, j_c=$Jc"
+        elseif isa(outer_channel, fjQuantumNumbers)
+            Fc = outer_channel.Fc
+            if Fc % 1 == 0
+                Fc = Int(Fc)
+            end
+            key = "l_c=$lc, f_c=$Fc"
+        else
+            error("get_thresholds: unsupported channel type")
+        end
+
+        if !haskey(threshold_dict, key)
+            error("get_thresholds: missing threshold for key '$key' (term: $(term))")
+        end
+        thresholds[i] = threshold_dict[key]
+    end
+
+    return thresholds
+end
+
 function single_channel_models(species::Symbol, l::Integer, p::Parameters)
     @assert l > 0 "l must be positive and nonzero for this function"
     jr = [l-1/2, l-1/2, l+1/2, l+1/2]
