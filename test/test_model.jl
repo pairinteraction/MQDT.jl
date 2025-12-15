@@ -1,7 +1,7 @@
 using MQDT
 
 function test_model(T::fModel)
-    if T.size != length(T.terms) != length(T.core) != length(T.thresholds) != size(T.defects, 1)
+    if (T.size != length(T.terms)) || (T.size != length(T.core)) || (T.size != size(T.defects, 1))
         println("Model size does not correspond to provided parameters.")
         @test false
     elseif size(T.unitary) != (T.size, T.size)
@@ -24,7 +24,6 @@ function test_model(T::kModel)
        (T.size != length(T.jjscheme)) ||
        (T.size != length(T.lschannels.i)) ||
        (T.size != length(T.jjchannels.i)) ||
-       (T.size != length(T.thresholds)) ||
        (T.size != length(T.K1))
         println("Model size does not correspond to provided parameters.")
         @test false
