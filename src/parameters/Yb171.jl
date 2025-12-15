@@ -22,10 +22,10 @@ export PARA,
 
 # Isotope data
 THRESHOLDS = Dict(
-    "l_c=0, f_c=0" => 50442.795744,
-    "l_c=0, f_c=1" => 50443.217463,
-    "l_c=1, f_c=0" => 77504.98,
-    "l_c=1, f_c=1" => 80835.39,
+    "l_c=0, j_c=0.5, f_c=0" => 50442.795744,
+    "l_c=0, j_c=0.5, f_c=1" => 50443.217463,
+    "l_c=1, j_c=1.5" => 77504.98,
+    "l_c=1, j_c=0.5" => 80835.39,
     "4f13 5d" => 83967.7,
 )
 
@@ -295,7 +295,7 @@ FMODEL_HIGHN_D15 = fModel(
         0 0 0 0 1 0;
         -1/2 sqrt(3/2)/2 0 0 0 sqrt(3/2)/2
     ],
-    Dict("l_c=1, f_c=1" => 79725.35),
+    Dict("l_c=1, j_c=1.5" => 79725.35),
 )
 
 FMODEL_HIGHN_D25 = fModel(
@@ -341,7 +341,7 @@ FMODEL_HIGHN_D25 = fModel(
         0 0 0 0 1 0;
         1/2 sqrt(1/6) 0 0 0 sqrt(7/3)/2
     ],
-    Dict("l_c=1, f_c=1" => 79725.35),
+    Dict("l_c=1, j_c=1.5" => 79725.35),
 )
 
 FMODEL_HIGHN_D35 = fModel(

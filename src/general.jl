@@ -575,11 +575,16 @@ function get_thresholds(M::fModel, P::Parameters)
             Jc = outer_channel.Jc
             key = "l_c=$lc, j_c=$Jc"
         elseif isa(outer_channel, fjQuantumNumbers)
+            Jc = outer_channel.Jc
             Fc = outer_channel.Fc
             if Fc % 1 == 0
                 Fc = Int(Fc)
             end
-            key = "l_c=$lc, f_c=$Fc"
+            if lc == 0
+                key = "l_c=$lc, j_c=$Jc, f_c=$Fc"
+            else
+                key = "l_c=$lc, j_c=$Jc"
+            end
         else
             error("get_thresholds: unsupported channel type")
         end
