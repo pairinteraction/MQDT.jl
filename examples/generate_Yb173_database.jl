@@ -1,43 +1,33 @@
 using MQDT
 
-# load Yb174 data
-parameters = MQDT.Yb174.PARA
-low_n_models = MQDT.Yb174.FMODEL_LOWN_P1
+# load Yb173 data
+parameters = MQDT.Yb173.PARA
 low_l_models = [
-    MQDT.Yb174.FMODEL_HIGHN_S0,
-    MQDT.Yb174.FMODEL_HIGHN_S1,
-    MQDT.Yb174.FMODEL_HIGHN_P0,
-    MQDT.Yb174.FMODEL_HIGHN_P1,
-    MQDT.Yb174.FMODEL_HIGHN_P2,
-    MQDT.Yb174.FMODEL_HIGHN_D1,
-    MQDT.Yb174.FMODEL_HIGHN_D2,
-    MQDT.Yb174.FMODEL_HIGHN_D3,
-    MQDT.Yb174.FMODEL_HIGHN_F2,
-    MQDT.Yb174.FMODEL_HIGHN_F3,
-    MQDT.Yb174.FMODEL_HIGHN_F4,
-    MQDT.Yb174.FMODEL_HIGHN_G3,
-    MQDT.Yb174.FMODEL_HIGHN_G4,
-    MQDT.Yb174.FMODEL_HIGHN_G5,
+    MQDT.Yb173.FMODEL_HIGHN_S15,
+    MQDT.Yb173.FMODEL_HIGHN_S25,
+    MQDT.Yb173.FMODEL_HIGHN_S35,
+    MQDT.Yb173.FMODEL_HIGHN_P05,
+    MQDT.Yb173.FMODEL_HIGHN_P15,
+    MQDT.Yb173.FMODEL_HIGHN_P25,
+    MQDT.Yb173.FMODEL_HIGHN_P35,
+    MQDT.Yb173.FMODEL_HIGHN_P45,
 ]
 
 # bounds
-n_min = [3, 27, 6, 6, 5, 26, 5, 18, 25, 7, 25, 25, 25, 25]
+n_min = 20
 n_max = 30
 
-# calculate low \nu MQDT states
-low_n_states = eigenstates(2, 2, low_n_models, parameters)
-
 # calculate high \nu, low \ell MQDT states
-low_l_states = [eigenstates(n_min[i], n_max, low_l_models[i], parameters) for i in eachindex(n_min)]
+low_l_states = [eigenstates(n_min, n_max, low_l_models[i], parameters) for i in eachindex(low_l_models)]
 
 # calculate high \ell SQDT states
 l_max = n_max - 1
-MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol calculation
-high_l_models = single_channel_jj_models(:Yb174, 5:l_max)
+MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol caluclation
+high_l_models = single_channel_fj_models(:Yb173, 5:l_max, parameters)
 high_l_states = [eigenstates(25, n_max, M, parameters) for M in high_l_models]
 
 # generate basis and calculate matrix elements
-basis = basisarray(vcat(low_n_states, low_l_states, high_l_states), vcat(low_n_models, low_l_models, high_l_models))
+basis = basisarray(vcat(low_l_states, high_l_states), vcat(low_l_models, high_l_models))
 @time me = matrix_elements(basis, parameters)
 
 # prepare tables
@@ -61,7 +51,7 @@ states_table = DataFrame(;
 sort!(states_table, [:nu])
 
 # store tables as csv files
-output_dir = "data/Yb174_mqdt/"
+output_dir = "data/Yb173_mqdt/"
 mkpath(output_dir)
 
 using CSV
