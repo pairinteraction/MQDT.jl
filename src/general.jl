@@ -19,6 +19,7 @@ julia> PARA = Parameters(
            50443.070393, # lowest ionization threshold in 1/cm
            0, # hyperfine constant in 1/cm
            2.1, # nuclear dipole
+           Dict("l_c=0, j_c=0.5" => 50443.070393),
        );
 
 ```
@@ -31,6 +32,7 @@ struct Parameters
     threshold::Float64
     hyperfine::Float64
     dipole::Float64
+    threshold_dict::Dict{String,Float64}
 end
 
 # --------------------------------------------------------
@@ -357,13 +359,13 @@ See also [`kModel`](@ref)
         size::Int,
         terms::Vector{String},
         core::Vector{Bool},
-        thresholds::Vector{Float64},
         defects::Matrix{Float64},
         mixing::Vector{String},
         angles::Matrix{Float64},
-        inner_channels::Channels
-        outer_channels::Channels
-        unitary::Matrix{Float64}
+        inner_channels::Channels,
+        outer_channels::Channels,
+        unitary::Matrix{Float64},
+        thresholds_dict::Union{Dict{String, Float64}, Nothing}
     )
 
 Type to store MQDT models inspired by [PRX 15, 011009 (2025)] using sparse K matriced and frame transformation.
@@ -378,7 +380,6 @@ julia> RYDBERG_S0 = fModel(
            6,
            ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
            Bool[1, 0, 1, 0, 1, 0],
-           [50443.070393, 83967.7, 80835.39, 83967.7, 77504.98, 83967.7],
            [
                0.355097325 0.278368431;
                0.204537279 0;
@@ -417,29 +418,46 @@ struct fModel <: Model
     size::Int
     terms::Vector{String}
     core::Vector{Bool}
-    thresholds::Vector{Float64}
     defects::Matrix{Float64}
     mixing::Vector{String}
     angles::Matrix{Float64}
     inner_channels::Channels
     outer_channels::Channels
     unitary::Matrix{Float64}
+    thresholds_dict::Union{Dict{String,Float64},Nothing}
+end
+
+function fModel(species, name, size, terms, core, defects, mixing, angles, inner_channels, outer_channels, unitary)
+    return fModel(
+        species,
+        name,
+        size,
+        terms,
+        core,
+        defects,
+        mixing,
+        angles,
+        inner_channels,
+        outer_channels,
+        unitary,
+        nothing,
+    )
 end
 
 """
 See also [`fModel`](@ref)
 
     kModel(
-        species::Symbol
-        name::String
-        size::Int
-        terms::Vector{String}
-        jjscheme::Vector{Bool}
-        lschannels::lsChannels
-        jjchannels::jjChannels
-        thresholds::Vector{Float64}
-        K0::Matrix{Float64}
-        K1::Vector{Float64}
+        species::Symbol,
+        name::String,
+        size::Int,
+        terms::Vector{String},
+        jjscheme::Vector{Bool},
+        lschannels::lsChannels,
+        jjchannels::jjChannels,
+        K0::Matrix{Float64},
+        K1::Vector{Float64},
+        thresholds_dict::Union{Dict{String, Float64}, Nothing}
     )
 
 Type to store MQDT models inspired by [JPB 47, 155001 (2014)] using dense, energy-dependent K matrices.
@@ -464,7 +482,6 @@ julia> KMODEL_S0 = kModel(
                jjQuantumNumbers(0.5, 2, 2.5, 2, 2.5, 0),
                jjQuantumNumbers(0.5, 2, 1.5, 2, 1.5, 0),
            ]),
-           [45932.2002, 60768.43, 60488.09],
            [
                1.051261 0.3759864 -0.02365485;
                0.3759864 -0.6400925 -0.0002063825;
@@ -483,9 +500,13 @@ struct kModel <: Model
     jjscheme::Vector{Bool}
     lschannels::lsChannels
     jjchannels::jjChannels
-    thresholds::Vector{Float64}
     K0::Matrix{Float64}
     K1::Vector{Float64}
+    thresholds_dict::Union{Dict{String,Float64},Nothing}
+end
+
+function kModel(species, name, size, terms, jjscheme, lschannels, jjchannels, K0, K1)
+    return kModel(species, name, size, terms, jjscheme, lschannels, jjchannels, K0, K1, nothing)
 end
 
 # --------------------------------------------------------
@@ -534,7 +555,6 @@ function single_channel_models(species::Symbol, l::Integer, p::Parameters)
             1,
             [""],
             Bool[1],
-            [p.threshold],
             [0;;],
             [""],
             [0;;],

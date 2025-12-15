@@ -17,15 +17,26 @@ export PARA,
     FMODEL_HIGHN_F4
 
 # Isotope data
+THRESHOLDS = Dict(
+    # fModel
+    "l_c=0, j_c=0.5" => 45932.1956,
+    # kModel
+    "5s" => 45932.2002,
+    "5p" => 70048.11,
+    "4d3/2" => 60488.09,
+    "4d5/2" => 60768.43,
+    "4d" => 60628.26,
+)
+
 PARA = Parameters(
     :Sr88,
     1822.888486192*87.9056122571, # nuclear mass
     0, # nuclear spin
     109736.63086399352, # Rydberg constant in 1/cm
-    # 45932.2002, # threshold used in [JPB 47 155001 (2014)]
-    45932.1956, # lowest ionization threshold in 1/cm
+    THRESHOLDS["l_c=0, j_c=0.5"], # lowest ionization threshold in 1/cm
     0, # hyperfine constant in 1/cm
     2.3, # nuclear dipole
+    THRESHOLDS,
 )
 
 # MQDT Models
@@ -35,7 +46,6 @@ FMODEL_HIGHN_S0 = fModel(
     1,
     ["5sns 1S0"],
     Bool[1],
-    [45932.1956],
     [3.26896 -0.138 0.9;],
     [""],
     [0;;],
@@ -50,7 +60,6 @@ FMODEL_HIGHN_S1 = fModel(
     1,
     ["5sns 3S1"],
     Bool[1],
-    [45932.1956],
     [3.370778 0.418 -0.3;],
     [""],
     [0;;],
@@ -65,7 +74,6 @@ FMODEL_LOWN_P1 = fModel(
     2,
     ["5snp 1P1", "5snp 3P1"],
     Bool[1, 1],
-    [45932.1956, 45932.1956],
     [0.87199081 0; 0.13140955 0],
     [""],
     [1.31169947 -4.48280597;],
@@ -80,7 +88,6 @@ FMODEL_HIGHN_P0 = fModel(
     1,
     ["5snp 3P0"],
     Bool[1],
-    [45932.1956],
     [2.8867 0.44 -1.9],
     [""],
     [0;;],
@@ -95,7 +102,6 @@ FMODEL_HIGHN_P1 = fModel(
     2,
     ["5snp 1P1", "5snp 3P1"],
     Bool[1, 1],
-    [45932.1956, 45932.1956],
     [2.724 -4.67 -157; 2.8826 0.407 -1.3],
     [""],
     [0;;],
@@ -110,7 +116,6 @@ FMODEL_HIGHN_P2 = fModel(
     1,
     ["5snp 3P2"],
     Bool[1],
-    [45932.1956],
     [2.882 0.446 -1.9],
     [""],
     [0;;],
@@ -125,7 +130,6 @@ FMODEL_HIGHN_D1 = fModel(
     1,
     ["5snd 3D1"],
     Bool[1],
-    [45932.1956],
     [2.67524 -13.15 -4444],
     [""],
     [0;;],
@@ -140,7 +144,6 @@ FMODEL_HIGHN_D2 = fModel(
     2,
     ["5snd 1D2", "5snd 3D2"],
     Bool[1, 1],
-    [45932.1956, 45932.1956],
     [2.3847 -39.41 -1090; 2.66149 -16.77 -6656],
     [""],
     [0;;],
@@ -155,7 +158,6 @@ FMODEL_HIGHN_D3 = fModel(
     1,
     ["5snd 3D3"],
     Bool[1],
-    [45932.1956],
     [2.655 -41.4 -15363],
     [""],
     [0;;],
@@ -170,7 +172,6 @@ FMODEL_HIGHN_F2 = fModel(
     1,
     ["5snf 3F2"],
     Bool[1],
-    [45932.1956],
     [0.12 -2.2 120],
     [""],
     [0;;],
@@ -185,7 +186,6 @@ FMODEL_HIGHN_F3 = fModel(
     2,
     ["5snf 1F3", "5snf 3F3"],
     Bool[1, 1],
-    [45932.1956, 45932.1956],
     [0.089 -2 30; 0.12 -2.2 120],
     [""],
     [0;;],
@@ -200,7 +200,6 @@ FMODEL_HIGHN_F4 = fModel(
     1,
     ["5snf 3F4"],
     Bool[1],
-    [45932.1956],
     [0.12 -2.2 120],
     [""],
     [0;;],
@@ -225,7 +224,6 @@ KMODEL_S0 = kModel(
         jjQuantumNumbers(0.5, 2, 2.5, 2, 2.5, 0),
         jjQuantumNumbers(0.5, 2, 1.5, 2, 1.5, 0),
     ]),
-    [45932.2002, 60768.43, 60488.09],
     [
         1.051261 0.3759864 -0.02365485;
         0.3759864 -0.6400925 -0.0002063825;
@@ -242,7 +240,6 @@ KMODEL_S1 = kModel(
     Bool[0, 0],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 0, 0, 1), lsQuantumNumbers(0.5, 1, 1, 1, 1, 1)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 1), jjQuantumNumbers(0.5, 1, NaN, 1, NaN, 1)]),
-    [45932.2002, 70048.11],
     [-103.9244 -133.4517; -133.4517 -168.0452],
     [-27.66912, 55.17184],
 )
@@ -255,7 +252,6 @@ KMODEL_P0 = kModel(
     Bool[0, 0],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 0), lsQuantumNumbers(0.5, 1, 2, 1, 1, 0)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0), jjQuantumNumbers(0.5, 2, 1.5, 1, 1.5, 0)]),
-    [45932.2002, 60628.26],
     [-0.4009565 -0.2220569; -0.2220569 0.4025180],
     [1.039923, -1.021696],
 )
@@ -268,7 +264,6 @@ KMODEL_1P1 = kModel(
     Bool[0, 0],
     lsChannels([lsQuantumNumbers(0.5, 0, 0, 1, 1, 1), lsQuantumNumbers(0.5, 0, 2, 1, 1, 1)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, NaN, 1), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 1)]),
-    [45932.2002, 60628.26],
     [11.16809 16.16933; 16.16933 22.39617],
     [-0.9097862, 4.272626],
 )
@@ -281,7 +276,6 @@ KMODEL_3P1 = kModel(
     Bool[0, 0],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 1), lsQuantumNumbers(0.5, 1, 2, 1, 1, 1)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, NaN, 1), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 1)]),
-    [45932.2002, 60628.26],
     [-0.4199067 -0.2292304; -0.2292304 -0.3526179],
     [1.082615, -1.304779],
 )
@@ -294,7 +288,6 @@ KMODEL_P2 = kModel(
     Bool[0, 0],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 2), lsQuantumNumbers(0.5, 1, 2, 1, 1, 2)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 2), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 2)]),
-    [45932.2002, 60628.26],
     [-0.4531133 -0.2179619; -0.2179619 -0.5285102],
     [1.050866, -0.4051199],
 )
@@ -307,7 +300,6 @@ KMODEL_D1 = kModel(
     Bool[0, 0],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 1), lsQuantumNumbers(0.5, 1, 2, 0, 2, 1)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 1), jjQuantumNumbers(0.5, 2, 1.5, 0, 0.5, 1)]),
-    [45932.2002, 60628.26],
     [-0.7403359 0.5504572; 0.5504572 1.461400],
     [0.9684681, 0.2777353],
 )
@@ -334,7 +326,6 @@ KMODEL_D2 = kModel(
         jjQuantumNumbers(0.5, 1, NaN, 1, NaN, 2),
         jjQuantumNumbers(0.5, 2, NaN, 2, NaN, 2),
     ]),
-    [45932.2002, 45932.2002, 60628.26, 60628.26, 70048.11, 60628.26],
     [
         -0.3853883 0.2308103 -0.2996898 0.6248391 -0.2381621 -0.08944624;
         0.2308103 -0.4881877 -0.6411698 0.000008101262 -0.4849582 0.002427350;
@@ -362,7 +353,6 @@ KMODEL_D3 = kModel(
         jjQuantumNumbers(0.5, 2, 2.5, 0, 0.5, 3),
         jjQuantumNumbers(0.5, 2, NaN, 2, NaN, 3),
     ]),
-    [45932.2002, 60628.26, 60628.26],
     [
         -0.7793857 0.4360198 0.2229788;
         0.4360198 1.212314 -0.0001683225;
@@ -379,7 +369,6 @@ KMODEL_1F3 = kModel(
     Bool[0, 0],
     lsChannels([lsQuantumNumbers(0.5, 0, 0, 3, 3, 3), lsQuantumNumbers(0.5, 0, 2, 1, 3, 3)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 3, NaN, 3), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 3)]),
-    [45932.2002, 60628.26],
     [0.1711631 0.4505951; 0.4505951 -0.6978294],
     [-0.3530368, -1.318505],
 )

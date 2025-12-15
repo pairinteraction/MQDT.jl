@@ -105,10 +105,10 @@ function nu(N::Number, T::Vector, I::Number, R::Number)
 end
 
 function nu(N::Number, M::Model, P::Parameters)
-    t = M.thresholds
+    thresholds = get_thresholds(M, P)
     i = P.threshold
     r = P.rydberg
-    return nu(N, t, i, r)
+    return nu(N, thresholds, i, r)
 end
 
 function nu(N::Vector, M::Model, P::Parameters)
