@@ -16,8 +16,8 @@ export PARA,
 THRESHOLDS = Dict(
     coreQuantumNumbers(0, 0.5, 2) => 50443.291203,
     coreQuantumNumbers(0, 0.5, 3) => 50442.941262,
-    coreQuantumNumbers(1, 1.5, NaN) => 77504.98,
-    coreQuantumNumbers(1, 0.5, NaN) => 80835.39,
+    coreQuantumNumbers(1, 0.5, NaN) => 77504.98,
+    coreQuantumNumbers(1, 1.5, NaN) => 80835.39,
     "4f13 5d 6s" => 83967.7,
 )
 
