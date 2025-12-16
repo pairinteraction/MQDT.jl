@@ -644,7 +644,7 @@ function get_thresholds(M::kModel, P::Parameters)
     return thresholds
 end
 
-function single_channel_models(species::Symbol, l::Integer, p::Parameters)
+function single_channel_models(species::Symbol, l::Integer)
     @assert l > 0 "l must be positive and nonzero for this function"
     jr = [l-1/2, l-1/2, l+1/2, l+1/2]
     jt = [l-1, l, l, l+1]
@@ -667,10 +667,10 @@ function single_channel_models(species::Symbol, l::Integer, p::Parameters)
     return m
 end
 
-function single_channel_models(species::Symbol, l_list::UnitRange{Int64}, p::Parameters)
+function single_channel_models(species::Symbol, l_list::UnitRange{Int64})
     m = Vector{fModel}()
     for l in l_list
-        append!(m, single_channel_models(species, l, p))
+        append!(m, single_channel_models(species, l))
     end
     return m
 end
