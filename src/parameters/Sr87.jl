@@ -1,6 +1,6 @@
 module Sr87
 
-using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers
+using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers, coreQuantumNumbers
 
 export PARA,
     FMODEL_HIGHN_S35,
@@ -22,7 +22,7 @@ export PARA,
     FMODEL_HIGHN_F45
 
 # Isotope data
-THRESHOLDS = Dict("l_c=0, j_c=0.5, f_c=4" => 45932.287373577, "l_c=0, j_c=0.5, f_c=5" => 45932.120512528)
+THRESHOLDS = Dict(coreQuantumNumbers(0, 0.5, 4) => 45932.287373577, coreQuantumNumbers(0, 0.5, 5) => 45932.120512528)
 
 PARA = Parameters(
     :Sr87,

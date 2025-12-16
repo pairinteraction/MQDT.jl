@@ -3,6 +3,29 @@
 # --------------------------------------------------------
 
 """
+    coreQuantumNumbers(lc::Int, Jc::Float64, Fc::Union{Float64, Nothing})
+
+Type to store the quantum numbers of the core excitations.
+If Fc is `NaN`, hyperfine structure is neglected for this core excitation.
+
+# Examples
+
+```jldoctest
+julia> core_exc = coreQuantumNumbers(0, 0.5, NaN);
+
+```
+"""
+struct coreQuantumNumbers
+    lc::Int
+    Jc::Float64
+    Fc::Float64
+end
+
+function coreQuantumNumbers(lc, Jc)
+    return coreQuantumNumbers(lc, Jc, NaN)
+end
+
+"""
     Parameters(species::Symbol, mass::Float64, spin::Float64, rydberg::Float64, threshold::Float64, hyperfine::Float64, dipole::Float64)
 
 Type to store relevant parameters for each atomic element. A corresponding
@@ -19,7 +42,7 @@ julia> PARA = Parameters(
            50443.070393, # lowest ionization threshold in 1/cm
            0, # hyperfine constant in 1/cm
            2.1, # nuclear dipole
-           Dict("l_c=0, j_c=0.5" => 50443.070393),
+           Dict(coreQuantumNumbers(0, 0.5) => 50443.070393),
        );
 
 ```
@@ -32,7 +55,7 @@ struct Parameters
     threshold::Float64
     hyperfine::Float64
     dipole::Float64
-    threshold_dict::Dict{String,Float64}
+    thresholds_dict::Dict{Union{coreQuantumNumbers,String},Float64}
 end
 
 # --------------------------------------------------------
@@ -365,7 +388,7 @@ See also [`kModel`](@ref)
         inner_channels::Channels,
         outer_channels::Channels,
         unitary::Matrix{Float64},
-        thresholds_dict::Union{Dict{String, Float64}, Nothing}
+        thresholds_dict::Union{Dict{Union{coreQuantumNumbers,String},Float64},Nothing}
     )
 
 Type to store MQDT models inspired by [PRX 15, 011009 (2025)] using sparse K matriced and frame transformation.
@@ -424,7 +447,7 @@ struct fModel <: Model
     inner_channels::Channels
     outer_channels::Channels
     unitary::Matrix{Float64}
-    thresholds_dict::Union{Dict{String,Float64},Nothing}
+    thresholds_dict::Union{Dict{Union{coreQuantumNumbers,String},Float64},Nothing}
 end
 
 function fModel(species, name, size, terms, core, defects, mixing, angles, inner_channels, outer_channels, unitary)
@@ -457,7 +480,7 @@ See also [`fModel`](@ref)
         jjchannels::jjChannels,
         K0::Matrix{Float64},
         K1::Vector{Float64},
-        thresholds_dict::Union{Dict{String, Float64}, Nothing}
+        thresholds_dict::Union{Dict{Union{coreQuantumNumbers,String},Float64},Nothing}
     )
 
 Type to store MQDT models inspired by [JPB 47, 155001 (2014)] using dense, energy-dependent K matrices.
@@ -502,7 +525,7 @@ struct kModel <: Model
     jjchannels::jjChannels
     K0::Matrix{Float64}
     K1::Vector{Float64}
-    thresholds_dict::Union{Dict{String,Float64},Nothing}
+    thresholds_dict::Union{Dict{Union{coreQuantumNumbers,String},Float64},Nothing}
 end
 
 function kModel(species, name, size, terms, jjscheme, lschannels, jjchannels, K0, K1)
@@ -544,55 +567,78 @@ function get_J(T::fModel)
 end
 
 function get_thresholds(M::fModel, P::Parameters)
-    threshold_dict = P.threshold_dict
+    thresholds_dict = P.thresholds_dict
     if !isnothing(M.thresholds_dict)
-        threshold_dict = merge(threshold_dict, M.thresholds_dict)
+        thresholds_dict = merge(thresholds_dict, M.thresholds_dict)
     end
 
     thresholds = Vector{Float64}(undef, length(M.terms))
 
-    i_rel = 0
+    i_core = 0
     for (i, term) in enumerate(M.terms)
-        relevant = M.core[i]
-        if !relevant
-            if sum(occursin.(keys(threshold_dict), term)) != 1
+        if !M.core[i]
+            threshold_keys = [key for key in keys(thresholds_dict) if isa(key, String) && occursin(key, term)]
+            if length(threshold_keys) != 1
                 error("get_thresholds: no or multiple threshold found for term $term")
             end
-            for (key, value) in threshold_dict
-                if occursin(key, term)
-                    thresholds[i] = value
-                    break
-                end
-            end
+            thresholds[i] = thresholds_dict[threshold_keys[1]]
             continue
         end
 
-        # else
-        i_rel += 1
-        outer_channel = M.outer_channels.i[i_rel]
+        # is_core
+        i_core += 1
+        outer_channel = M.outer_channels.i[i_core]
         lc = outer_channel.lc
-        if isa(outer_channel, jjQuantumNumbers)
-            Jc = outer_channel.Jc
-            key = "l_c=$lc, j_c=$Jc"
-        elseif isa(outer_channel, fjQuantumNumbers)
-            Jc = outer_channel.Jc
+        Jc = outer_channel.Jc
+
+        if isa(outer_channel, fjQuantumNumbers)
             Fc = outer_channel.Fc
-            if Fc % 1 == 0
-                Fc = Int(Fc)
+            Fc = Fc % 1 == 0 ? Int(Fc) : Fc
+            key = coreQuantumNumbers(lc, Jc, Fc)
+            if haskey(thresholds_dict, key)
+                thresholds[i] = thresholds_dict[key]
+                continue
             end
-            if lc == 0
-                key = "l_c=$lc, j_c=$Jc, f_c=$Fc"
-            else
-                key = "l_c=$lc, j_c=$Jc"
-            end
-        else
-            error("get_thresholds: unsupported channel type")
         end
 
-        if !haskey(threshold_dict, key)
-            error("get_thresholds: missing threshold for key '$key' (term: $(term))")
+        key = coreQuantumNumbers(lc, Jc)
+        if haskey(thresholds_dict, key)
+            thresholds[i] = thresholds_dict[key]
+            continue
         end
-        thresholds[i] = threshold_dict[key]
+
+        error("get_thresholds: missing threshold for key='$key' (term=$(term))")
+    end
+
+    return thresholds
+end
+
+function get_thresholds(M::kModel, P::Parameters)
+    thresholds_dict = P.thresholds_dict
+    if !isnothing(M.thresholds_dict)
+        thresholds_dict = merge(thresholds_dict, M.thresholds_dict)
+    end
+
+    thresholds = Vector{Float64}(undef, length(M.terms))
+
+    for (i, term) in enumerate(M.terms)
+        outer_channel = M.jjchannels.i[i]
+        lc = outer_channel.lc
+        Jc = outer_channel.Jc
+
+        key = coreQuantumNumbers(lc, Jc)
+        if haskey(thresholds_dict, key)
+            thresholds[i] = thresholds_dict[key]
+            continue
+        end
+
+        key = coreQuantumNumbers(lc, NaN)
+        if haskey(thresholds_dict, key)
+            thresholds[i] = thresholds_dict[key]
+            continue
+        end
+
+        error("get_thresholds: missing threshold for key='$key' (term=$(term))")
     end
 
     return thresholds

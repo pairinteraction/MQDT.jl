@@ -1,6 +1,6 @@
 module Yb173
 
-using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers
+using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers, coreQuantumNumbers
 
 export PARA,
     FMODEL_HIGHN_S15,
@@ -14,11 +14,11 @@ export PARA,
 
 # Isotope data
 THRESHOLDS = Dict(
-    "l_c=0, j_c=0.5, f_c=2" => 50443.291203,
-    "l_c=0, j_c=0.5, f_c=3" => 50442.941262,
-    "l_c=1, j_c=1.5" => 77504.98,
-    "l_c=1, j_c=0.5" => 80835.39,
-    "4f13 5d" => 83967.7,
+    coreQuantumNumbers(0, 0.5, 2) => 50443.291203,
+    coreQuantumNumbers(0, 0.5, 3) => 50442.941262,
+    coreQuantumNumbers(1, 1.5, NaN) => 77504.98,
+    coreQuantumNumbers(1, 0.5, NaN) => 80835.39,
+    "4f13 5d 6s" => 83967.7,
 )
 
 PARA = Parameters(
@@ -26,7 +26,7 @@ PARA = Parameters(
     1822.88848628*172.938216212, # nuclear mass
     2.5, # nuclear spin
     109736.9675832, # Rydberg constant in 1/cm
-    THRESHOLDS["l_c=0, f_c=2"], # higher hyperfine ionization threshold in 1/cm (Fc=2)
+    THRESHOLDS[coreQuantumNumbers(0, 0.5, 2)], # higher hyperfine ionization threshold in 1/cm (Fc=2)
     -0.116647, # hyperfine constant in 1/cm
     # 3.497 # hyperfine constant in GHz corresponding to 10.491 GHz threshold splitting
     -0.68, # nuclear dipole
@@ -205,7 +205,7 @@ FMODEL_HIGHN_P15 = fModel(
         0 0 0 0 0 0 0 0 1 0;
         0 0 0 0 0 0 0 0 0 1
     ]',
-    Dict("l_c=0, j_c=0.5, f_c=2" => 50443.217463, "l_c=0, j_c=0.5, f_c=3" => 50442.795744),
+    Dict(coreQuantumNumbers(0, 0.5, 2) => 50443.217463, coreQuantumNumbers(0, 0.5, 3) => 50442.795744),
 )
 
 FMODEL_HIGHN_P25 = fModel(
@@ -284,7 +284,7 @@ FMODEL_HIGHN_P25 = fModel(
         0 0 0 0 0 0 0 0 0 0 1 0;
         0 0 0 0 0 0 0 0 0 0 0 1
     ]',
-    Dict("l_c=0, j_c=0.5, f_c=2" => 50443.217463, "l_c=0, j_c=0.5, f_c=3" => 50442.795744),
+    Dict(coreQuantumNumbers(0, 0.5, 2) => 50443.217463, coreQuantumNumbers(0, 0.5, 3) => 50442.795744),
 )
 
 FMODEL_HIGHN_P35 = fModel(
@@ -354,7 +354,7 @@ FMODEL_HIGHN_P35 = fModel(
         0 0 0 0 0 0 0 0 1 0;
         0 0 0 0 0 0 0 0 0 1
     ]',
-    Dict("l_c=0, j_c=0.5, f_c=2" => 50443.217463, "l_c=0, j_c=0.5, f_c=3" => 50442.795744),
+    Dict(coreQuantumNumbers(0, 0.5, 2) => 50443.217463, coreQuantumNumbers(0, 0.5, 3) => 50442.795744),
 )
 
 FMODEL_HIGHN_P45 = fModel(

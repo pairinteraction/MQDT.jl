@@ -1,6 +1,6 @@
 module Sr88
 
-using ..MQDT: Parameters, fModel, kModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers
+using ..MQDT: Parameters, fModel, kModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers, coreQuantumNumbers
 
 export PARA,
     FMODEL_LOWN_P1,
@@ -17,23 +17,14 @@ export PARA,
     FMODEL_HIGHN_F4
 
 # Isotope data
-THRESHOLDS = Dict(
-    # fModel
-    "l_c=0, j_c=0.5" => 45932.1956,
-    # kModel
-    "5s" => 45932.2002,
-    "5p" => 70048.11,
-    "4d3/2" => 60488.09,
-    "4d5/2" => 60768.43,
-    "4d" => 60628.26,
-)
+THRESHOLDS = Dict(coreQuantumNumbers(0, 0.5) => 45932.1956,)
 
 PARA = Parameters(
     :Sr88,
     1822.888486192*87.9056122571, # nuclear mass
     0, # nuclear spin
     109736.63086399352, # Rydberg constant in 1/cm
-    THRESHOLDS["l_c=0, j_c=0.5"], # lowest ionization threshold in 1/cm
+    THRESHOLDS[coreQuantumNumbers(0, 0.5)], # lowest ionization threshold in 1/cm
     0, # hyperfine constant in 1/cm
     2.3, # nuclear dipole
     THRESHOLDS,
@@ -208,6 +199,19 @@ FMODEL_HIGHN_F4 = fModel(
     [1;;],
 )
 
+# kModel
+THRESHOLDS_kModel_1 = Dict(
+    coreQuantumNumbers(0, 0.5) => 45932.2002,
+    coreQuantumNumbers(1, NaN) => 70048.11,
+    coreQuantumNumbers(2, 3/2) => 60488.09,
+    coreQuantumNumbers(2, 5/2) => 60768.43,
+)
+THRESHOLDS_kModel_2 = Dict(
+    coreQuantumNumbers(0, 0.5) => 45932.2002,
+    coreQuantumNumbers(1, NaN) => 70048.11,
+    coreQuantumNumbers(2, NaN) => 60628.26,
+)
+
 KMODEL_S0 = kModel(
     :Sr88,
     "1S0",
@@ -230,6 +234,7 @@ KMODEL_S0 = kModel(
         -0.02365485 -0.0002063825 3.009087
     ],
     [0.8763911, 0.4042584, 17.22631],
+    THRESHOLDS_kModel_1,
 )
 
 KMODEL_S1 = kModel(
@@ -242,6 +247,7 @@ KMODEL_S1 = kModel(
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 1), jjQuantumNumbers(0.5, 1, NaN, 1, NaN, 1)]),
     [-103.9244 -133.4517; -133.4517 -168.0452],
     [-27.66912, 55.17184],
+    THRESHOLDS_kModel_1,
 )
 
 KMODEL_P0 = kModel(
@@ -254,6 +260,7 @@ KMODEL_P0 = kModel(
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0), jjQuantumNumbers(0.5, 2, 1.5, 1, 1.5, 0)]),
     [-0.4009565 -0.2220569; -0.2220569 0.4025180],
     [1.039923, -1.021696],
+    THRESHOLDS_kModel_2,
 )
 
 KMODEL_1P1 = kModel(
@@ -266,6 +273,7 @@ KMODEL_1P1 = kModel(
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, NaN, 1), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 1)]),
     [11.16809 16.16933; 16.16933 22.39617],
     [-0.9097862, 4.272626],
+    THRESHOLDS_kModel_2,
 )
 
 KMODEL_3P1 = kModel(
@@ -278,6 +286,7 @@ KMODEL_3P1 = kModel(
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, NaN, 1), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 1)]),
     [-0.4199067 -0.2292304; -0.2292304 -0.3526179],
     [1.082615, -1.304779],
+    THRESHOLDS_kModel_2,
 )
 
 KMODEL_P2 = kModel(
@@ -290,6 +299,7 @@ KMODEL_P2 = kModel(
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 2), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 2)]),
     [-0.4531133 -0.2179619; -0.2179619 -0.5285102],
     [1.050866, -0.4051199],
+    THRESHOLDS_kModel_2,
 )
 
 KMODEL_D1 = kModel(
@@ -302,6 +312,7 @@ KMODEL_D1 = kModel(
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 1), jjQuantumNumbers(0.5, 2, 1.5, 0, 0.5, 1)]),
     [-0.7403359 0.5504572; 0.5504572 1.461400],
     [0.9684681, 0.2777353],
+    THRESHOLDS_kModel_2,
 )
 
 KMODEL_D2 = kModel(
@@ -335,6 +346,7 @@ KMODEL_D2 = kModel(
         -0.08944624 0.002427350 0.0 0.0 0.0 2.205400
     ],
     [-1.775326, 2.052554, 4.733804, 3.989162, 5.292869, 6.079562],
+    THRESHOLDS_kModel_2,
 )
 
 KMODEL_D3 = kModel(
@@ -359,6 +371,7 @@ KMODEL_D3 = kModel(
         0.2229788 -0.0001683225 -0.2238265
     ],
     [1.071997, 8.514161, 5.544426],
+    THRESHOLDS_kModel_2,
 )
 
 KMODEL_1F3 = kModel(
@@ -371,6 +384,7 @@ KMODEL_1F3 = kModel(
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 3, NaN, 3), jjQuantumNumbers(0.5, 2, NaN, 1, NaN, 3)]),
     [0.1711631 0.4505951; 0.4505951 -0.6978294],
     [-0.3530368, -1.318505],
+    THRESHOLDS_kModel_2,
 )
 
 end

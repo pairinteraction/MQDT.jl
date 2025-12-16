@@ -1,6 +1,6 @@
 module Yb174
 
-using ..MQDT: Parameters, fModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers
+using ..MQDT: Parameters, fModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers, coreQuantumNumbers
 
 export PARA,
     FMODEL_LOWN_P1,
@@ -21,10 +21,10 @@ export PARA,
 
 # Isotope data
 THRESHOLDS = Dict(
-    "l_c=0, j_c=0.5" => 50443.070393,
-    "l_c=1, j_c=0.5" => 77504.98,
-    "l_c=1, j_c=1.5" => 80835.39,
-    "4f13 5d" => 83967.7,
+    coreQuantumNumbers(0, 0.5) => 50443.070393,
+    coreQuantumNumbers(1, 0.5) => 77504.98,
+    coreQuantumNumbers(1, 1.5) => 80835.39,
+    "4f13 5d 6s" => 83967.7,
 )
 
 PARA = Parameters(
@@ -32,7 +32,7 @@ PARA = Parameters(
     1822.88848628*173.9388621, # nuclear mass
     0, # nuclear spin
     109736.9695858, # Rydberg constant in 1/cm
-    THRESHOLDS["l_c=0, j_c=0.5"], # lowest ionization threshold in 1/cm
+    THRESHOLDS[coreQuantumNumbers(0, 0.5)], # lowest ionization threshold in 1/cm
     0, # hyperfine constant in 1/cm
     2.1, # nuclear dipole
     THRESHOLDS,
@@ -238,7 +238,7 @@ FMODEL_HIGHN_D2 = fModel(
         0 0 0 1 0;
         0 0 0 0 1
     ],
-    Dict("l_c=1, j_c=0.5" => 79725.35),
+    Dict(coreQuantumNumbers(1, 0.5) => 79725.35),
 )
 
 FMODEL_HIGHN_D3 = fModel(

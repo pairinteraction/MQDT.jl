@@ -1,7 +1,15 @@
 module Yb171
 
 using ..MQDT:
-    Parameters, fModel, lsChannels, jjChannels, fjChannels, lsQuantumNumbers, jjQuantumNumbers, fjQuantumNumbers
+    Parameters,
+    fModel,
+    lsChannels,
+    jjChannels,
+    fjChannels,
+    lsQuantumNumbers,
+    jjQuantumNumbers,
+    fjQuantumNumbers,
+    coreQuantumNumbers
 
 export PARA,
     FMODEL_HIGHN_S05,
@@ -22,11 +30,11 @@ export PARA,
 
 # Isotope data
 THRESHOLDS = Dict(
-    "l_c=0, j_c=0.5, f_c=0" => 50442.795744,
-    "l_c=0, j_c=0.5, f_c=1" => 50443.217463,
-    "l_c=1, j_c=1.5" => 77504.98,
-    "l_c=1, j_c=0.5" => 80835.39,
-    "4f13 5d" => 83967.7,
+    coreQuantumNumbers(0, 0.5, 0) => 50442.795744,
+    coreQuantumNumbers(0, 0.5, 1) => 50443.217463,
+    coreQuantumNumbers(1, 1.5, NaN) => 77504.98,
+    coreQuantumNumbers(1, 0.5, NaN) => 80835.39,
+    "4f13 5d 6s" => 83967.7,
 )
 
 PARA = Parameters(
@@ -34,7 +42,7 @@ PARA = Parameters(
     1822.88848628*170.9363258, # nuclear mass
     0.5, # nuclear spin
     109736.9635066, # Rydberg constant in 1/cm
-    THRESHOLDS["l_c=0, f_c=1"], # higher hyperfine ionization threshold in 1/cm (Fc=1)
+    THRESHOLDS[coreQuantumNumbers(0, 0.5, 1)], # higher hyperfine ionization threshold in 1/cm (Fc=1)
     0.421719, # hyperfine constant in 1/cm
     # 12.64 # hyperfine constant in GHz
     0.49367, # nuclear dipole
@@ -295,7 +303,7 @@ FMODEL_HIGHN_D15 = fModel(
         0 0 0 0 1 0;
         -1/2 sqrt(3/2)/2 0 0 0 sqrt(3/2)/2
     ],
-    Dict("l_c=1, j_c=1.5" => 79725.35),
+    Dict(coreQuantumNumbers(1, 1.5) => 79725.35),
 )
 
 FMODEL_HIGHN_D25 = fModel(
@@ -341,7 +349,7 @@ FMODEL_HIGHN_D25 = fModel(
         0 0 0 0 1 0;
         1/2 sqrt(1/6) 0 0 0 sqrt(7/3)/2
     ],
-    Dict("l_c=1, j_c=1.5" => 79725.35),
+    Dict(coreQuantumNumbers(1, 1.5) => 79725.35),
 )
 
 FMODEL_HIGHN_D35 = fModel(
