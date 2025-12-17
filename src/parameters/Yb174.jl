@@ -229,7 +229,7 @@ FMODEL_HIGHN_D2 = fModel(
     jjChannels([
         jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 2),
         jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 2),
-        jjQuantumNumbers(0.5, 1, 0.5, 1, 1.5, 2), # Jc and Jr could also be switched or both be 3/2
+        jjQuantumNumbers(0.5, 1, NaN, 1, NaN, 2), # Jc and Jr could also be switched or both be 3/2
     ]),
     [
         sqrt(3/5) sqrt(2/5) 0 0 0;
@@ -238,7 +238,7 @@ FMODEL_HIGHN_D2 = fModel(
         0 0 0 1 0;
         0 0 0 0 1
     ],
-    Dict(coreQuantumNumbers(1, 0.5) => 79725.35),
+    Dict(coreQuantumNumbers(1, NaN) => 79725.35),
 )
 
 FMODEL_HIGHN_D3 = fModel(

@@ -45,6 +45,13 @@ end
 function test_unitary(T::fModel, P::Parameters)
     c = findall(T.core)
     t0 = T.unitary[c, c]
+
+    if any(qn -> isnan(qn.Jc), T.outer_channels.i) ||
+       (typeof(T.outer_channels) == fjChannels && any(qn -> isnan(qn.Fc), T.outer_channels.i))
+        println("Skip test_unitary for model $(T.name) due to NaN in quantum numbers.")
+        return
+    end
+
     if typeof(T.outer_channels) == jjChannels
         if typeof(T.inner_channels) == lsChannels
             t1 = MQDT.matrix_ls_to_jj(T.inner_channels, T.outer_channels)'
@@ -68,11 +75,7 @@ function test_unitary(T::fModel, P::Parameters)
             t1 = (tjj * tfj)'
         end
     end
-    # TODO some states are simplified and are actually "wrong", check if we can handle this better
-    if (isa(T.outer_channels, MQDT.fjChannels) && "6pnp 3P0" in T.terms) || ("6pnp 1D2" in T.terms)
-        println("Skip test_unitary for model $(T.name) due to wrong state.")
-        return
-    end
+
     @test isapprox(t0, t1; rtol=0.001)
 end
 

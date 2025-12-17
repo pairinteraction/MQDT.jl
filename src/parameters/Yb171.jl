@@ -83,7 +83,7 @@ FMODEL_HIGHN_S05 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 0, 0, 0.5, 0.5),
         fjQuantumNumbers(0.5, 1, 1.5, 1, 1, 1.5, 0.5),
-        fjQuantumNumbers(0.5, 1, 0.5, 0, 1, 0.5, 0.5), # Fc of the 3P0 state could be both 0 or 1 TODO wouldnt this change the ionization threshold?
+        fjQuantumNumbers(0.5, 1, 0.5, NaN, 1, 0.5, 0.5), # Fc of the 3P0 state could be both 0 or 1
         fjQuantumNumbers(0.5, 0, 0.5, 1, 0, 0.5, 0.5),
     ]),
     [
@@ -292,7 +292,7 @@ FMODEL_HIGHN_D15 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 2.5, 1.5),
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 1.5, 1.5),
-        fjQuantumNumbers(0.5, 1, 1.5, 1, 1, 1.5, 1.5), # Fc of the 1D2 state could be both 0 or 1
+        fjQuantumNumbers(0.5, 1, NaN, NaN, 1, NaN, 1.5), # Fc of the 1D2 state could be both 0 or 1
         fjQuantumNumbers(0.5, 0, 0.5, 0, 2, 1.5, 1.5),
     ]),
     [
@@ -303,7 +303,7 @@ FMODEL_HIGHN_D15 = fModel(
         0 0 0 0 1 0;
         -1/2 sqrt(3/2)/2 0 0 0 sqrt(3/2)/2
     ],
-    Dict(coreQuantumNumbers(1, 1.5) => 79725.35),
+    Dict(coreQuantumNumbers(1, NaN, NaN) => 79725.35),
 )
 
 FMODEL_HIGHN_D25 = fModel(
@@ -338,7 +338,7 @@ FMODEL_HIGHN_D25 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 2.5, 2.5),
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 1.5, 2.5),
-        fjQuantumNumbers(0.5, 1, 1.5, 1, 1, 1.5, 2.5), # Fc of the 1D2 state could be both 0 or 1
+        fjQuantumNumbers(0.5, 1, NaN, NaN, 1, NaN, 2.5), # Fc of the 1D2 state could be both 0 or 1
         fjQuantumNumbers(0.5, 0, 0.5, 0, 2, 2.5, 2.5),
     ]),
     [
@@ -349,7 +349,7 @@ FMODEL_HIGHN_D25 = fModel(
         0 0 0 0 1 0;
         1/2 sqrt(1/6) 0 0 0 sqrt(7/3)/2
     ],
-    Dict(coreQuantumNumbers(1, 1.5) => 79725.35),
+    Dict(coreQuantumNumbers(1, NaN, NaN) => 79725.35),
 )
 
 FMODEL_HIGHN_D35 = fModel(

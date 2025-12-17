@@ -89,7 +89,7 @@ FMODEL_HIGHN_S25 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 2, 0, 0.5, 2.5),
         fjQuantumNumbers(0.5, 1, 1.5, 3, 1, 1.5, 2.5),
-        fjQuantumNumbers(0.5, 1, 0.5, 2, 1, 0.5, 2.5), # Fc of the 3P0 state could be both 2 or 3
+        fjQuantumNumbers(0.5, 1, 0.5, NaN, 1, 0.5, 2.5), # Fc of the 3P0 state could be both 2 or 3
         fjQuantumNumbers(0.5, 0, 0.5, 3, 0, 0.5, 2.5),
     ]),
     [
@@ -205,7 +205,6 @@ FMODEL_HIGHN_P15 = fModel(
         0 0 0 0 0 0 0 0 1 0;
         0 0 0 0 0 0 0 0 0 1
     ]',
-    Dict(coreQuantumNumbers(0, 0.5, 2) => 50443.217463, coreQuantumNumbers(0, 0.5, 3) => 50442.795744),
 )
 
 FMODEL_HIGHN_P25 = fModel(
@@ -284,7 +283,6 @@ FMODEL_HIGHN_P25 = fModel(
         0 0 0 0 0 0 0 0 0 0 1 0;
         0 0 0 0 0 0 0 0 0 0 0 1
     ]',
-    Dict(coreQuantumNumbers(0, 0.5, 2) => 50443.217463, coreQuantumNumbers(0, 0.5, 3) => 50442.795744),
 )
 
 FMODEL_HIGHN_P35 = fModel(
@@ -354,7 +352,6 @@ FMODEL_HIGHN_P35 = fModel(
         0 0 0 0 0 0 0 0 1 0;
         0 0 0 0 0 0 0 0 0 1
     ]',
-    Dict(coreQuantumNumbers(0, 0.5, 2) => 50443.217463, coreQuantumNumbers(0, 0.5, 3) => 50442.795744),
 )
 
 FMODEL_HIGHN_P45 = fModel(

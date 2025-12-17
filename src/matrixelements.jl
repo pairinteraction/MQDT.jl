@@ -200,6 +200,10 @@ end
 Returns the reduced magnetic dipole moment (excluding radial contributions from the Rydberg electron)
 """
 function magneton(nd, mp, ic, q1::fjQuantumNumbers, q2::fjQuantumNumbers)
+    if isnan(q1.Jc) || isnan(q1.Fc) || isnan(q2.Jc) || isnan(q2.Fc)
+        # TODO for now return 0 if Jc or Fc of one of the qns is NaN
+        return 0
+    end
     μ_B = 0.5
     μ_N = nd/mp
     g_s = 2.0023192
