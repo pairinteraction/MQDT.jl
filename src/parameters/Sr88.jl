@@ -31,9 +31,10 @@ PARA = Parameters(
 )
 
 # MQDT Models
+# Defect data as compiled in [F Robicheaux 2019 J. Phys. B: At. Mol. Opt. Phys. 52 244001]
 FMODEL_HIGHN_S0 = fModel(
     :Sr88,
-    "S J=0",
+    "S J=0, ν > 10",
     1,
     ["5sns 1S0"],
     Bool[1],
@@ -47,7 +48,7 @@ FMODEL_HIGHN_S0 = fModel(
 
 FMODEL_HIGHN_S1 = fModel(
     :Sr88,
-    "S J=1",
+    "S J=1, ν > 11",
     1,
     ["5sns 3S1"],
     Bool[1],
@@ -61,7 +62,7 @@ FMODEL_HIGHN_S1 = fModel(
 
 FMODEL_LOWN_P1 = fModel(
     :Sr88,
-    "recombination",
+    "recombination, 1.8 < ν < 2.2",
     2,
     ["5snp 1P1", "5snp 3P1"],
     Bool[1, 1],
@@ -75,7 +76,7 @@ FMODEL_LOWN_P1 = fModel(
 
 FMODEL_HIGHN_P0 = fModel(
     :Sr88,
-    "P J=0",
+    "P J=0, ν > 7",
     1,
     ["5snp 3P0"],
     Bool[1],
@@ -89,7 +90,7 @@ FMODEL_HIGHN_P0 = fModel(
 
 FMODEL_HIGHN_P1 = fModel(
     :Sr88,
-    "P J=1",
+    "P J=1, ν > 5",
     2,
     ["5snp 1P1", "5snp 3P1"],
     Bool[1, 1],
@@ -103,7 +104,7 @@ FMODEL_HIGHN_P1 = fModel(
 
 FMODEL_HIGHN_P2 = fModel(
     :Sr88,
-    "P J=2",
+    "P J=2, ν > 5",
     1,
     ["5snp 3P2"],
     Bool[1],
@@ -117,7 +118,7 @@ FMODEL_HIGHN_P2 = fModel(
 
 FMODEL_HIGHN_D1 = fModel(
     :Sr88,
-    "D J=1",
+    "D J=1, ν > 17",
     1,
     ["5snd 3D1"],
     Bool[1],
@@ -131,13 +132,13 @@ FMODEL_HIGHN_D1 = fModel(
 
 FMODEL_HIGHN_D2 = fModel(
     :Sr88,
-    "D J=2",
+    "D J=2, ν > 25",
     2,
     ["5snd 1D2", "5snd 3D2"],
     Bool[1, 1],
     [2.3847 -39.41 -1090; 2.66149 -16.77 -6656],
-    [""],
-    [0;;],
+    ["12"],
+    [-0.14;;],
     lsChannels([lsQuantumNumbers(0.5, 0, 0, 2, 2, 2), lsQuantumNumbers(0.5, 1, 0, 2, 2, 2)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 2), jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 2)]),
     [-sqrt(2/5) sqrt(3/5); sqrt(3/5) sqrt(2/5)],
@@ -145,7 +146,7 @@ FMODEL_HIGHN_D2 = fModel(
 
 FMODEL_HIGHN_D3 = fModel(
     :Sr88,
-    "D J=3",
+    "D J=3, ν > 47",
     1,
     ["5snd 3D3"],
     Bool[1],
@@ -159,7 +160,7 @@ FMODEL_HIGHN_D3 = fModel(
 
 FMODEL_HIGHN_F2 = fModel(
     :Sr88,
-    "F J=2",
+    "F J=2, ν > 9",
     1,
     ["5snf 3F2"],
     Bool[1],
@@ -173,7 +174,7 @@ FMODEL_HIGHN_F2 = fModel(
 
 FMODEL_HIGHN_F3 = fModel(
     :Sr88,
-    "F J=3",
+    "F J=3, ν > 9",
     2,
     ["5snf 1F3", "5snf 3F3"],
     Bool[1, 1],
@@ -187,7 +188,7 @@ FMODEL_HIGHN_F3 = fModel(
 
 FMODEL_HIGHN_F4 = fModel(
     :Sr88,
-    "F J=4",
+    "F J=4, ν > 9",
     1,
     ["5snf 3F4"],
     Bool[1],
@@ -200,6 +201,7 @@ FMODEL_HIGHN_F4 = fModel(
 )
 
 # kModel
+# Data from [C L Vaillant et al 2014 J. Phys. B: At. Mol. Opt. Phys. 47 155001]
 THRESHOLDS_kModel_1 = Dict(
     coreQuantumNumbers(0, 0.5) => 45932.2002,
     coreQuantumNumbers(1, NaN) => 70048.11,
@@ -214,7 +216,7 @@ THRESHOLDS_kModel_2 = Dict(
 
 KMODEL_S0 = kModel(
     :Sr88,
-    "1S0",
+    "1S0, ν > 3",
     3,
     ["(5s1/2)(ns1/2)", "(4d5/2)(nd5/2)", "(4d3/2)(nd3/2)"],
     Bool[1, 1, 1],
@@ -239,7 +241,7 @@ KMODEL_S0 = kModel(
 
 KMODEL_S1 = kModel(
     :Sr88,
-    "3S1",
+    "3S1, ν > 3",
     2,
     ["5sns 3S1", "5pnp 3P1"],
     Bool[0, 0],
@@ -252,7 +254,7 @@ KMODEL_S1 = kModel(
 
 KMODEL_P0 = kModel(
     :Sr88,
-    "3P0",
+    "3P0, ν > 4",
     2,
     ["5snp 3P0", "4dnp 3P0"],
     Bool[0, 0],
@@ -265,7 +267,7 @@ KMODEL_P0 = kModel(
 
 KMODEL_1P1 = kModel(
     :Sr88,
-    "1P1",
+    "1P1, ν > 4",
     2,
     ["5snp 1P1", "4dnp 1P1"],
     Bool[0, 0],
@@ -278,7 +280,7 @@ KMODEL_1P1 = kModel(
 
 KMODEL_3P1 = kModel(
     :Sr88,
-    "3P1",
+    "3P1, ν > 4",
     2,
     ["5snp 3P1", "4dnp 3P1"],
     Bool[0, 0],
@@ -291,7 +293,7 @@ KMODEL_3P1 = kModel(
 
 KMODEL_P2 = kModel(
     :Sr88,
-    "3P2",
+    "3P2, ν > 4",
     2,
     ["5snp 3P2", "4dnp 3P2"],
     Bool[0, 0],
@@ -304,7 +306,7 @@ KMODEL_P2 = kModel(
 
 KMODEL_D1 = kModel(
     :Sr88,
-    "3D1",
+    "3D1, ν > 7",
     2,
     ["5snd 3D1", "4dns 3D1"],
     Bool[0, 0],
@@ -317,7 +319,7 @@ KMODEL_D1 = kModel(
 
 KMODEL_D2 = kModel(
     :Sr88,
-    "1D2 / 3D2",
+    "1D2 / 3D2, ν > 7",
     6,
     ["(5s1/2)(nd5/2)", "(5s1/2)(nd3/2)", "(4d5/2)(ns1/2)", "(4d3/2)(ns1/2)", "5pnp 1D2", "4dnd 3P2"],
     Bool[1, 1, 1, 1, 0, 0],
@@ -351,7 +353,7 @@ KMODEL_D2 = kModel(
 
 KMODEL_D3 = kModel(
     :Sr88,
-    "3D3",
+    "3D3, ν > 7",
     3,
     ["5snd 3D3", "4dns 3D3", "4dnd 3D3"],
     Bool[0, 0, 0],
@@ -376,7 +378,7 @@ KMODEL_D3 = kModel(
 
 KMODEL_1F3 = kModel(
     :Sr88,
-    "1F3",
+    "1F3, ν > 4",
     2,
     ["5snf 1F3", "4dnp 1F3"],
     Bool[0, 0],
