@@ -3,7 +3,6 @@ module Yb174
 using ..MQDT: Parameters, fModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers, coreQuantumNumbers
 
 export PARA,
-    FMODEL_LOWN_P1,
     FMODEL_HIGHN_S0,
     FMODEL_HIGHN_S1,
     FMODEL_HIGHN_P0,
@@ -17,7 +16,16 @@ export PARA,
     FMODEL_HIGHN_F4,
     FMODEL_HIGHN_G3,
     FMODEL_HIGHN_G4,
-    FMODEL_HIGHN_G5
+    FMODEL_HIGHN_G5,
+    FMODEL_LOWN_S0,
+    FMODEL_LOWN_S1,
+    FMODEL_LOWN_P0,
+    FMODEL_LOWEST_P1,
+    FMODEL_LOWN_P1,
+    FMODEL_LOWN_P2,
+    FMODEL_LOWN_D1,
+    FMODEL_LOWN_D2,
+    FMODEL_LOWN_D3
 
 # Isotope data
 THRESHOLDS = Dict(
@@ -38,7 +46,10 @@ PARA = Parameters(
     THRESHOLDS,
 )
 
-# MQDT Models
+# --------------------------------------------------------
+# MQDT models valid at large n
+# --------------------------------------------------------
+
 FMODEL_HIGHN_S0 = fModel(
     :Yb174,
     "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
@@ -53,7 +64,7 @@ FMODEL_HIGHN_S0 = fModel(
         0.257664798 0;
         0.155797119 0
     ],
-    ["12", "13", "14", "34", "35", "16"],
+    ["1.2", "1.3", "1.4", "3.4", "3.5", "1.6"],
     [
         0.126557575 0;
         0.300103593 0;
@@ -103,25 +114,11 @@ FMODEL_HIGHN_P0 = fModel(
     ["6snp 3P0", "4f13 5d 6snd"],
     Bool[1, 0],
     [0.953661478 -0.287531374; 0.198460766 0],
-    ["12"],
+    ["1.2"],
     [0.163343232 0],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 0)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0)]),
     [1 0; 0 1],
-)
-
-FMODEL_LOWN_P1 = fModel(
-    :Yb174,
-    "P J=1, 1.7 < ν < 2.7", # fit to NIST data for the 6p states
-    2,
-    ["6snp 1P1", "6snp 3P1"],
-    Bool[1, 1],
-    [0.161083 0; 0.920424 0],
-    ["12"],
-    [-0.426128 6.272986],
-    lsChannels([lsQuantumNumbers(0.5, 0, 0, 1, 1, 1), lsQuantumNumbers(0.5, 1, 0, 1, 1, 1)]),
-    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1), jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1)]),
-    [sqrt(2/3) sqrt(1/3); -sqrt(1/3) sqrt(2/3)],
 )
 
 FMODEL_HIGHN_P1 = fModel(
@@ -138,7 +135,7 @@ FMODEL_HIGHN_P1 = fModel(
         0.19352751 0;
         0.18153094 0
     ],
-    ["12", "13", "14", "15", "16", "23", "24", "25", "26"],
+    ["1.2", "1.3", "1.4", "1.5", "1.6", "2.3", "2.4", "2.5", "2.6"],
     [
         -0.08410871 120.37555 -9314.23;
         -0.07317986 0 0;
@@ -174,7 +171,7 @@ FMODEL_HIGHN_P2 = fModel(
         0.209224174 0 0;
         0.186236574 0 0
     ],
-    ["12", "13", "14"],
+    ["1.2", "1.3", "1.4"],
     [
         0.0706189664 0;
         0.0231221428 0;
@@ -212,7 +209,7 @@ FMODEL_HIGHN_D2 = fModel(
         0.233752026 0;
         0.152911249 0
     ],
-    ["12", "13", "14", "24", "15", "25"],
+    ["1.2", "1.3", "1.4", "2.4", "1.5", "2.5"],
     [
         0.21157531 -15.3844;
         0.00521559431 0;
@@ -284,7 +281,7 @@ FMODEL_HIGHN_F3 = fModel(
         0.196660618 0;
         0.21069642 0
     ],
-    ["12", "13", "14", "15", "16", "17", "23", "24", "25", "26", "27"],
+    ["1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "2.3", "2.4", "2.5", "2.6", "2.7"],
     [
         -0.0208481417 0.239045493;
         -0.00411835457 0;
@@ -346,7 +343,7 @@ FMODEL_HIGHN_G4 = fModel(
     ["6sng +G4", "6sng -G4"],
     Bool[1, 1],
     [0.0262659964 -0.148808463; 0.0254568575 -0.134219071],
-    ["12"],
+    ["1.2"],
     [-0.08222676 0],
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4), jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4), jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4)]),
@@ -364,6 +361,136 @@ FMODEL_HIGHN_G5 = fModel(
     [0;;],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 4, 4, 5)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 5)]),
+    [1;;],
+)
+
+# --------------------------------------------------------
+# MQDT models valid at small n
+# --------------------------------------------------------
+
+FMODEL_LOWN_S0 = fModel(
+    :Yb174,
+    "S J=0, 1 < ν < 2", # fit to the 6s^2 ground state
+    1,
+    ["6sns 1S0"],
+    Bool[1],
+    [0.525055 0],
+    [""],
+    [0;;],
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 0, 0, 0)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 0)]),
+    [1;;],
+)
+
+FMODEL_LOWN_S1 = fModel(
+    :Yb174,
+    "S J=1, 2 < ν < 26", # fit to NIST data between 7s and 13s, extrapolation seems good up to 30s
+    1,
+    ["6sns 3S1"],
+    Bool[1],
+    [0.432841 0.724559 -1.95424],
+    [""],
+    [0;;],
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 0, 0, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 0, 0.5, 1)]),
+    [1;;],
+)
+
+FMODEL_LOWN_P0 = fModel(
+    :Yb174,
+    "P J=0, 1.5 < ν < 5.5", # fit to NIST data between 6p and 9p
+    1,
+    ["6snp 3P0"],
+    Bool[1],
+    [0.969279 0.288219 1.36228],
+    [""],
+    [0;;],
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 0)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 0)]),
+    [1;;],
+)
+
+FMODEL_LOWEST_P1 = fModel(
+    :Yb174,
+    "P J=1, 1.7 < ν < 2.7", # fit to NIST data for the 6p states
+    2,
+    ["6snp 1P1", "6snp 3P1"],
+    Bool[1, 1],
+    [0.161083 0; 0.920424 0],
+    ["1.2"],
+    [-0.426128 6.272986],
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 1, 1, 1), lsQuantumNumbers(0.5, 1, 0, 1, 1, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1), jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1)]),
+    [sqrt(2/3) sqrt(1/3); -sqrt(1/3) sqrt(2/3)],
+)
+
+FMODEL_LOWN_P1 = fModel(
+    :Yb174,
+    "P J=1, 2.7 < ν < 5.7", # fit to NIST data between 7p and 9p
+    2,
+    ["6snp 1P1", "6snp 3P1"],
+    Bool[1, 1],
+    [0.967223 -3.03997 0.569205; 0.967918 0.25116 0.868505],
+    [""],
+    [0;;],
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 1, 1, 1), lsQuantumNumbers(0.5, 1, 0, 1, 1, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 1), jjQuantumNumbers(0.5, 0, 0.5, 1, 0.5, 1)]),
+    [sqrt(2/3) sqrt(1/3); -sqrt(1/3) sqrt(2/3)],
+)
+
+FMODEL_LOWN_P2 = fModel(
+    :Yb174,
+    "P J=2, 1.5 < ν < 4.5", # fit to NIST data between 6p and 8p
+    1,
+    ["6snp 3P2"],
+    Bool[1],
+    [0.906105 0.383471 1.23512],
+    [""],
+    [0;;],
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 2)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 1, 1.5, 2)]),
+    [1;;],
+)
+
+FMODEL_LOWN_D1 = fModel(
+    :Yb174,
+    "D J=1, 2 < ν < 5", # fit to NIST data between 5d and 8d, causes a µ=0.005 difference at the 30d state
+    1,
+    ["6snd 3D1"],
+    Bool[1],
+    [0.758222 -0.017906 3.392161],
+    [""],
+    [0;;],
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 1)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 1)]),
+    [1;;],
+)
+
+FMODEL_LOWN_D2 = fModel(
+    :Yb174,
+    "D J=2, 2 < ν < 5", # fit to NIST data between 5d and 7d
+    2,
+    ["6snd 1D2", "6snd 3D2"],
+    Bool[1, 1],
+    [0.703156 0.973192; 0.724546 0.372621],
+    ["1.2"],
+    [0.948409 2.121270],
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 2, 2, 2), lsQuantumNumbers(0.5, 1, 0, 2, 2, 2)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 2), jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 2)]),
+    [sqrt(3/5) sqrt(2/5); -sqrt(2/5) sqrt(3/5)],
+)
+
+FMODEL_LOWN_D3 = fModel(
+    :Yb174,
+    "D J=3, 2 < ν < 18", # fit to NIST data between 5d and 8d, provides good match around 21d
+    1,
+    ["6snd 3D3"],
+    Bool[1],
+    [0.734512 -0.019501 3.459114],
+    [""],
+    [0;;],
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 3)]),
+    jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 3)]),
     [1;;],
 )
 
