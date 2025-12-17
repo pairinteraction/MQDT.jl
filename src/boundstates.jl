@@ -170,46 +170,28 @@ function kbar(N::Number, M::fModel, P::Parameters)
     return kbar(m)
 end
 
-# function kbar(N::Number, M::fModel, P::Parameters)
-#     n = nu(N, M, P)
-#     m = theta(n, M.defects)
-#     i = findall(isone, M.rydbergritz)
-#     if !isempty(i)
-#         for j in i
-#             m[j] = theta_rr(n[j], M.defects, j)
-#         end
-#     end
-#     return kbar(m)
-# end
-
 """
     couple(C::String)
 
-From a string of type "ij", return a touple of indices (i, j).
-With this method, maximum for j is 10.
+From a string of type "i.j", return a touple of indices (i, j).
 
 # Examples
 
 ```jldoctest
-MQDT.couple("710")
+MQDT.couple("7.10")
 
 # output
 
-(7, 10)
+2-element Vector{Int64}:
+  7
+ 10
 ```
 """
 function couple(C::String)
     if isempty(C)
-        C = "11"
+        C = "1.1"
     end
-    c = parse(Int, C)
-    i = div(c, 10)
-    j = mod(c, 10)
-    if j == 0
-        i = div(c, 100)
-        j = mod(c, 100)
-    end
-    return i, j
+    return [parse(Int, strip(i)) for i in split(C, ".")]
 end
 
 """
@@ -223,8 +205,8 @@ Works for subsequent rotations passed as vectors.
 # Examples
 
 ```jldoctest
-println(MQDT.rot(0.4, "23", 3))
-println(MQDT.rot([0.4, 0.2], ["23", "12"], 3))
+println(MQDT.rot(0.4, "2.3", 3))
+println(MQDT.rot([0.4, 0.2], ["2.3", "1.2"], 3))
 
 # output
 
