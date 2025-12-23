@@ -1,64 +1,4 @@
 # --------------------------------------------------------
-# Store Parameters
-# --------------------------------------------------------
-
-"""
-    coreQuantumNumbers(lc::Int, Jc::Float64, Fc::Union{Float64, Nothing})
-
-Type to store the quantum numbers of the core excitations.
-If Fc is `NaN`, hyperfine structure is neglected for this core excitation.
-
-# Examples
-
-```jldoctest
-julia> core_exc = coreQuantumNumbers(0, 0.5, NaN);
-
-```
-"""
-struct coreQuantumNumbers
-    lc::Int
-    Jc::Float64
-    Fc::Float64
-end
-
-function coreQuantumNumbers(lc, Jc)
-    return coreQuantumNumbers(lc, Jc, NaN)
-end
-
-"""
-    Parameters(species::Symbol, mass::Float64, spin::Float64, rydberg::Float64, threshold::Float64, hyperfine::Float64, dipole::Float64)
-
-Type to store relevant parameters for each atomic element. A corresponding
-file in the parameters folder of the mqdt module initializes this type.
-
-# Examples
-
-```jldoctest
-julia> PARA = Parameters(
-           :Yb174,
-           1822.88848628*173.9388621, # nuclear mass
-           0, # nuclear spin
-           109736.9695858, # Rydberg constant in 1/cm
-           50443.070393, # lowest ionization threshold in 1/cm
-           0, # hyperfine constant in 1/cm
-           2.1, # nuclear dipole
-           Dict(coreQuantumNumbers(0, 0.5) => 50443.070393),
-       );
-
-```
-"""
-struct Parameters
-    species::Symbol
-    mass::Float64
-    spin::Float64
-    rydberg::Float64
-    threshold::Float64
-    hyperfine::Float64
-    dipole::Float64
-    thresholds_dict::Dict{Union{coreQuantumNumbers,String},Float64}
-end
-
-# --------------------------------------------------------
 # Quantum Number structs
 # --------------------------------------------------------
 
@@ -132,6 +72,29 @@ function lsQuantumNumbers(sc, S, lc, lr, L, J)
     return lsQuantumNumbers(sc, S, lc, lr, L, J, J)
 end
 
+"""
+    coreQuantumNumbers(lc::Int, Jc::Float64, Fc::Float64)
+
+Type to store the quantum numbers of the core excitations.
+If Fc is `NaN`, hyperfine structure is neglected for this core excitation.
+
+# Examples
+
+```jldoctest
+julia> core_exc = coreQuantumNumbers(0, 0.5, NaN);
+
+```
+"""
+struct coreQuantumNumbers <: QuantumNumbers
+    lc::Int
+    Jc::Float64
+    Fc::Float64
+end
+
+function coreQuantumNumbers(lc, Jc)
+    return coreQuantumNumbers(lc, Jc, NaN)
+end
+
 # --------------------------------------------------------
 # Base functions for QuantumNumbers structs
 # --------------------------------------------------------
@@ -150,6 +113,43 @@ end
 
 function fj_quantum_numbers(T::jjQuantumNumbers)
     return fjQuantumNumbers(T.sc, T.lc, T.Jc, T.Jc, T.lr, T.Jr, T.J)
+end
+
+# --------------------------------------------------------
+# Store Parameters
+# --------------------------------------------------------
+
+"""
+    Parameters(species::Symbol, mass::Float64, spin::Float64, rydberg::Float64, threshold::Float64, hyperfine::Float64, dipole::Float64)
+
+Type to store relevant parameters for each atomic element. A corresponding
+file in the parameters folder of the mqdt module initializes this type.
+
+# Examples
+
+```jldoctest
+julia> PARA = Parameters(
+           :Yb174,
+           1822.88848628*173.9388621, # nuclear mass
+           0, # nuclear spin
+           109736.9695858, # Rydberg constant in 1/cm
+           50443.070393, # lowest ionization threshold in 1/cm
+           0, # hyperfine constant in 1/cm
+           2.1, # nuclear dipole
+           Dict(coreQuantumNumbers(0, 0.5) => 50443.070393),
+       );
+
+```
+"""
+struct Parameters
+    species::Symbol
+    mass::Float64
+    spin::Float64
+    rydberg::Float64
+    threshold::Float64
+    hyperfine::Float64
+    dipole::Float64
+    thresholds_dict::Dict{Union{coreQuantumNumbers,String},Float64}
 end
 
 # --------------------------------------------------------
