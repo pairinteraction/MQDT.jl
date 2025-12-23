@@ -268,7 +268,7 @@ FMODEL_HIGHN_F2 = fModel(
 
 FMODEL_HIGHN_F3 = fModel(
     :Yb174,
-    "F J=3, ν > 7", # [arXiv:2507.11487v1]
+    "F J=3, ν > 7", # [Phys. Rev. A 112, 042817 (2025)]
     7,
     ["6snf 1F3", "6snf 3F3", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d", "4f13 5d 6snl e"],
     Bool[1, 1, 0, 0, 0, 0, 0],
@@ -283,7 +283,7 @@ FMODEL_HIGHN_F3 = fModel(
     ],
     ["1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "2.3", "2.4", "2.5", "2.6", "2.7"],
     [
-        -0.0208481417 0.239045493;
+        -0.0209955122 0.251041249; # updated since [arXiv:2507.11487v1]
         -0.00411835457 0;
         -0.0962784945 0;
         0.132826901 0;
@@ -338,13 +338,13 @@ FMODEL_HIGHN_G3 = fModel(
 
 FMODEL_HIGHN_G4 = fModel(
     :Yb174,
-    "G J=4, ν > 25", # [arXiv:2507.11487v1]
+    "G J=4, ν > 25", # [Phys. Rev. A 112, 042817 (2025)]
     2,
     ["6sng +G4", "6sng -G4"],
     Bool[1, 1],
     [0.0262659964 -0.148808463; 0.0254568575 -0.134219071],
     ["1.2"],
-    [-0.08222676 0],
+    [-0.089123698 0], # updated since [arXiv:2507.11487v1]
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4), jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 4, 4.5, 4), jjQuantumNumbers(0.5, 0, 0.5, 4, 3.5, 4)]),
     [1 0; 0 1], # this series is well described in jj coupling. singlet-triplet mixing is approximately atan(sqrt(4/5))
@@ -352,11 +352,11 @@ FMODEL_HIGHN_G4 = fModel(
 
 FMODEL_HIGHN_G5 = fModel(
     :Yb174,
-    "G J=5, ν > 25", # [arXiv:2507.11487v1]
+    "G J=5, ν > 25", # [Phys. Rev. A 112, 042817 (2025)]
     1,
     ["6sng 3G5"],
     Bool[1],
-    [0.02529201 -0.11588052],
+    [0.02536571 -0.18507079], # updated since [arXiv:2507.11487v1]
     [""],
     [0;;],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 4, 4, 5)]),
