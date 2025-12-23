@@ -32,6 +32,7 @@ THRESHOLDS = Dict(
     coreQuantumNumbers(0, 0.5) => 50443.070393,
     coreQuantumNumbers(1, 0.5) => 77504.98,
     coreQuantumNumbers(1, 1.5) => 80835.39,
+    coreQuantumNumbers(1, NaN) => 79725.35,
     "4f13 5d 6s" => 83967.7,
 )
 
@@ -235,7 +236,6 @@ FMODEL_HIGHN_D2 = fModel(
         0 0 0 1 0;
         0 0 0 0 1
     ],
-    Dict(coreQuantumNumbers(1, NaN) => 79725.35),
 )
 
 FMODEL_HIGHN_D3 = fModel(
