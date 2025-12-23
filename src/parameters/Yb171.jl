@@ -307,7 +307,7 @@ FMODEL_HIGHN_D15 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 2.5, 1.5),
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 1.5, 1.5),
-        fjQuantumNumbers(0.5, 1, NaN, NaN, 1, NaN, 1.5), # Fc of the 1D2 state could be both 0 or 1
+        fjQuantumNumbers(0.5, 1, NaN, NaN, 1, NaN, 1.5), # Jc of the 1D2 state could be both 1/2 or 3/2
         fjQuantumNumbers(0.5, 0, 0.5, 0, 2, 1.5, 1.5),
     ]),
     [
@@ -353,7 +353,7 @@ FMODEL_HIGHN_D25 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 2.5, 2.5),
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 1.5, 2.5),
-        fjQuantumNumbers(0.5, 1, NaN, NaN, 1, NaN, 2.5), # Fc of the 1D2 state could be both 0 or 1
+        fjQuantumNumbers(0.5, 1, NaN, NaN, 1, NaN, 2.5), # Jc of the 1D2 state could be both 1/2 or 3/2
         fjQuantumNumbers(0.5, 0, 0.5, 0, 2, 2.5, 2.5),
     ]),
     [
@@ -660,7 +660,7 @@ FMODEL_LOWN_S05 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 0, 0, 0.5, 0.5),
         fjQuantumNumbers(0.5, 1, 1.5, 1, 1, 1.5, 0.5),
-        fjQuantumNumbers(0.5, 1, 0.5, 0, 1, 0.5, 0.5), # Fc of the 3P0 state could be both 0 or 1
+        fjQuantumNumbers(0.5, 1, 0.5, NaN, 1, 0.5, 0.5), # Fc of the 3P0 state could be both 0 or 1
         fjQuantumNumbers(0.5, 0, 0.5, 1, 0, 0.5, 0.5),
     ]),
     [
@@ -891,7 +891,7 @@ FMODEL_LOWN_D05 = fModel(
     [0;;],
     lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 1, 0.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 1.5, 0.5)]),
-    [1;;],
+    [-1;;],
 )
 
 FMODEL_LOWN_D15 = fModel(
@@ -926,7 +926,7 @@ FMODEL_LOWN_D15 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 2.5, 1.5),
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 1.5, 1.5),
-        fjQuantumNumbers(0.5, 1, 1.5, 1, 1, 1.5, 1.5), # Fc of the 1D2 state could be both 0 or 1
+        fjQuantumNumbers(0.5, 1, NaN, NaN, 1, NaN, 1.5), # Jc of the 1D2 state could be both 1/2 or 3/2
         fjQuantumNumbers(0.5, 0, 0.5, 0, 2, 1.5, 1.5),
     ]),
     [
@@ -971,7 +971,7 @@ FMODEL_LOWN_D25 = fModel(
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 2.5, 2.5),
         fjQuantumNumbers(0.5, 0, 0.5, 1, 2, 1.5, 2.5),
-        fjQuantumNumbers(0.5, 1, 1.5, 1, 1, 1.5, 2.5),
+        fjQuantumNumbers(0.5, 1, NaN, NaN, 1, NaN, 2.5), # Jc of the 1D2 state could be both 1/2 or 3/2
         fjQuantumNumbers(0.5, 0, 0.5, 0, 2, 2.5, 2.5),
     ]),
     [
