@@ -137,7 +137,7 @@ FMODEL_HIGHN_D2 = fModel(
     ["5snd 1D2", "5snd 3D2"],
     Bool[1, 1],
     [2.3847 -39.41 -1090; 2.66149 -16.77 -6656],
-    ["12"],
+    ["1.2"],
     [-0.14 0;],
     lsChannels([lsQuantumNumbers(0.5, 0, 0, 2, 2, 2), lsQuantumNumbers(0.5, 1, 0, 2, 2, 2)]),
     jjChannels([jjQuantumNumbers(0.5, 0, 0.5, 2, 1.5, 2), jjQuantumNumbers(0.5, 0, 0.5, 2, 2.5, 2)]),
