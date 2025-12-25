@@ -24,6 +24,7 @@ export lsQuantumNumbers,
     eigenstates,
     basisarray,
     matrix_elements,
+    get_nu_limits_from_model,
     single_channel_models
 
 include("general.jl")
