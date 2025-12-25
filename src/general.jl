@@ -566,6 +566,32 @@ function get_J(T::fModel)
     return get_J(T.inner_channels)
 end
 
+"""
+Get the minimum and maximum effective principal quantum number (nu_min, nu_max) from a given Model.
+
+The name of a Model usually is something like "S J=0, ν > 2" or "S F=1/2, ν > 26",
+from this we can extract nu_min = 2 and nu_max NaN.
+
+Some Model names also contain a upper limit, e.g. "P J=1, 1.7 < ν < 2.7",
+from which we extract nu_min = 1.7 and nu_max = 2.7.
+"""
+function get_nu_limits_from_model(model::Model)
+    m = match(r"([0-9/\.]+)\s*<\s*ν\s*<\s*([0-9/\.]+)", model.name)
+    if m !== nothing
+        nu_min = parse(Float64, m.captures[1])
+        nu_max = parse(Float64, m.captures[2])
+        return nu_min, nu_max
+    end
+
+    m = match(r"ν\s*>\s*([0-9/\.]+)", model.name)
+    if m !== nothing
+        nu_min = parse(Float64, m.captures[1])
+        return nu_min, NaN
+    end
+
+    throw(ArgumentError("No match found for 'ν > ...' or '... < ν < ...' in model: $(model.name)"))
+end
+
 function get_thresholds(M::fModel, P::Parameters)
     thresholds_dict = P.thresholds_dict
     if !isnothing(M.thresholds_dict)
