@@ -454,7 +454,7 @@ FMODEL_LOWN_P2 = fModel(
 
 FMODEL_LOWN_D1 = fModel(
     :Yb174,
-    "D J=1, 2 < ν < 5", # fit to NIST data between 5d and 8d, causes a µ=0.005 difference at the 30d state
+    "D J=1, 2 < ν < 26", # fit to NIST data between 5d and 8d, causes a µ=0.005 difference at the 30d state
     1,
     ["6snd 3D1"],
     Bool[1],
