@@ -881,7 +881,7 @@ FMODEL_LOWN_P25 = fModel(
 
 FMODEL_LOWN_D05 = fModel(
     :Yb171,
-    "D F=1/2, ν < 30", # data taken from Yb174 NIST fit for 2 < ν < 5
+    "D F=1/2, 2 < ν < 30", # data taken from Yb174 NIST fit for 2 < ν < 5
     1,
     ["6snd 3D1"],
     Bool[1],
@@ -895,7 +895,7 @@ FMODEL_LOWN_D05 = fModel(
 
 FMODEL_LOWN_D15 = fModel(
     :Yb171,
-    "D F=3/2, ν < 30", # model from [arXiv:2507.11487v1] with modified 3D1 data taken from Yb174 fit to NIST
+    "D F=3/2, 2 < ν < 30", # model from [arXiv:2507.11487v1] with modified 3D1 data taken from Yb174 fit to NIST
     6,
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D1"],
     Bool[1, 1, 0, 0, 1, 1],
@@ -940,7 +940,7 @@ FMODEL_LOWN_D15 = fModel(
 
 FMODEL_LOWN_D25 = fModel(
     :Yb171,
-    "D F=5/2, ν < 30", # model from [arXiv:2507.11487v1] with modified 3D3 data taken from Yb174 fit to NIST
+    "D F=5/2, 2 < ν < 30", # model from [arXiv:2507.11487v1] with modified 3D3 data taken from Yb174 fit to NIST
     6,
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D3"],
     Bool[1, 1, 0, 0, 1, 1],
@@ -985,7 +985,7 @@ FMODEL_LOWN_D25 = fModel(
 
 FMODEL_LOWN_D35 = fModel(
     :Yb171,
-    "D F=7/2, ν < 14", # data taken from Yb174 NIST fit for 2 < ν < 5, provides good match around 18d
+    "D F=7/2, 2 < ν < 14", # data taken from Yb174 NIST fit for 2 < ν < 5, provides good match around 18d
     1,
     ["6snd 3D3"],
     Bool[1],
