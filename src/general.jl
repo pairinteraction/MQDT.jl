@@ -678,7 +678,7 @@ function single_channel_models(species::Symbol, l::Integer)
     for i in eachindex(jt)
         m[i] = fModel(
             species,
-            "L=$l, J=$(jt[i]), Jr=$(jr[i])",
+            "L=$l, J=$(jt[i]), Jr=$(jr[i]), ν > $(l+1)",
             1,
             [""],
             Bool[1],
