@@ -30,25 +30,20 @@ low_l_models = [
     MQDT.Yb174.FMODEL_HIGHN_G5,
 ]
 
-# bounds (as found in the parameters file)
-low_n_min = [1, 2, 1.5, 1.7, 2.7, 1.5, 2, 2, 2] .+ 0.5
-low_n_max = [2, 26, 5.5, 2.7, 5.7, 4.5, 26, 5, 18] .- 0.5
-
-# calculate low \nu MQDT states
-low_n_states = [eigenstates(low_n_min[i], low_n_max[i], low_n_models[i], parameters) for i in eachindex(low_n_min)]
-
-# bounds (as found in the parameters file)
-n_min = [2, 26, 6, 6, 5, 26, 5, 18, 25, 7, 25, 25, 25, 25] .+ 0.5
 n_max = 30
 
+# calculate low \nu MQDT states
+low_n_states = [eigenstates(NaN, n_max, model, parameters) for model in low_n_models]
+
 # calculate high \nu, low \ell MQDT states
-low_l_states = [eigenstates(n_min[i], n_max, low_l_models[i], parameters) for i in eachindex(n_min)]
+low_l_states = [eigenstates(NaN, n_max, model, parameters) for model in low_l_models]
 
 # calculate high \ell SQDT states
+n_min_high_l = 25 # minimum n for high-l states
 l_max = n_max - 1
 MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol calculation
 high_l_models = single_channel_models(:Yb174, 5:l_max)
-high_l_states = [eigenstates(25, n_max, M, parameters) for M in high_l_models]
+high_l_states = [eigenstates(n_min_high_l, n_max, M, parameters) for M in high_l_models]
 
 # generate basis and calculate matrix elements
 basis = basisarray(vcat(low_n_states, low_l_states, high_l_states), vcat(low_n_models, low_l_models, high_l_models))
