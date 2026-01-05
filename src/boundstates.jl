@@ -363,8 +363,20 @@ See also [`eigenenergies`](@ref)
 
 Function that returns the bound states corresponding to an MQDT model in the form of an instance of `EigenStates`,
 which contains the global reference principal quantum number, the channel-dependent principal quantum numbers, as well as the channel coefficients.
+N1 can be NaN to use the lowest possible effective principal quantum number for the model M.
+N2 can only be NaN if the model M has a defined maximum effective principal quantum number.
+We will always use the higher of N1 and the M's minimum effective principal quantum number
+and the lower of N2 and the M's maximum effective principal quantum number.
 """
 function eigenstates(N1::Number, N2::Number, M::Model, P::Parameters)
+    nu_min_model, nu_max_model = get_nu_limits_from_model(M)
+
+    N1 = isnan(N1) ? nu_min_model : max(N1, nu_min_model)
+    N2 = isnan(N2) ? nu_max_model : min(N2, nu_max_model)
+    if isinf(N2)
+        error("Cannot use infinite N2 if the model does not define a maximum effective principal quantum number.")
+    end
+
     z, n = eigenenergies(N1, N2, M, P)
     mfunc(e) = mmat(e, M, P)
     a = similar(n)
