@@ -69,7 +69,8 @@ PARA = Parameters(
 FMODEL_HIGHN_S05 = fModel(
     :Yb171,
     "S F=1/2, ν > 26", # [Phys. Rev. A 112, 042817 (2025), Phys. Rev. X 15, 011009 (2025)]
-    7,
+    0.5,
+    (26.0, Inf),
     ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c", "6sns 3S1"],
     Bool[1, 0, 1, 0, 1, 0, 1],
     [
@@ -116,7 +117,8 @@ FMODEL_HIGHN_S05 = fModel(
 FMODEL_HIGHN_S15 = fModel(
     :Yb171,
     "S F=3/2, ν > 26", # [Phys. Rev. X 15, 011009 (2025)]
-    1,
+    1.5,
+    (26.0, Inf),
     ["6sns 3S1"],
     Bool[1],
     [0.438426851 3.91762642 -10612.6828 8017432.38 -2582622910.0;],
@@ -130,7 +132,8 @@ FMODEL_HIGHN_S15 = fModel(
 FMODEL_HIGHN_P05 = fModel(
     :Yb171,
     "P F=1/2, ν > 5.7", # [Phys. Rev. A 112, 042817 (2025), Phys. Rev. X 15, 011009 (2025)] # fit for ν > 28, but extrapolates nicely down for ν > 5.7
-    8,
+    0.5,
+    (5.7, Inf),
     [
         "6snp 1P1",
         "6snp 3P1",
@@ -191,7 +194,8 @@ FMODEL_HIGHN_P05 = fModel(
 FMODEL_HIGHN_P15 = fModel(
     :Yb171,
     "P F=3/2, ν > 10", # [Phys. Rev. A 112, 042817 (2025)] # fit for ν > 10
-    11,
+    1.5,
+    (10.0, Inf),
     [
         "6snp 1P1",
         "6snp 3P1",
@@ -265,7 +269,8 @@ FMODEL_HIGHN_P15 = fModel(
 FMODEL_HIGHN_D05 = fModel(
     :Yb171,
     "D F=1/2, ν > 30", # [Phys. Rev. X 15, 011009 (2025)]
-    1,
+    0.5,
+    (30.0, Inf),
     ["6snd 3D1"],
     Bool[1],
     [0.75258093 0.382628525 -483.120633;],
@@ -279,7 +284,8 @@ FMODEL_HIGHN_D05 = fModel(
 FMODEL_HIGHN_D15 = fModel(
     :Yb171,
     "D F=3/2, ν > 30", # [Phys. Rev. A 112, 042817 (2025), Phys. Rev. X 15, 011009 (2025)]
-    6,
+    1.5,
+    (30.0, Inf),
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D1"],
     Bool[1, 1, 0, 0, 1, 1],
     [
@@ -324,7 +330,8 @@ FMODEL_HIGHN_D15 = fModel(
 FMODEL_HIGHN_D25 = fModel(
     :Yb171,
     "D F=5/2, ν > 30", # [Phys. Rev. A 112, 042817 (2025), Phys. Rev. X 15, 011009 (2025)]
-    6,
+    2.5,
+    (30.0, Inf),
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D3"],
     Bool[1, 1, 0, 0, 1, 1],
     [
@@ -369,7 +376,8 @@ FMODEL_HIGHN_D25 = fModel(
 FMODEL_HIGHN_D35 = fModel(
     :Yb171,
     "D F=7/2, ν > 14", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)], provides good match around 18d
-    1,
+    3.5,
+    (14.0, Inf),
     ["6snd 3D3"],
     Bool[1],
     [0.72895315 -0.20653489 220.484722;],
@@ -383,7 +391,8 @@ FMODEL_HIGHN_D35 = fModel(
 FMODEL_HIGHN_F25 = fModel(
     :Yb171,
     "F F=5/2, ν > 20", # [Phys. Rev. A 112, 042817 (2025)]
-    12,
+    2.5,
+    (20.0, Inf),
     [
         "6snf 1F3",
         "6snf 3F3",
@@ -462,7 +471,8 @@ FMODEL_HIGHN_F25 = fModel(
 FMODEL_HIGHN_F35 = fModel(
     :Yb171,
     "F F=7/2, ν > 20", # [Phys. Rev. A 112, 042817 (2025)]
-    8,
+    3.5,
+    (20.0, Inf),
     [
         "6snf 1F3",
         "6snf 3F3",
@@ -523,7 +533,8 @@ FMODEL_HIGHN_F35 = fModel(
 FMODEL_HIGHN_F45 = fModel(
     :Yb171,
     "F F=9/2, ν > 20", # extracted from FMODEL_HIGHN_F35
-    1,
+    4.5,
+    (20.0, Inf),
     ["6snf 3F4"],
     Bool[1],
     [0.0834193873 -1.11453386 -1545.71844;],
@@ -537,7 +548,8 @@ FMODEL_HIGHN_F45 = fModel(
 FMODEL_HIGHN_G25 = fModel(
     :Yb171,
     "G F=5/2, ν > 25", # [Phys. Rev. A 112, 042817 (2025)]
-    1,
+    2.5,
+    (25.0, Inf),
     ["6sng 3G3"],
     Bool[1],
     [0.02613255 -0.14203905;],
@@ -551,7 +563,8 @@ FMODEL_HIGHN_G25 = fModel(
 FMODEL_HIGHN_G35 = fModel(
     :Yb171,
     "G F=7/2, ν > 25", # [Phys. Rev. A 112, 042817 (2025)]
-    3,
+    3.5,
+    (25.0, Inf),
     ["6sng +G4", "6sng -G4", "6sng 3G3"],
     Bool[1, 1, 1],
     [
@@ -581,7 +594,8 @@ FMODEL_HIGHN_G35 = fModel(
 FMODEL_HIGHN_G45 = fModel(
     :Yb171,
     "G F=9/2, ν > 25", # [Phys. Rev. A 112, 042817 (2025)]
-    3,
+    4.5,
+    (25.0, Inf),
     ["6sng +G4", "6sng -G4", "6sng 3G5"],
     Bool[1, 1, 1],
     [
@@ -611,7 +625,8 @@ FMODEL_HIGHN_G45 = fModel(
 FMODEL_HIGHN_G55 = fModel(
     :Yb171,
     "G F=11/2, ν > 25", # extracted from FMODEL_HIGHN_G45
-    1,
+    5.5,
+    (25.0, Inf),
     ["6sng 3G5"],
     Bool[1],
     [0.02536571 -0.18507079;],
@@ -629,7 +644,8 @@ FMODEL_HIGHN_G55 = fModel(
 FMODEL_LOWN_S05 = fModel(
     :Yb171,
     "S F=1/2, 2 < ν < 26", # model from [Phys. Rev. X 15, 011009 (2025)] with modified 3S1 data taken from Yb174 fit to NIST
-    7,
+    0.5,
+    (2.0, 26.0),
     ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c", "6sns 3S1"],
     Bool[1, 0, 1, 0, 1, 0, 1],
     [
@@ -676,7 +692,8 @@ FMODEL_LOWN_S05 = fModel(
 FMODEL_LOWN_S15 = fModel(
     :Yb171,
     "S F=3/2, 2 < ν < 26", # taken from Yb174 fit to NIST
-    1,
+    1.5,
+    (2.0, 26.0),
     ["6sns 3S1"],
     Bool[1],
     [0.432841 0.724559 -1.95424;],
@@ -690,7 +707,8 @@ FMODEL_LOWN_S15 = fModel(
 FMODEL_LOWEST_P05 = fModel(
     :Yb171,
     "P F=1/2, 1.5 < ν < 2.5", # fit to Yb174 NIST data
-    3,
+    0.5,
+    (1.5, 2.5),
     ["6snp 1P1", "6snp 3P1", "6snp 3P0"],
     Bool[1, 1, 1],
     [0.161083 0; 0.920424 0; 0.180701 0],
@@ -716,7 +734,8 @@ FMODEL_LOWEST_P05 = fModel(
 FMODEL_LOWN_P05 = fModel(
     :Yb171,
     "P F=1/2, 2.9 < ν < 5.9", # data taken from Yb174 NIST fits
-    3,
+    0.5,
+    (2.9, 5.9),
     ["6snp 1P1", "6snp 3P1", "6snp 3P0"],
     Bool[1, 1, 1],
     [
@@ -746,7 +765,8 @@ FMODEL_LOWN_P05 = fModel(
 FMODEL_LOWEST_P15 = fModel(
     :Yb171,
     "P F=3/2, 1.5 < ν < 2.5", # fit to Yb174 NIST data
-    3,
+    1.5,
+    (1.5, 2.5),
     ["6snp 1P1", "6snp 3P1", "6snp 3P2"],
     Bool[1, 1, 1],
     [0.161083 0; 0.920424 0; 0.110501 0],
@@ -772,7 +792,8 @@ FMODEL_LOWEST_P15 = fModel(
 FMODEL_LOWN_P15 = fModel(
     :Yb171,
     "P F=3/2, 3 < ν < 10", # data taken from Yb174 NIST fits
-    10,
+    1.5,
+    (3.0, 10.0),
     [
         "6snp 1P1",
         "6snp 3P1",
@@ -840,7 +861,8 @@ FMODEL_LOWN_P15 = fModel(
 FMODEL_LOWEST_P25 = fModel(
     :Yb171,
     "P F=5/2, 1.5 < ν < 4.5", # data taken from Yb174 NIST fit
-    1,
+    2.5,
+    (1.5, 4.5),
     ["6snp 3P2"],
     Bool[1],
     [0.906105 0.383471 1.23512;],
@@ -854,7 +876,8 @@ FMODEL_LOWEST_P25 = fModel(
 FMODEL_LOWN_P25 = fModel(
     :Yb171,
     "P F=5/2, 5 < ν < 20", # data taken from Yb174 [Phys. Rev. X 15, 011009 (2025)] fits
-    4,
+    2.5,
+    (5.0, 20.0),
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
     Bool[1, 0, 0, 0],
     [
@@ -882,7 +905,8 @@ FMODEL_LOWN_P25 = fModel(
 FMODEL_LOWN_D05 = fModel(
     :Yb171,
     "D F=1/2, 2 < ν < 30", # data taken from Yb174 NIST fit for 2 < ν < 5
-    1,
+    0.5,
+    (2.0, 30.0),
     ["6snd 3D1"],
     Bool[1],
     [0.758222 -0.017906 3.392161;],
@@ -896,7 +920,8 @@ FMODEL_LOWN_D05 = fModel(
 FMODEL_LOWN_D15 = fModel(
     :Yb171,
     "D F=3/2, 2 < ν < 30", # model from [arXiv:2507.11487v1] with modified 3D1 data taken from Yb174 fit to NIST
-    6,
+    1.5,
+    (2.0, 30.0),
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D1"],
     Bool[1, 1, 0, 0, 1, 1],
     [
@@ -941,7 +966,8 @@ FMODEL_LOWN_D15 = fModel(
 FMODEL_LOWN_D25 = fModel(
     :Yb171,
     "D F=5/2, 2 < ν < 30", # model from [arXiv:2507.11487v1] with modified 3D3 data taken from Yb174 fit to NIST
-    6,
+    2.5,
+    (2.0, 30.0),
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2", "6snd 3D3"],
     Bool[1, 1, 0, 0, 1, 1],
     [
@@ -986,7 +1012,8 @@ FMODEL_LOWN_D25 = fModel(
 FMODEL_LOWN_D35 = fModel(
     :Yb171,
     "D F=7/2, 2 < ν < 14", # data taken from Yb174 NIST fit for 2 < ν < 5, provides good match around 18d
-    1,
+    3.5,
+    (2.0, 14.0),
     ["6snd 3D3"],
     Bool[1],
     [0.734512 -0.019501 3.459114;],
