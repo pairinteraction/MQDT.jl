@@ -2,10 +2,10 @@ using MQDT
 using PythonCall
 
 function test_model_struct(T::fModel)
-    if (T.size != length(T.terms)) || (T.size != length(T.core)) || (T.size != size(T.defects, 1))
+    if (length(T.terms) != length(T.core)) || (length(T.terms) != size(T.defects, 1))
         println("Model size does not correspond to provided parameters.")
         @test false
-    elseif size(T.unitary) != (T.size, T.size)
+    elseif size(T.unitary) != (length(T.terms), length(T.terms))
         println("Frame transformation matrix does not have the correct dimensions.")
         @test false
     elseif length(findall(T.core)) != size(T.outer_channels) != size(T.inner_channels)
@@ -21,14 +21,13 @@ function test_model_struct(T::fModel)
 end
 
 function test_model_struct(T::kModel)
-    if (T.size != length(T.terms)) ||
-       (T.size != length(T.jjscheme)) ||
-       (T.size != length(T.lschannels.i)) ||
-       (T.size != length(T.jjchannels.i)) ||
-       (T.size != length(T.K1))
+    if (length(T.terms) != length(T.jjscheme)) ||
+       (length(T.terms) != length(T.lschannels.i)) ||
+       (length(T.terms) != length(T.jjchannels.i)) ||
+       (length(T.terms) != length(T.K1))
         println("Model size does not correspond to provided parameters.")
         @test false
-    elseif size(T.K0) != (T.size, T.size)
+    elseif size(T.K0) != (length(T.terms), length(T.terms))
         println("Frame transformation matrix does not have the correct dimensions.")
         @test false
     else
@@ -89,9 +88,29 @@ function test_model_unitary(T::kModel)
     @test isapprox(t1, t2; rtol=0.001)
 end
 
-function test_model_states_and_matrix_elements(model::fModel, param::Parameters)
+function test_model_name(model::fModel)
+    f_tot_str = match(r"F=([\d]+/?[\d]*)", model.name)
+    if f_tot_str == nothing
+        f_tot_str = match(r"J=([\d]+)", model.name)
+    end
+
+    @test f_tot_str != nothing
+    s = f_tot_str.captures[1]
+    if occursin("/", s)
+        parts = split(s, "/")
+        f_tot = parse(Float64, parts[1]) / parse(Float64, parts[2])
+    else
+        f_tot = parse(Float64, s)
+    end
+    @test f_tot == model.F
+
     nu_min, nu_max = get_nu_limits_from_model(model)
-    nu_max = isnan(nu_max) ? nu_min + 5 : min(nu_max, nu_min + 5)
+    @test (nu_min, nu_max) == model.nu_range
+end
+
+function test_model_states_and_matrix_elements(model::fModel, param::Parameters)
+    nu_min, nu_max = model.nu_range
+    nu_max = min(nu_max, nu_min + 5)
     states = eigenstates(nu_min, nu_max, model, param)
     basis = basisarray(states, model)
     @test size(basis) == length(states)
@@ -113,9 +132,6 @@ end
 @testset "Models" begin
     for species in (MQDT.Sr87, MQDT.Sr88, MQDT.Yb171, MQDT.Yb173, MQDT.Yb174)
         for nm in names(species, all=true)
-            if !isdefined(species, nm)
-                continue
-            end
             obj = getfield(species, nm)
             if !isa(obj, MQDT.Model)
                 continue
@@ -124,6 +140,7 @@ end
             println("Testing $(species) $(nm)")
             @testset "$(species) $(nm)" begin
                 if isa(obj, fModel)
+                    test_model_name(obj)
                     test_model_struct(obj)
                     test_model_unitary(obj, species.PARA)
                     test_model_states_and_matrix_elements(obj, species.PARA)
