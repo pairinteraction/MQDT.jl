@@ -54,7 +54,8 @@ PARA = Parameters(
 FMODEL_HIGHN_S0 = fModel(
     :Yb174,
     "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
-    6,
+    0,
+    (2.0, Inf),
     ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
     Bool[1, 0, 1, 0, 1, 0],
     [
@@ -98,6 +99,7 @@ FMODEL_HIGHN_S1 = fModel(
     :Yb174,
     "S J=1, ν > 26", # fit only valid from 28s upward [Phys. Rev. Lett. 128, 033201 (2022)]
     1,
+    (26.0, Inf),
     ["6sns 3S1"],
     Bool[1],
     [0.4382 4 -1e4 8e6 -3e9;], # adjusted for non-rydberg ritz
@@ -111,7 +113,8 @@ FMODEL_HIGHN_S1 = fModel(
 FMODEL_HIGHN_P0 = fModel(
     :Yb174,
     "P J=0, ν > 6", # [Phys. Rev. X 15, 011009 (2025)]
-    2,
+    0,
+    (6.0, Inf),
     ["6snp 3P0", "4f13 5d 6snd"],
     Bool[1, 0],
     [0.953661478 -0.287531374; 0.198460766 0],
@@ -125,7 +128,8 @@ FMODEL_HIGHN_P0 = fModel(
 FMODEL_HIGHN_P1 = fModel(
     :Yb174,
     "P J=1, ν > 6", # [Phys. Rev. X 15, 011009 (2025)]
-    6,
+    1,
+    (6.0, Inf),
     ["6snp 1P1", "6snp 3P1", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d"],
     Bool[1, 1, 0, 0, 0, 0],
     [
@@ -163,7 +167,8 @@ FMODEL_HIGHN_P1 = fModel(
 FMODEL_HIGHN_P2 = fModel(
     :Yb174,
     "P J=2, ν > 5", # [Phys. Rev. X 15, 011009 (2025)]
-    4,
+    2,
+    (5.0, Inf),
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
     Bool[1, 0, 0, 0],
     [
@@ -187,6 +192,7 @@ FMODEL_HIGHN_D1 = fModel(
     :Yb174,
     "D J=1, ν > 26", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)]
     1,
+    (26.0, Inf),
     ["6snd 3D1"],
     Bool[1],
     [0.75258093 0.3826 -483.1;],
@@ -200,7 +206,8 @@ FMODEL_HIGHN_D1 = fModel(
 FMODEL_HIGHN_D2 = fModel(
     :Yb174,
     "D J=2, ν > 5", # [Phys. Rev. X 15, 011009 (2025)]
-    5,
+    2,
+    (5.0, Inf),
     ["6snd 1D2", "6snd 3D2", "4f13 5d 6snl a", "4f13 5d 6snl b", "6pnp 1D2"],
     Bool[1, 1, 0, 0, 1],
     [
@@ -241,7 +248,8 @@ FMODEL_HIGHN_D2 = fModel(
 FMODEL_HIGHN_D3 = fModel(
     :Yb174,
     "D J=3, ν > 18", # fit only valid from 30d upward [Phys. Rev. X 15, 011009 (2025)], provides good match around 21d
-    1,
+    3,
+    (18.0, Inf),
     ["6snd 3D3"],
     Bool[1],
     [0.72902016 -0.705328923 829.238844;],
@@ -255,7 +263,8 @@ FMODEL_HIGHN_D3 = fModel(
 FMODEL_HIGHN_F2 = fModel(
     :Yb174,
     "F J=2, ν > 25", # [arXiv:2507.11487v1]
-    1,
+    2,
+    (25.0, Inf),
     ["6snf 3F2"],
     Bool[1],
     [0.0718252326 -1.00091963 -106.291066;],
@@ -269,7 +278,8 @@ FMODEL_HIGHN_F2 = fModel(
 FMODEL_HIGHN_F3 = fModel(
     :Yb174,
     "F J=3, ν > 7", # [Phys. Rev. A 112, 042817 (2025)]
-    7,
+    3,
+    (7.0, Inf),
     ["6snf 1F3", "6snf 3F3", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c", "4f13 5d 6snl d", "4f13 5d 6snl e"],
     Bool[1, 1, 0, 0, 0, 0, 0],
     [
@@ -311,7 +321,8 @@ FMODEL_HIGHN_F3 = fModel(
 FMODEL_HIGHN_F4 = fModel(
     :Yb174,
     "F J=4, ν > 25", # [arXiv:2507.11487v1]
-    1,
+    4,
+    (25.0, Inf),
     ["6snf 3F4"],
     Bool[1],
     [0.0839027969 -2.91009023;],
@@ -325,7 +336,8 @@ FMODEL_HIGHN_F4 = fModel(
 FMODEL_HIGHN_G3 = fModel(
     :Yb174,
     "G J=3, ν > 25", # [arXiv:2507.11487v1]
-    1,
+    3,
+    (25.0, Inf),
     ["6sng 3G3"],
     Bool[1],
     [0.0260964574 -0.14139526;],
@@ -339,7 +351,8 @@ FMODEL_HIGHN_G3 = fModel(
 FMODEL_HIGHN_G4 = fModel(
     :Yb174,
     "G J=4, ν > 25", # [Phys. Rev. A 112, 042817 (2025)]
-    2,
+    4,
+    (25.0, Inf),
     ["6sng +G4", "6sng -G4"],
     Bool[1, 1],
     [0.0262659964 -0.148808463; 0.0254568575 -0.134219071;],
@@ -353,7 +366,8 @@ FMODEL_HIGHN_G4 = fModel(
 FMODEL_HIGHN_G5 = fModel(
     :Yb174,
     "G J=5, ν > 25", # [Phys. Rev. A 112, 042817 (2025)]
-    1,
+    5,
+    (25.0, Inf),
     ["6sng 3G5"],
     Bool[1],
     [0.02536571 -0.18507079;], # updated since [arXiv:2507.11487v1]
@@ -371,7 +385,8 @@ FMODEL_HIGHN_G5 = fModel(
 FMODEL_LOWN_S0 = fModel(
     :Yb174,
     "S J=0, 1 < ν < 2", # fit to the 6s^2 ground state
-    1,
+    0,
+    (1.0, 2.0),
     ["6sns 1S0"],
     Bool[1],
     [0.525055 0;],
@@ -386,6 +401,7 @@ FMODEL_LOWN_S1 = fModel(
     :Yb174,
     "S J=1, 2 < ν < 26", # fit to NIST data between 7s and 13s, extrapolation seems good up to 30s
     1,
+    (2.0, 26.0),
     ["6sns 3S1"],
     Bool[1],
     [0.432841 0.724559 -1.95424;],
@@ -399,7 +415,8 @@ FMODEL_LOWN_S1 = fModel(
 FMODEL_LOWN_P0 = fModel(
     :Yb174,
     "P J=0, 1.5 < ν < 5.5", # fit to NIST data between 6p and 9p
-    1,
+    0,
+    (1.5, 5.5),
     ["6snp 3P0"],
     Bool[1],
     [0.969279 0.288219 1.36228;],
@@ -413,7 +430,8 @@ FMODEL_LOWN_P0 = fModel(
 FMODEL_LOWEST_P1 = fModel(
     :Yb174,
     "P J=1, 1.7 < ν < 2.7", # fit to NIST data for the 6p states
-    2,
+    1,
+    (1.7, 2.7),
     ["6snp 1P1", "6snp 3P1"],
     Bool[1, 1],
     [0.161083 0; 0.920424 0],
@@ -427,7 +445,8 @@ FMODEL_LOWEST_P1 = fModel(
 FMODEL_LOWN_P1 = fModel(
     :Yb174,
     "P J=1, 2.7 < ν < 5.7", # fit to NIST data between 7p and 9p
-    2,
+    1,
+    (2.7, 5.7),
     ["6snp 1P1", "6snp 3P1"],
     Bool[1, 1],
     [0.967223 -3.03997 0.569205; 0.967918 0.25116 0.868505;],
@@ -441,7 +460,8 @@ FMODEL_LOWN_P1 = fModel(
 FMODEL_LOWN_P2 = fModel(
     :Yb174,
     "P J=2, 1.5 < ν < 4.5", # fit to NIST data between 6p and 8p
-    1,
+    2,
+    (1.5, 4.5),
     ["6snp 3P2"],
     Bool[1],
     [0.906105 0.383471 1.23512;],
@@ -456,6 +476,7 @@ FMODEL_LOWN_D1 = fModel(
     :Yb174,
     "D J=1, 2 < ν < 26", # fit to NIST data between 5d and 8d, causes a µ=0.005 difference at the 30d state
     1,
+    (2.0, 26.0),
     ["6snd 3D1"],
     Bool[1],
     [0.758222 -0.017906 3.392161;],
@@ -470,6 +491,7 @@ FMODEL_LOWN_D2 = fModel(
     :Yb174,
     "D J=2, 2 < ν < 5", # fit to NIST data between 5d and 7d
     2,
+    (2.0, 5.0),
     ["6snd 1D2", "6snd 3D2"],
     Bool[1, 1],
     [0.703156 0.973192; 0.724546 0.372621],
@@ -483,7 +505,8 @@ FMODEL_LOWN_D2 = fModel(
 FMODEL_LOWN_D3 = fModel(
     :Yb174,
     "D J=3, 2 < ν < 18", # fit to NIST data between 5d and 8d, provides good match around 21d
-    1,
+    3,
+    (2.0, 18.0),
     ["6snd 3D3"],
     Bool[1],
     [0.734512 -0.019501 3.459114;],
