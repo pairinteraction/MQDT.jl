@@ -294,31 +294,39 @@ end
     mroots(N::Number, M::Model, P::Parameters)
     mroots(N1::Number, N2::Number, M::Model, P::Parameters)
 
-Function that returns the roots of the M matrix in the range from `N` to `N+1` or, if provided, from `N1` to `N2`.
+Function that returns the roots of the M matrix in the range from `N-0.5` to `N+0.5` or, if provided, from `N1` to `N2`.
 Root finding algorithm used from the package `Roots`.
 """
 function mroots(N::Number, M::Model, P::Parameters)
-    m(n) = det(mmat(n, M, P))
-    z = find_zeros(m, (N-0.5, N+0.5))
-    c = Int[]
-    for i in eachindex(z)
-        mz = m(z[i])
-        if abs(mz) > 1e-10
-            println("Warning: skipped a root that seems inaccurate. Value was $(mz) at n=$(z[i]) for $(M.name).")
-        else
-            push!(c, i)
-        end
-    end
-    return z[c]
+    return mroots(N-0.5, N+0.5, M, P)
 end
 
 function mroots(N1::Number, N2::Number, M::Model, P::Parameters)
-    z = Float64[]
-    for i in N1:N2
-        append!(z, mroots(i, M, P))
+    nus = Float64[]
+    m(n) = det(mmat(n, M, P))
+    for (i, _N1) in enumerate(N1:N2)
+        _N2 = min(_N1 + 1, N2)
+        if abs(_N1 - _N2) < 1e-10
+            _N2 = _N2 + 1e-10
+        end
+        z = find_zeros(m, (_N1, _N2))
+        new_nus = Float64[]
+        for nu in z
+            if abs(m(nu)) > 1e-10
+                println("Warning: skipped a root that seems inaccurate. Value was $(m(nu)) at n=$(nu) for $(M.name).")
+            else
+                push!(new_nus, nu)
+            end
+        end
+        if i != 1 && length(new_nus) > 0 && abs(new_nus[1] - _N1) < eps()
+            # if the first root is at the lower boundary, skip it unless it's the very first interval
+            popfirst!(new_nus)
+        end
+        append!(nus, new_nus)
     end
-    return z
+    return nus
 end
+
 
 """
 See also [`mroots`](@ref)
