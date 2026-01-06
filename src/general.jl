@@ -379,7 +379,8 @@ See also [`kModel`](@ref)
     fModel(
         species::Symbol,
         name::String,
-        size::Int,
+        F::Float64,
+        nu_range::Tuple{Float64,Float64},
         terms::Vector{String},
         core::Vector{Bool},
         defects::Matrix{Float64},
@@ -400,7 +401,8 @@ Contains all relevant parameters to form the K matrix and calculate the spectrum
 julia> RYDBERG_S0 = fModel(
            :Yb174,
            "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
-           6,
+           0,
+           (2, Inf),
            ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
            Bool[1, 0, 1, 0, 1, 0],
            [
@@ -438,7 +440,8 @@ julia> RYDBERG_S0 = fModel(
 struct fModel <: Model
     species::Symbol
     name::String
-    size::Int
+    F::Float64
+    nu_range::Tuple{Float64,Float64}
     terms::Vector{String}
     core::Vector{Bool}
     defects::Matrix{Float64}
@@ -450,11 +453,25 @@ struct fModel <: Model
     thresholds_dict::Union{Dict{Union{coreQuantumNumbers,String},Float64},Nothing}
 end
 
-function fModel(species, name, size, terms, core, defects, mixing, angles, inner_channels, outer_channels, unitary)
+function fModel(
+    species,
+    name,
+    F,
+    nu_range,
+    terms,
+    core,
+    defects,
+    mixing,
+    angles,
+    inner_channels,
+    outer_channels,
+    unitary,
+)
     return fModel(
         species,
         name,
-        size,
+        F,
+        nu_range,
         terms,
         core,
         defects,
@@ -537,15 +554,11 @@ end
 # --------------------------------------------------------
 
 function Base.length(T::Model)
-    return T.size
-end
-
-function Base.size(T::Model)
-    return (T.size,)
+    return length(T.terms)
 end
 
 function get_lr(T::fModel)
-    l = zeros(Int, T.size)
+    l = zeros(Int, length(T.terms))
     l[findall(T.core)] = get_lr(T.outer_channels)
     return l
 end
