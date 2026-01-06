@@ -304,8 +304,9 @@ end
 function mroots(N1::Number, N2::Number, M::Model, P::Parameters)
     nus = Float64[]
     m(n) = det(mmat(n, M, P))
-    for (i, _N1) in enumerate(N1:N2)
-        _N2 = min(_N1 + 1, N2)
+    N_list = [N1; (N1 + 0.5):N2; N2]
+    for (i, _N1) in enumerate(N_list[1:(end - 1)])
+        _N2 = N_list[i + 1]
         if abs(_N1 - _N2) < 1e-10
             _N2 = _N2 + 1e-10
         end
@@ -326,7 +327,6 @@ function mroots(N1::Number, N2::Number, M::Model, P::Parameters)
     end
     return nus
 end
-
 
 """
 See also [`mroots`](@ref)
