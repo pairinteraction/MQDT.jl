@@ -112,7 +112,7 @@ function nu(N::Number, M::Model, P::Parameters)
 end
 
 function nu(N::Vector, M::Model, P::Parameters)
-    n = Matrix{Float64}(undef, M.size, length(N))
+    n = Matrix{Float64}(undef, length(M), length(N))
     for i in eachindex(N)
         n[:, i] = nu(N[i], M, P)
     end
@@ -232,7 +232,7 @@ end
 
 function rot(N::Number, M::fModel, P::Parameters)
     if iszero(M.angles) # check presence of channel mixing
-        return diagm(ones(M.size))
+        return diagm(ones(length(M)))
     else
         t = M.angles[:, 1]
         i = findall(!iszero, M.angles[:, 2]) # check energy dependence
@@ -241,7 +241,7 @@ function rot(N::Number, M::fModel, P::Parameters)
             n = nu(N, M, P)[j] # find nu relative to threshold
             t = theta(n, M.angles)
         end
-        return rot(t, M.mixing, M.size)
+        return rot(t, M.mixing, length(M))
     end
 end
 
@@ -380,7 +380,7 @@ If overwrite_model_limits is True, we will ignore the model nu limits and always
 """
 function eigenstates(N1::Number, N2::Number, M::Model, P::Parameters; overwrite_model_limits::Bool=false)
     if !overwrite_model_limits
-        nu_min_model, nu_max_model = get_nu_limits_from_model(M)
+        nu_min_model, nu_max_model = M.nu_range
         N1 = isnan(N1) ? nu_min_model : max(N1, nu_min_model)
         N2 = isnan(N2) ? nu_max_model : min(N2, nu_max_model)
     elseif isnan(N1) || isnan(N2)
@@ -445,7 +445,7 @@ function basisarray(T::EigenStates, M::fModel)
 
     B = Vector{BasisState}()
     for i in eachindex(T.n)
-        if !isone(M.size) || lr_list[first_relevant_channel] < T.nu[first_relevant_channel, i]
+        if !isone(length(M)) || lr_list[first_relevant_channel] < T.nu[first_relevant_channel, i]
             ei = T.n[i]
             if abs(ei - round(Int, ei)) < 1e2eps()
                 ei = round(ei)
