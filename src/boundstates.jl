@@ -375,12 +375,17 @@ N1 can be NaN to use the lowest possible effective principal quantum number for 
 N2 can only be NaN if the model M has a defined maximum effective principal quantum number.
 We will always use the higher of N1 and the M's minimum effective principal quantum number
 and the lower of N2 and the M's maximum effective principal quantum number.
-"""
-function eigenstates(N1::Number, N2::Number, M::Model, P::Parameters)
-    nu_min_model, nu_max_model = get_nu_limits_from_model(M)
 
-    N1 = isnan(N1) ? nu_min_model : max(N1, nu_min_model)
-    N2 = isnan(N2) ? nu_max_model : min(N2, nu_max_model)
+If overwrite_model_limits is True, we will ignore the model nu limits and always use the given bounds.
+"""
+function eigenstates(N1::Number, N2::Number, M::Model, P::Parameters; overwrite_model_limits::Bool=false)
+    if !overwrite_model_limits
+        nu_min_model, nu_max_model = get_nu_limits_from_model(M)
+        N1 = isnan(N1) ? nu_min_model : max(N1, nu_min_model)
+        N2 = isnan(N2) ? nu_max_model : min(N2, nu_max_model)
+    elseif isnan(N1) || isnan(N2)
+        error("When overwrite_model_limits is true, N1 and N2 cannot be NaN.")
+    end
     if isinf(N2)
         error("Cannot use infinite N2 if the model does not define a maximum effective principal quantum number.")
     end
