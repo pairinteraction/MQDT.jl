@@ -379,7 +379,8 @@ See also [`kModel`](@ref)
     fModel(
         species::Symbol,
         name::String,
-        size::Int,
+        F::Float64,
+        nu_range::Tuple{Float64,Float64},
         terms::Vector{String},
         core::Vector{Bool},
         defects::Matrix{Float64},
@@ -400,7 +401,8 @@ Contains all relevant parameters to form the K matrix and calculate the spectrum
 julia> RYDBERG_S0 = fModel(
            :Yb174,
            "S J=0, ν > 2", # fit for states 6s7s upward [Phys. Rev. X 15, 011009 (2025)]
-           6,
+           0,
+           (2, Inf),
            ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c"],
            Bool[1, 0, 1, 0, 1, 0],
            [
@@ -438,7 +440,8 @@ julia> RYDBERG_S0 = fModel(
 struct fModel <: Model
     species::Symbol
     name::String
-    size::Int
+    F::Float64
+    nu_range::Tuple{Float64,Float64}
     terms::Vector{String}
     core::Vector{Bool}
     defects::Matrix{Float64}
@@ -450,11 +453,25 @@ struct fModel <: Model
     thresholds_dict::Union{Dict{Union{coreQuantumNumbers,String},Float64},Nothing}
 end
 
-function fModel(species, name, size, terms, core, defects, mixing, angles, inner_channels, outer_channels, unitary)
+function fModel(
+    species,
+    name,
+    F,
+    nu_range,
+    terms,
+    core,
+    defects,
+    mixing,
+    angles,
+    inner_channels,
+    outer_channels,
+    unitary,
+)
     return fModel(
         species,
         name,
-        size,
+        F,
+        nu_range,
         terms,
         core,
         defects,
@@ -537,15 +554,11 @@ end
 # --------------------------------------------------------
 
 function Base.length(T::Model)
-    return T.size
-end
-
-function Base.size(T::Model)
-    return (T.size,)
+    return length(T.terms)
 end
 
 function get_lr(T::fModel)
-    l = zeros(Int, T.size)
+    l = zeros(Int, length(T.terms))
     l[findall(T.core)] = get_lr(T.outer_channels)
     return l
 end
@@ -670,35 +683,85 @@ function get_thresholds(M::kModel, P::Parameters)
     return thresholds
 end
 
-function single_channel_models(species::Symbol, l::Integer)
-    @assert l > 0 "l must be positive and nonzero for this function"
-    jr = [l-1/2, l-1/2, l+1/2, l+1/2]
-    jt = [l-1, l, l, l+1]
-    m = Vector{fModel}(undef, 4)
-    for i in eachindex(jt)
-        m[i] = fModel(
-            species,
-            "L=$l, J=$(jt[i]), Jr=$(jr[i]), ν > $(l+1)",
-            1,
-            [""],
-            Bool[1],
-            [0;;],
-            [""],
-            [0;;],
-            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], jt[i])]),
-            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], jt[i])]),
-            [1;;],
-        )
+function get_parameters(species::Symbol)
+    species_module = getfield(MQDT, species)
+    for nm in names(species_module; all=true)
+        obj = getfield(species_module, nm)
+        if isa(obj, Parameters) && obj.species == species
+            return obj
+        end
     end
-    return m
+    return error("No Parameters found for species: $species")
 end
 
-function single_channel_models(species::Symbol, l_list::UnitRange{Int64})
-    m = Vector{fModel}()
-    for l in l_list
-        append!(m, single_channel_models(species, l))
+function get_fmodels(species::Symbol, f_tot::Float64)
+    models = Vector{fModel}()
+    species_module = getfield(MQDT, species)
+    for nm in names(species_module; all=true)
+        obj = getfield(species_module, nm)
+        if isa(obj, fModel) && obj.species == species && obj.F == f_tot
+            push!(models, obj)
+        end
     end
-    return m
+    if length(models) >= 1
+        return models
+    end
+
+    # else generate single-channel models
+    parameters = get_parameters(species)
+    return single_channel_models(species, l_tot, f_tot, parameters)
+end
+
+function single_channel_models(species::Symbol, l::Integer, f_tot::Float64, param::Parameters)
+    @assert l > 0 "l must be positive and nonzero for this function"
+
+    j_ryd_list = collect(abs(l - 1 / 2):1:(l + 1 / 2))
+    f_core_list = collect(abs(param.spin - 1 / 2):1:(param.spin + 1 / 2))
+
+    models = Vector{fModel}()
+    for j_ryd in j_ryd_list
+        for f_core in f_core_list
+            if !(abs(f_core - j_ryd) <= f_tot <= (f_core + j_ryd))
+                continue
+            end
+            if param.spin == 0
+                channel = jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, j_ryd, f_tot, f_tot)])
+                model = fModel(
+                    species,
+                    "SQDT L=$l, Jr=$j_ryd, J=$f_tot, ν > $(l+1)",
+                    f_tot,
+                    (l+1, Inf),
+                    ["JJ: L=$l, Jr=$j_ryd, J=$f_tot"],
+                    Bool[1],
+                    [0;;],
+                    [""],
+                    [0;;],
+                    channel,
+                    channel,
+                    [1;;],
+                )
+            else
+                channel = fjChannels([fjQuantumNumbers(0.5, 0, 0.5, f_core, l, j_ryd, f_tot)])
+                model = fModel(
+                    species,
+                    "SQDT L=$l, Jr=$j_ryd, F=$f_tot, ν > $(l+1)",
+                    f_tot,
+                    (l+1, Inf),
+                    ["FJ: I=$(param.spin), L=$l, Jr=$j_ryd, F=$f_tot"],
+                    Bool[1],
+                    [0;;],
+                    [""],
+                    [0;;],
+                    channel,
+                    channel,
+                    [1;;],
+                )
+            end
+            push!(models, model)
+        end
+    end
+
+    return models
 end
 
 # --------------------------------------------------------

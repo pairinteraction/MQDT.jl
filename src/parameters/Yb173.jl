@@ -43,7 +43,8 @@ PARA = Parameters(
 FMODEL_HIGHN_S15 = fModel(
     :Yb173,
     "S F=3/2, ν > 26",
-    1,
+    1.5,
+    (26.0, Inf),
     ["6sns 3S1"],
     # ["(6s1/2)(ns1/2)"],
     Bool[1],
@@ -58,7 +59,8 @@ FMODEL_HIGHN_S15 = fModel(
 FMODEL_HIGHN_S25 = fModel(
     :Yb173,
     "S F=5/2, ν > 26",
-    7,
+    2.5,
+    (26.0, Inf),
     ["6sns 1S0", "4f13 5d 6snl a", "6pnp 1S0", "4f13 5d 6snl b", "6pnp 3P0", "4f13 5d 6snl c", "6sns 3S1"],
     # ["(6s1/2)(ns1/2)", "5d a", "(6p3/2)(np3/2)", "5d b", "(6p1/2)(np1/2)", "5d c", "(6s1/2)(ns1/2)"],
     Bool[1, 0, 1, 0, 1, 0, 1],
@@ -106,7 +108,8 @@ FMODEL_HIGHN_S25 = fModel(
 FMODEL_HIGHN_S35 = fModel(
     :Yb173,
     "S F=7/2, ν > 26",
-    1,
+    3.5,
+    (26.0, Inf),
     ["6sns 3S1"],
     # ["(6s1/2)(ns1/2)"],
     Bool[1],
@@ -121,7 +124,8 @@ FMODEL_HIGHN_S35 = fModel(
 FMODEL_HIGHN_P05 = fModel(
     :Yb173,
     "P F=1/2, ν > 10",
-    4,
+    0.5,
+    (10.0, Inf),
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
     # ["(6s1/2)(np3/2)", "5d a", "5d b", "5d c"],
     Bool[1, 0, 0, 0],
@@ -141,7 +145,8 @@ FMODEL_HIGHN_P05 = fModel(
 FMODEL_HIGHN_P15 = fModel(
     :Yb173,
     "P F=3/2, ν > 10",
-    10,
+    1.5,
+    (10.0, Inf),
     [
         "6snp 1P1",
         "6snp 3P1",
@@ -210,7 +215,8 @@ FMODEL_HIGHN_P15 = fModel(
 FMODEL_HIGHN_P25 = fModel(
     :Yb173,
     "P F=5/2, ν > 10",
-    12,
+    2.5,
+    (10.0, Inf),
     [
         "6snp 1P1",
         "6snp 3P1",
@@ -288,7 +294,8 @@ FMODEL_HIGHN_P25 = fModel(
 FMODEL_HIGHN_P35 = fModel(
     :Yb173,
     "P F=7/2, ν > 10",
-    10,
+    3.5,
+    (10.0, Inf),
     [
         "6snp 1P1",
         "6snp 3P1",
@@ -357,7 +364,8 @@ FMODEL_HIGHN_P35 = fModel(
 FMODEL_HIGHN_P45 = fModel(
     :Yb173,
     "P F=9/2, ν > 10",
-    4,
+    4.5,
+    (10.0, Inf),
     ["6snp 3P2", "4f13 5d 6snl a", "4f13 5d 6snl b", "4f13 5d 6snl c"],
     # ["(6s1/2)(np3/2)", "5d a", "5d b", "5d c"],
     Bool[1, 0, 0, 0],
