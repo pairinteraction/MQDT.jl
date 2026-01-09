@@ -683,6 +683,36 @@ function get_thresholds(M::kModel, P::Parameters)
     return thresholds
 end
 
+function get_parameters(species::Symbol)
+    species_module = getfield(MQDT, species)
+    for nm in names(species_module; all=true)
+        obj = getfield(species_module, nm)
+        if isa(obj, Parameters) && obj.species == species
+            return obj
+        end
+    end
+    return error("No Parameters found for species: $species")
+end
+
+function get_fmodels(species::Symbol, f_tot::Float64)
+    models = Vector{fModel}()
+    species_module = getfield(MQDT, species)
+    for nm in names(species_module; all=true)
+        obj = getfield(species_module, nm)
+        if isa(obj, fModel) && obj.species == species && obj.F == f_tot
+            push!(models, obj)
+        end
+    end
+    if length(models) >= 1
+        return models
+    end
+
+    # else generate single-channel models
+    parameters = get_parameters(species)
+    return single_channel_models(species, l_tot, f_tot, parameters)
+end
+
+
 function single_channel_models(species::Symbol, l::Integer)
     @assert l > 0 "l must be positive and nonzero for this function"
     jr = [l-1/2, l-1/2, l+1/2, l+1/2]
