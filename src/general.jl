@@ -712,36 +712,56 @@ function get_fmodels(species::Symbol, f_tot::Float64)
     return single_channel_models(species, l_tot, f_tot, parameters)
 end
 
-
-function single_channel_models(species::Symbol, l::Integer)
+function single_channel_models(species::Symbol, l::Integer, f_tot::Float64, param::Parameters)
     @assert l > 0 "l must be positive and nonzero for this function"
-    jr = [l-1/2, l-1/2, l+1/2, l+1/2]
-    jt = [l-1, l, l, l+1]
-    m = Vector{fModel}(undef, 4)
-    for i in eachindex(jt)
-        m[i] = fModel(
-            species,
-            "L=$l, J=$(jt[i]), Jr=$(jr[i]), ν > $(l+1)",
-            1,
-            [""],
-            Bool[1],
-            [0;;],
-            [""],
-            [0;;],
-            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], jt[i])]),
-            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], jt[i])]),
-            [1;;],
-        )
-    end
-    return m
-end
 
-function single_channel_models(species::Symbol, l_list::UnitRange{Int64})
-    m = Vector{fModel}()
-    for l in l_list
-        append!(m, single_channel_models(species, l))
+    j_ryd_list = collect(abs(l - 1 / 2):1:(l + 1 / 2))
+    f_core_list = collect(abs(param.spin - 1 / 2):1:(param.spin + 1 / 2))
+
+    models = Vector{fModel}()
+    for j_ryd in j_ryd_list
+        for f_core in f_core_list
+            if !(abs(f_core - j_ryd) <= f_tot <= (f_core + j_ryd))
+                continue
+            end
+            if param.spin == 0
+                channel = jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, j_ryd, f_tot, f_tot)])
+                model = fModel(
+                    species,
+                    "SQDT L=$l, Jr=$j_ryd, J=$f_tot, ν > $(l+1)",
+                    f_tot,
+                    (l+1, Inf),
+                    ["JJ: L=$l, Jr=$j_ryd, J=$f_tot"],
+                    Bool[1],
+                    [0;;],
+                    [""],
+                    [0;;],
+                    channel,
+                    channel,
+                    [1;;],
+                )
+            else
+                channel = fjChannels([fjQuantumNumbers(0.5, 0, 0.5, f_core, l, j_ryd, f_tot)])
+                model = fModel(
+                    species,
+                    "SQDT L=$l, Jr=$j_ryd, F=$f_tot, ν > $(l+1)",
+                    f_tot,
+                    (l+1, Inf),
+                    ["FJ: I=$(param.spin), L=$l, Jr=$j_ryd, F=$f_tot"],
+                    Bool[1],
+                    [0;;],
+                    [""],
+                    [0;;],
+                    channel,
+                    channel,
+                    [1;;],
+                )
+            end
+            push!(models, model)
+        end
     end
-    return m
+
+    return models
 end
 
 # --------------------------------------------------------
