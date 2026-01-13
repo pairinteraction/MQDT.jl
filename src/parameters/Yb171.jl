@@ -203,7 +203,7 @@ FMODEL_HIGHN_P15 = fModel(
         "4f13 5d 6snl e",
         "4f13 5d 6snl f",
         "4f13 5d 6snl g",
-        "62nf 3F2",
+        "6snf 3F2",
     ],
     Bool[1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
     [
