@@ -1,52 +1,47 @@
 using MQDT
 
-# load Yb174 data
-parameters = MQDT.Yb174.PARA
-low_n_models = [
-    MQDT.Yb174.FMODEL_LOWN_S0,
-    MQDT.Yb174.FMODEL_LOWN_S1,
-    MQDT.Yb174.FMODEL_LOWN_P0,
-    MQDT.Yb174.FMODEL_LOWEST_P1,
-    MQDT.Yb174.FMODEL_LOWN_P1,
-    MQDT.Yb174.FMODEL_LOWN_P2,
-    MQDT.Yb174.FMODEL_LOWN_D1,
-    MQDT.Yb174.FMODEL_LOWN_D2,
-    MQDT.Yb174.FMODEL_LOWN_D3,
-]
-low_l_models = [
-    MQDT.Yb174.FMODEL_HIGHN_S0,
-    MQDT.Yb174.FMODEL_HIGHN_S1,
-    MQDT.Yb174.FMODEL_HIGHN_P0,
-    MQDT.Yb174.FMODEL_HIGHN_P1,
-    MQDT.Yb174.FMODEL_HIGHN_P2,
-    MQDT.Yb174.FMODEL_HIGHN_D1,
-    MQDT.Yb174.FMODEL_HIGHN_D2,
-    MQDT.Yb174.FMODEL_HIGHN_D3,
-    MQDT.Yb174.FMODEL_HIGHN_F2,
-    MQDT.Yb174.FMODEL_HIGHN_F3,
-    MQDT.Yb174.FMODEL_HIGHN_F4,
-    MQDT.Yb174.FMODEL_HIGHN_G3,
-    MQDT.Yb174.FMODEL_HIGHN_G4,
-    MQDT.Yb174.FMODEL_HIGHN_G5,
-]
-
+species = :Yb174
+parameters = MQDT.get_species_parameters(species)
 n_max = 30
-
-# calculate low \nu MQDT states
-low_n_states = [eigenstates(NaN, n_max, model, parameters) for model in low_n_models]
-
-# calculate high \nu, low \ell MQDT states
-low_l_states = [eigenstates(NaN, n_max, model, parameters) for model in low_l_models]
-
-# calculate high \ell SQDT states
 n_min_high_l = 25 # minimum n for high-l states
-l_max = n_max - 1
-MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol calculation
-high_l_models = single_channel_models(:Yb174, 5:l_max)
-high_l_states = [eigenstates(n_min_high_l, n_max, M, parameters) for M in high_l_models]
 
-# generate basis and calculate matrix elements
-basis = basisarray(vcat(low_n_states, low_l_states, high_l_states), vcat(low_n_models, low_l_models, high_l_models))
+all_models = Vector{MQDT.fModel}()
+
+sr = 1 / 2
+Jc = 1 / 2
+ic = parameters.spin
+for lr in 0:(n_max - 1)
+    for Jr in abs(lr - sr):1:(lr + sr)
+        for Fc in abs(Jc - ic):1:(Jc + ic)
+            for F in abs(Fc - Jr):1:(Fc + Jr)
+                models = MQDT.get_fmodels(species, lr, Jr, Fc, F, parameters)
+                for model in models
+                    if !any(m -> m.name == model.name, all_models)
+                        push!(all_models, model)
+                    end
+                end
+            end
+        end
+    end
+end
+
+@info "Calculating MQDT states..."
+states = Vector{MQDT.EigenStates}(undef, length(all_models))
+for (i, M) in enumerate(all_models)
+    n_min = NaN
+    if startswith(M.name, "SQDT")
+        n_min = n_min_high_l
+    end
+    @info "$(M.name)"
+    states[i] = MQDT.eigenstates(n_min, n_max, M, parameters)
+    @info "  found nu_min=$(minimum(states[i].n)), nu_max=$(maximum(states[i].n)), total states=$(length(states[i].n))"
+end
+
+# generate basis
+basis = basisarray(states, all_models)
+
+# calculate matrix elements
+MQDT.wigner_init_float(n_max, "Jmax", 9) # initialize Wigner symbol calculation
 @time me = matrix_elements(basis, parameters)
 
 # prepare tables
