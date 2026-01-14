@@ -154,7 +154,7 @@ FMODEL_HIGHN_D2 = fModel(
 
 FMODEL_HIGHN_D3 = fModel(
     :Sr88,
-    "D J=3, ν > 47",
+    "D J=3, ν > 47", # This is a conservative estimate, based on the considered experimental data. In practise the fit may be reasonable good for lower \nu.
     3,
     (47.0, Inf),
     ["5snd 3D3"],
