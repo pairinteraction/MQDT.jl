@@ -105,11 +105,11 @@ function test_model_name(model::fModel)
     @test f_tot == model.F
 
     nu_min, nu_max = get_nu_limits_from_model(model)
-    @test (nu_min, nu_max) == model.nu_range
+    @test (nu_min, nu_max) == model.range
 end
 
 function test_model_states_and_matrix_elements(model::fModel, param::Parameters)
-    nu_min, nu_max = model.nu_range
+    nu_min, nu_max = model.range
     nu_max = min(nu_max, nu_min + 5)
     states = eigenstates(nu_min, nu_max, model, param)
     basis = basisarray(states, model)
