@@ -25,6 +25,8 @@ export lsQuantumNumbers,
     basisarray,
     matrix_elements,
     get_nu_limits_from_model,
+    get_species_parameters,
+    get_fmodels,
     single_channel_model
 
 include("general.jl")
