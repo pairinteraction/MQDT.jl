@@ -47,8 +47,8 @@ m_S15 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARA)[4] for b in b_S15.states]
 g_S15 = -2m_S15 / f * wigner3j(1, 0, f, f, f, f)
 
 scatter(; layout=(2, 1), size=(400, 500), legend=:topleft)
-scatter!(s_S05.n, mod.(-s_S05.nu[7, :], 1); title="¹⁷¹Yb S series", subplot=1, label="F=1/2")
-scatter!(s_S15.n, mod.(-s_S15.nu[1, :], 1); xlabel="ν", ylabel="μ", subplot=1, label="F=3/2")
+scatter!(s_S05.n, mod.(-s_S05.n, 1); title="¹⁷¹Yb S series", subplot=1, label="F=1/2")
+scatter!(s_S15.n, mod.(-s_S15.n, 1); xlabel="ν", ylabel="μ", subplot=1, label="F=3/2")
 scatter!(s_S05.n, g_S05; subplot=2)
 scatter!(s_S15.n, g_S15; xlabel="ν", ylabel="g factor", subplot=2)
 hline!([g_F(1/2, 1/2, 0, 0, 0)]; l=:dash, label="¹S₁", subplot=2)
@@ -71,9 +71,9 @@ m_P15 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARA)[4] for b in b_P15.states]
 g_P15 = -2m_P15 / f * wigner3j(1, 0, f, f, f, f)
 
 scatter(; layout=(2, 2), size=(700, 500))
-scatter!(s_P05.n, mod.(-s_P05.nu[1, :], 1); ylabel="μ", title="¹⁷¹Yb P F=1/2", subplot=1)
+scatter!(s_P05.n, mod.(-s_P05.n, 1); ylabel="μ", title="¹⁷¹Yb P F=1/2", subplot=1)
 scatter!(s_P05.n, g_P05; xlabel="ν", ylabel="g factor", subplot=3)
-scatter!(s_P15.n, mod.(-s_P15.nu[1, :], 1); ylabel="μ", title="¹⁷¹Yb P F=3/2", subplot=2)
+scatter!(s_P15.n, mod.(-s_P15.n, 1); ylabel="μ", title="¹⁷¹Yb P F=3/2", subplot=2)
 scatter!(s_P15.n, g_P15; xlabel="ν", ylabel="g factor", subplot=4)
 hline!([g_F(1/2, 1/2, 1, 1, 0)]; l=:dash, label="¹P₁", subplot=3)
 hline!([g_F(1/2, 1/2, 1, 1, 1)]; l=:dash, label="³P₁", subplot=3)
