@@ -380,7 +380,7 @@ See also [`kModel`](@ref)
         species::Symbol,
         name::String,
         F::Float64,
-        nu_range::Tuple{Float64,Float64},
+        range::Tuple{Float64,Float64},
         terms::Vector{String},
         core::Vector{Bool},
         defects::Matrix{Float64},
@@ -441,7 +441,7 @@ struct fModel <: Model
     species::Symbol
     name::String
     F::Float64
-    nu_range::Tuple{Float64,Float64}
+    range::Tuple{Float64,Float64}
     terms::Vector{String}
     core::Vector{Bool}
     defects::Matrix{Float64}
@@ -453,25 +453,12 @@ struct fModel <: Model
     thresholds_dict::Union{Dict{Union{coreQuantumNumbers,String},Float64},Nothing}
 end
 
-function fModel(
-    species,
-    name,
-    F,
-    nu_range,
-    terms,
-    core,
-    defects,
-    mixing,
-    angles,
-    inner_channels,
-    outer_channels,
-    unitary,
-)
+function fModel(species, name, F, range, terms, core, defects, mixing, angles, inner_channels, outer_channels, unitary)
     return fModel(
         species,
         name,
         F,
-        nu_range,
+        range,
         terms,
         core,
         defects,

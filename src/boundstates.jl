@@ -380,7 +380,7 @@ If overwrite_model_limits is True, we will ignore the model nu limits and always
 """
 function eigenstates(N1::Number, N2::Number, M::Model, P::Parameters; overwrite_model_limits::Bool=false)
     if !overwrite_model_limits
-        nu_min_model, nu_max_model = M.nu_range
+        nu_min_model, nu_max_model = M.range
         N1 = isnan(N1) ? nu_min_model : max(N1, nu_min_model)
         N2 = isnan(N2) ? nu_max_model : min(N2, nu_max_model)
     elseif isnan(N1) || isnan(N2)
