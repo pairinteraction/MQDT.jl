@@ -683,35 +683,29 @@ function get_thresholds(M::kModel, P::Parameters)
     return thresholds
 end
 
-function single_channel_models(species::Symbol, l::Integer)
-    @assert l > 0 "l must be positive and nonzero for this function"
-    jr = [l-1/2, l-1/2, l+1/2, l+1/2]
-    jt = [l-1, l, l, l+1]
-    m = Vector{fModel}(undef, 4)
-    for i in eachindex(jt)
-        m[i] = fModel(
-            species,
-            "L=$l, J=$(jt[i]), Jr=$(jr[i]), ν > $(l+1)",
-            1,
-            [""],
-            Bool[1],
-            [0;;],
-            [""],
-            [0;;],
-            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], jt[i])]),
-            jjChannels([jjQuantumNumbers(0.5, 0, 0.5, l, jr[i], jt[i])]),
-            [1;;],
-        )
+function single_channel_model(species::Symbol, lr::Int, Jr::Float64, Fc::Float64, F::Float64, param::Parameters)
+    sr = 1 / 2
+    Jc = 1 / 2
+    ic = param.spin
+    if !(abs(lr - sr) <= Jr <= (lr + sr)) || !(abs(Jc - ic) <= Fc <= (Jc + ic)) || !(abs(Jr - Fc) <= F <= (Jr + Fc))
+        error("Quantum numbers not allowed: lr=$lr, Jr=$Jr, Fc=$Fc, F=$F")
     end
-    return m
-end
 
-function single_channel_models(species::Symbol, l_list::UnitRange{Int64})
-    m = Vector{fModel}()
-    for l in l_list
-        append!(m, single_channel_models(species, l))
+    if lr <= 0
+        error("expected only lr > 0: lr=$lr, Jr=$Jr, Fc=$Fc, F=$F")
     end
-    return m
+
+    if param.spin == 0
+        channel = jjChannels([jjQuantumNumbers(0.5, 0, 0.5, lr, Jr, F, F)])
+        name = "SQDT L=$lr, Jr=$Jr, J=$F, ν > $(lr+1)"
+        term = "JJ: L=$lr, Jr=$Jr, J=$F"
+    else
+        channel = fjChannels([fjQuantumNumbers(0.5, 0, 0.5, Fc, lr, Jr, F)])
+        name = "SQDT L=$lr, Jr=$Jr, F=$F, ν > $(lr+1)"
+        term = "FJ: I=$(param.spin), L=$lr, Jr=$Jr, F=$F"
+    end
+
+    return fModel(species, name, F, (lr+1, Inf), [term], Bool[1], [0;;], [""], [0;;], channel, channel, [1;;])
 end
 
 # --------------------------------------------------------
