@@ -683,6 +683,54 @@ function get_thresholds(M::kModel, P::Parameters)
     return thresholds
 end
 
+function get_species_parameters(species::Symbol)
+    species_module = getfield(MQDT, species)
+    for nm in names(species_module; all=true)
+        obj = getfield(species_module, nm)
+        if isa(obj, Parameters) && obj.species == species
+            return obj
+        end
+    end
+    return error("No Parameters found for species: $species")
+end
+
+"""
+    get_fmodels(species::Symbol, lr::Int, Jr::Float64, Fc::Float64, F::Float64, param::Parameters)
+
+Given atomic `species` and quantum numbers of a Rydberg channel (`lr`, `Jr`, `Fc`, `F`),
+this function searches for all existing `fModel` in the species module, which includes the specified channel.
+If no matching `fModel` is found, a single-channel `fModel` is generated and returned.
+"""
+function get_fmodels(species::Symbol, lr::Int, Jr::Float64, Fc::Float64, F::Float64, param::Parameters)
+    ic = param.spin
+
+    if ic == 0
+        qn = jjQuantumNumbers(0.5, 0, 0.5, lr, Jr, F)
+    else
+        qn = fjQuantumNumbers(0.5, 0, 0.5, Fc, lr, Jr, F)
+    end
+
+    species_module = getfield(MQDT, species)
+    models = Vector{fModel}()
+    for nm in names(species_module; all=true)
+        obj = getfield(species_module, nm)
+        if !isa(obj, fModel) || (obj.species != species) || (obj.F != F)
+            continue
+        end
+        for channel in obj.outer_channels.i
+            if channel == qn
+                push!(models, obj)
+            end
+        end
+    end
+    if !isempty(models)
+        return models
+    end
+
+    # else generate single-channel model
+    return [single_channel_model(species, lr, Jr, Fc, F, param)]
+end
+
 function single_channel_model(species::Symbol, lr::Int, Jr::Float64, Fc::Float64, F::Float64, param::Parameters)
     sr = 1 / 2
     Jc = 1 / 2
