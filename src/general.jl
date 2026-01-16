@@ -323,42 +323,7 @@ function unique_parity(T::Channels)
     if length(f) == 1
         return f[1]
     else
-        error("unique_parity: channels have different parity")
-    end
-end
-
-"""
-    good_quantum_number(T::lsChannels)
-    good_quantum_number(T::jjChannels)
-    good_quantum_number(T::fjChannels)
-
-Given a ls or jj (fj) channel representation, this function checks whether each channel
-has the same total (hyperfine) angular momentum J (F) and, if true, returns it.
-"""
-function good_quantum_number(T::lsChannels)
-    f = unique(get_J(T))
-    if length(f) == 1
-        return f[1]
-    else
-        error("good_quantum_number: channels have different J")
-    end
-end
-
-function good_quantum_number(T::jjChannels)
-    f = unique(get_J(T))
-    if length(f) == 1
-        return f[1]
-    else
-        error("good_quantum_number: channels have different J")
-    end
-end
-
-function good_quantum_number(T::fjChannels)
-    f = unique(get_F(T))
-    if length(f) == 1
-        return f[1]
-    else
-        error("good_quantum_number: channels have different F")
+        error("Channels have different parity")
     end
 end
 
@@ -564,6 +529,16 @@ end
 
 function get_J(T::fModel)
     return get_J(T.inner_channels)
+end
+
+function parity(T::Model)
+    p_inn = unique_parity(T.inner_channels)
+    p_out = unique_parity(T.outer_channels)
+    if p_inn == p_out
+        return p_out
+    else
+        error("Inner and outer channels have different parity")
+    end
 end
 
 """
