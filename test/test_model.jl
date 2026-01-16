@@ -14,6 +14,12 @@ function test_model_struct(T::fModel)
     elseif length(T.mixing) != size(T.angles, 1)
         println("Wrong number of close-coupling rotations.")
         @test false
+    elseif MQDT.parity(T) != 1 && MQDT.parity(T) != -1
+        println("Channels have inconsistent parity.")
+        @test false
+    elseif [T.F] != unique(MQDT.get_F(T.inner_channels)) || [T.F] != unique(MQDT.get_F(T.outer_channels))
+        println("Channels don't have the same good quantum number.")
+        @test false
     else
         println("Model $(T.name) passed.")
         @test true
@@ -66,6 +72,7 @@ function test_model_unitary(T::fModel, P::Parameters)
             lc = unique(MQDT.get_lc(T.inner_channels))
             lr = unique(MQDT.get_lr(T.inner_channels))
             ft = unique(MQDT.get_F(T.outer_channels))[1]
+            @test ft == T.F
             qn = MQDT.AngularMomenta(lc, lr, P.spin)
             jj = MQDT.jj_channels(qn)
             fj = [unique.(MQDT.get_F.(jj))[i][1] for i in 1:length(jj)]
@@ -142,8 +149,8 @@ end
                 if isa(obj, fModel)
                     test_model_name(obj)
                     test_model_struct(obj)
-                    test_model_unitary(obj, species.PARA)
-                    test_model_states_and_matrix_elements(obj, species.PARA)
+                    test_model_unitary(obj, species.PARAMETERS)
+                    test_model_states_and_matrix_elements(obj, species.PARAMETERS)
                 elseif isa(obj, kModel)
                     test_model_struct(obj)
                     test_model_unitary(obj)
