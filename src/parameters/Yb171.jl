@@ -11,7 +11,7 @@ using ..MQDT:
     fjQuantumNumbers,
     coreQuantumNumbers
 
-export PARA,
+export PARAMETERS,
     FMODEL_HIGHN_S05,
     FMODEL_HIGHN_S15,
     FMODEL_HIGHN_P05,
@@ -50,7 +50,7 @@ THRESHOLDS = Dict(
     "4f13 5d 6s" => 83967.7,
 )
 
-PARA = Parameters(
+PARAMETERS = Parameters(
     :Yb171,
     1822.88848628*170.9363258, # nuclear mass
     0.5, # nuclear spin
