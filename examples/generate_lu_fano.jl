@@ -35,15 +35,15 @@ end
 
 # S series of Yb171
 f = 0.5
-s_S05 = eigenstates(24, 129, MQDT.Yb171.FMODEL_HIGHN_S05, MQDT.Yb171.PARA)
+s_S05 = eigenstates(24, 129, MQDT.Yb171.FMODEL_HIGHN_S05, MQDT.Yb171.PARAMETERS)
 b_S05 = basisarray([s_S05], [MQDT.Yb171.FMODEL_HIGHN_S05])
-m_S05 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARA)[4] for b in b_S05.states]
+m_S05 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARAMETERS)[4] for b in b_S05.states]
 g_S05 = -2m_S05 / f * wigner3j(1, 0, f, f, f, f)
 
 f = 1.5
-s_S15 = eigenstates(24, 129, MQDT.Yb171.FMODEL_HIGHN_S15, MQDT.Yb171.PARA)
+s_S15 = eigenstates(24, 129, MQDT.Yb171.FMODEL_HIGHN_S15, MQDT.Yb171.PARAMETERS)
 b_S15 = basisarray([s_S15], [MQDT.Yb171.FMODEL_HIGHN_S15])
-m_S15 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARA)[4] for b in b_S15.states]
+m_S15 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARAMETERS)[4] for b in b_S15.states]
 g_S15 = -2m_S15 / f * wigner3j(1, 0, f, f, f, f)
 
 scatter(; layout=(2, 1), size=(400, 500), legend=:topleft)
@@ -59,15 +59,15 @@ savefig("Yb171_S_series.pdf")
 
 # P series of Yb171
 f = 0.5
-s_P05 = eigenstates(10, 70, MQDT.Yb171.FMODEL_HIGHN_P05, MQDT.Yb171.PARA)
+s_P05 = eigenstates(10, 70, MQDT.Yb171.FMODEL_HIGHN_P05, MQDT.Yb171.PARAMETERS)
 b_P05 = basisarray([s_P05], [MQDT.Yb171.FMODEL_HIGHN_P05])
-m_P05 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARA)[4] for b in b_P05.states]
+m_P05 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARAMETERS)[4] for b in b_P05.states]
 g_P05 = -2m_P05 / f * wigner3j(1, 0, f, f, f, f)
 
 f = 1.5
-s_P15 = eigenstates(10, 70, MQDT.Yb171.FMODEL_HIGHN_P15, MQDT.Yb171.PARA)
+s_P15 = eigenstates(10, 70, MQDT.Yb171.FMODEL_HIGHN_P15, MQDT.Yb171.PARAMETERS)
 b_P15 = basisarray([s_P15], [MQDT.Yb171.FMODEL_HIGHN_P15])
-m_P15 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARA)[4] for b in b_P15.states]
+m_P15 = [MQDT.multipole_moments(b, b, MQDT.Yb171.PARAMETERS)[4] for b in b_P15.states]
 g_P15 = -2m_P15 / f * wigner3j(1, 0, f, f, f, f)
 
 scatter(; layout=(2, 2), size=(700, 500))

@@ -2,7 +2,7 @@ module Yb174
 
 using ..MQDT: Parameters, fModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers, coreQuantumNumbers
 
-export PARA,
+export PARAMETERS,
     FMODEL_HIGHN_S0,
     FMODEL_HIGHN_S1,
     FMODEL_HIGHN_P0,
@@ -36,7 +36,7 @@ THRESHOLDS = Dict(
     "4f13 5d 6s" => 83967.7,
 )
 
-PARA = Parameters(
+PARAMETERS = Parameters(
     :Yb174,
     1822.88848628*173.9388621, # nuclear mass
     0, # nuclear spin

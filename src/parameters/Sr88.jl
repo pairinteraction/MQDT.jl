@@ -2,7 +2,7 @@ module Sr88
 
 using ..MQDT: Parameters, fModel, kModel, lsChannels, jjChannels, lsQuantumNumbers, jjQuantumNumbers, coreQuantumNumbers
 
-export PARA,
+export PARAMETERS,
     FMODEL_LOWN_P1,
     FMODEL_HIGHN_S0,
     FMODEL_HIGHN_S1,
@@ -19,7 +19,7 @@ export PARA,
 # Isotope data
 THRESHOLDS = Dict(coreQuantumNumbers(0, 0.5) => 45932.1956,)
 
-PARA = Parameters(
+PARAMETERS = Parameters(
     :Sr88,
     1822.888486192*87.9056122571, # nuclear mass
     0, # nuclear spin
