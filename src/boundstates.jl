@@ -434,8 +434,8 @@ Returns a `BasisArray`, which is a list of `BasisState` instances.
 """
 function basisarray(T::EigenStates, M::fModel)
     c = M.outer_channels
-    p = unique_parity(c)
-    f = good_quantum_number(c)
+    p = parity(M)
+    f = M.F
     lr_list = Vector{Union{Int,Nothing}}(nothing, length(M.core))
     for (idx, lr) in zip(findall(M.core), get_lr(c))
         lr_list[idx] = lr
