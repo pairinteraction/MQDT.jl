@@ -2,7 +2,7 @@ module Sr87
 
 using ..MQDT: Parameters, fModel, lsChannels, fjChannels, lsQuantumNumbers, fjQuantumNumbers, coreQuantumNumbers
 
-export PARA,
+export PARAMETERS,
     FMODEL_HIGHN_S35,
     FMODEL_HIGHN_S45,
     FMODEL_HIGHN_S55,
@@ -24,7 +24,7 @@ export PARA,
 # Isotope data
 THRESHOLDS = Dict(coreQuantumNumbers(0, 0.5, 4) => 45932.287373577, coreQuantumNumbers(0, 0.5, 5) => 45932.120512528)
 
-PARA = Parameters(
+PARAMETERS = Parameters(
     :Sr87,
     1822.888486192*86.9088774970, # nuclear mass
     4.5, # nuclear spin
@@ -48,7 +48,7 @@ FMODEL_HIGHN_S35 = fModel(
     [3.370778 0.418 -0.3;],
     [""],
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 0, 0, 1)]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 0, 0, 1, 3.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 4, 0, 0.5, 3.5)]),
     [-1;;],
 )
@@ -64,7 +64,7 @@ FMODEL_HIGHN_S45 = fModel(
     [3.26896 -0.138 0.9; 3.370778 0.418 -0.3],
     [""],
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 0, 0, 0, 0, 0), lsQuantumNumbers(0.5, 1, 0, 0, 0, 1)]),
+    lsChannels([lsQuantumNumbers(0.5, 0, 0, 0, 0, 0, 4.5), lsQuantumNumbers(0.5, 1, 0, 0, 0, 1, 4.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 4, 0, 0.5, 4.5), fjQuantumNumbers(0.5, 0, 0.5, 5, 0, 0.5, 4.5)]),
     [3/2/sqrt(5) sqrt(11)/2/sqrt(5); sqrt(11)/2/sqrt(5) -3/2/sqrt(5)],
 )
@@ -80,7 +80,7 @@ FMODEL_HIGHN_S55 = fModel(
     [3.370778 0.418 -0.3;],
     [""],
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 0, 0, 1)]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 0, 0, 1, 5.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 5, 0, 0.5, 5.5)]),
     [1;;],
 )
@@ -97,10 +97,10 @@ FMODEL_LOWN_P45 = fModel(
     [""],
     [0;;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 0),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2),
+        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 0, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2, 4.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 1, 0.5, 4.5),
@@ -127,7 +127,7 @@ FMODEL_HIGHN_P25 = fModel(
     [2.882 0.446 -1.9;],
     [""],
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 2)]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 2, 2.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 4, 1, 1.5, 2.5)]),
     [-1;;],
 )
@@ -144,9 +144,9 @@ FMODEL_HIGHN_P35 = fModel(
     [""],
     [0;;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2),
+        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1, 3.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1, 3.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2, 3.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 1, 0.5, 3.5),
@@ -168,10 +168,10 @@ FMODEL_HIGHN_P45 = fModel(
     [""],
     [0;;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 0),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2),
+        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 0, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2, 4.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 1, 0.5, 4.5),
@@ -199,9 +199,9 @@ FMODEL_HIGHN_P55 = fModel(
     [""],
     [0;;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1),
-        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2),
+        lsQuantumNumbers(0.5, 0, 0, 1, 1, 1, 5.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 1, 5.5),
+        lsQuantumNumbers(0.5, 1, 0, 1, 1, 2, 5.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 1, 1.5, 5.5),
@@ -222,7 +222,7 @@ FMODEL_HIGHN_P65 = fModel(
     [2.882 0.446 -1.9;],
     [""],
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 2)]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 1, 1, 2, 6.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 5, 1, 1.5, 6.5)]),
     [1;;],
 )
@@ -238,7 +238,7 @@ FMODEL_HIGHN_D15 = fModel(
     [2.655 -41.4 -15363;],
     [""],
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 3)]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 3, 1.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 4, 2, 2.5, 1.5)]),
     [-1;;],
 )
@@ -255,9 +255,9 @@ FMODEL_HIGHN_D25 = fModel(
     ["1.2"],
     [-0.14 0;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3),
+        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2, 2.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2, 2.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3, 2.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 2, 1.5, 2.5),
@@ -279,10 +279,10 @@ FMODEL_HIGHN_D35 = fModel(
     ["1.3"],
     [-0.14 0;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 1),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3),
+        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2, 3.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 1, 3.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2, 3.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3, 3.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 2, 1.5, 3.5),
@@ -310,10 +310,10 @@ FMODEL_HIGHN_D45 = fModel(
     ["1.3"],
     [-0.14 0;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 1),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3),
+        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 1, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3, 4.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 2, 1.5, 4.5),
@@ -341,10 +341,10 @@ FMODEL_HIGHN_D55 = fModel(
     ["1.3"],
     [-0.14 0;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 1),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3),
+        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2, 5.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 1, 5.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2, 5.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3, 5.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 2, 1.5, 5.5),
@@ -372,9 +372,9 @@ FMODEL_HIGHN_D65 = fModel(
     ["1.2"],
     [-0.14 0;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2),
-        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3),
+        lsQuantumNumbers(0.5, 0, 0, 2, 2, 2, 6.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 2, 6.5),
+        lsQuantumNumbers(0.5, 1, 0, 2, 2, 3, 6.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 2, 2.5, 6.5),
@@ -395,7 +395,7 @@ FMODEL_HIGHN_D75 = fModel(
     [2.655 -41.4 -15363;],
     [""],
     [0;;],
-    lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 3)]),
+    lsChannels([lsQuantumNumbers(0.5, 1, 0, 2, 2, 3, 7.5)]),
     fjChannels([fjQuantumNumbers(0.5, 0, 0.5, 5, 2, 2.5, 7.5)]),
     [1;;],
 )
@@ -412,10 +412,10 @@ FMODEL_HIGHN_F45 = fModel(
     [""],
     [0;;],
     lsChannels([
-        lsQuantumNumbers(0.5, 0, 0, 3, 3, 3),
-        lsQuantumNumbers(0.5, 1, 0, 3, 3, 2),
-        lsQuantumNumbers(0.5, 1, 0, 3, 3, 3),
-        lsQuantumNumbers(0.5, 1, 0, 3, 3, 4),
+        lsQuantumNumbers(0.5, 0, 0, 3, 3, 3, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 3, 3, 2, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 3, 3, 3, 4.5),
+        lsQuantumNumbers(0.5, 1, 0, 3, 3, 4, 4.5),
     ]),
     fjChannels([
         fjQuantumNumbers(0.5, 0, 0.5, 4, 3, 2.5, 4.5),
