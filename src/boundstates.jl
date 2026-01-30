@@ -303,6 +303,10 @@ end
 
 function mroots(N1::Number, N2::Number, M::Model, P::Parameters)
     nus = Float64[]
+    if N1 > N2
+        return nus
+    end
+
     m(n) = det(mmat(n, M, P))
     N_list = [N1; (N1 + 0.5):N2; N2]
     for (i, _N1) in enumerate(N_list[1:(end - 1)])
