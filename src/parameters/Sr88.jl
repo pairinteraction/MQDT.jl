@@ -154,9 +154,10 @@ FMODEL_HIGHN_D2 = fModel(
 
 FMODEL_HIGHN_D3 = fModel(
     :Sr88,
-    "D J=3, ν > 47", # This is a conservative estimate, based on the considered experimental data. In practise the fit may be reasonable good for lower \nu.
+    "D J=3, ν > 25",
+    # From the paper: ν > 47, which is a conservative estimate, based on the considered experimental data. In practise the fit may be reasonable good for lower \nu, so we choose ν > 25 here to include more states.
     3,
-    (47.0, Inf),
+    (25.0, Inf),
     ["5snd 3D3"],
     Bool[1],
     [2.655 -41.4 -15363],

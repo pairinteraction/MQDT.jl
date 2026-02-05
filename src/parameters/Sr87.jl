@@ -229,9 +229,10 @@ FMODEL_HIGHN_P65 = fModel(
 
 FMODEL_HIGHN_D15 = fModel(
     :Sr87,
-    "D F=3/2, ν > 47",
+    "D F=3/2, ν > 25",
+    # From the paper: ν > 47, but we choose ν > 25 here to include more states, see Sr88 FMODEL_HIGHN_D3
     1.5,
-    (47.0, Inf),
+    (25.0, Inf),
     ["5snd 3D3"],
     # ["(6s1/2)(nd5/2)"],
     Bool[1],
@@ -245,9 +246,10 @@ FMODEL_HIGHN_D15 = fModel(
 
 FMODEL_HIGHN_D25 = fModel(
     :Sr87,
-    "D F=5/2, ν > 47",
+    "D F=5/2, ν > 25",
+    # From the paper: ν > 47, but we choose ν > 25 here to include more states, see Sr88 FMODEL_HIGHN_D3
     2.5,
-    (47.0, Inf),
+    (25.0, Inf),
     ["5snd 1D2", "5snd 3D2", "5snd 3D3"],
     # ["(6s1/2)(nd3/2)", "(6s1/2)(nd5/2)", "(6s1/2)(nd5/2)"],
     Bool[1, 1, 1],
@@ -269,9 +271,10 @@ FMODEL_HIGHN_D25 = fModel(
 
 FMODEL_HIGHN_D35 = fModel(
     :Sr87,
-    "D F=7/2, ν > 47",
+    "D F=7/2, ν > 25",
+    # From the paper: ν > 47, but we choose ν > 25 here to include more states, see Sr88 FMODEL_HIGHN_D3
     3.5,
-    (47.0, Inf),
+    (25.0, Inf),
     ["5snd 1D2", "5snd 3D1", "5snd 3D2", "5snd 3D3"],
     # ["(6s1/2)(nd3/2)", "(6s1/2)(nd5/2)", "(6s1/2)(nd3/2)", "(6s1/2)(nd5/2)"],
     Bool[1, 1, 1, 1],
@@ -300,9 +303,10 @@ FMODEL_HIGHN_D35 = fModel(
 
 FMODEL_HIGHN_D45 = fModel(
     :Sr87,
-    "D F=9/2, ν > 47",
+    "D F=9/2, ν > 25",
+    # From the paper: ν > 47, but we choose ν > 25 here to include more states, see Sr88 FMODEL_HIGHN_D3
     4.5,
-    (47.0, Inf),
+    (25.0, Inf),
     ["5snd 1D2", "5snd 3D1", "5snd 3D2", "5snd 3D3"],
     # ["(6s1/2)(nd3/2)", "(6s1/2)(nd5/2)", "(6s1/2)(nd3/2)", "(6s1/2)(nd5/2)"],
     Bool[1, 1, 1, 1],
@@ -331,9 +335,10 @@ FMODEL_HIGHN_D45 = fModel(
 
 FMODEL_HIGHN_D55 = fModel(
     :Sr87,
-    "D F=11/2, ν > 47",
+    "D F=11/2, ν > 25",
+    # From the paper: ν > 47, but we choose ν > 25 here to include more states, see Sr88 FMODEL_HIGHN_D3
     5.5,
-    (47.0, Inf),
+    (25.0, Inf),
     ["5snd 1D2", "5snd 3D1", "5snd 3D2", "5snd 3D3"],
     # ["(6s1/2)(nd3/2)", "(6s1/2)(nd5/2)", "(6s1/2)(nd3/2)", "(6s1/2)(nd5/2)"],
     Bool[1, 1, 1, 1],
@@ -362,9 +367,10 @@ FMODEL_HIGHN_D55 = fModel(
 
 FMODEL_HIGHN_D65 = fModel(
     :Sr87,
-    "D F=13/2, ν > 47",
+    "D F=13/2, ν > 25",
+    # From the paper: ν > 47, but we choose ν > 25 here to include more states, see Sr88 FMODEL_HIGHN_D3
     6.5,
-    (47.0, Inf),
+    (25.0, Inf),
     ["5snd 1D2", "5snd 3D2", "5snd 3D3"],
     # ["(6s1/2)(nd3/2)", "(6s1/2)(nd5/2)", "(6s1/2)(nd5/2)"],
     Bool[1, 1, 1],
@@ -386,9 +392,10 @@ FMODEL_HIGHN_D65 = fModel(
 
 FMODEL_HIGHN_D75 = fModel(
     :Sr87,
-    "D F=15/2, ν > 47",
+    "D F=15/2, ν > 25",
+    # From the paper: ν > 47, but we choose ν > 25 here to include more states, see Sr88 FMODEL_HIGHN_D3
     7.5,
-    (47.0, Inf),
+    (25.0, Inf),
     ["5snd 3D3"],
     # ["(6s1/2)(nd5/2)"],
     Bool[1],
