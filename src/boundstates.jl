@@ -400,6 +400,8 @@ function eigenstates(N1::Number, N2::Number, M::Model, P::Parameters; overwrite_
     for i in eachindex(z)
         m = mfunc(z[i])
         t = nullspace(n[:, i], m)
+        # multiply t by a phase factor such that the largest component is positive
+        t *= sign(t[argmax(abs.(t))])
         a[:, i] = t
     end
     return EigenStates(z, n, a)
