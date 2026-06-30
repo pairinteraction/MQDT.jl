@@ -564,7 +564,7 @@ function get_nu_limits_from_model(model::Model)
         return nu_min, Inf
     end
 
-    throw(ArgumentError("No match found for 'ν > ...' or '... < ν < ...' in model: $(model.name)"))
+    return throw(ArgumentError("No match found for 'ν > ...' or '... < ν < ...' in model: $(model.name)"))
 end
 
 function get_thresholds(M::fModel, P::Parameters)
