@@ -1,3 +1,7 @@
+> [!CAUTION]
+> This package is no longer maintained.
+> The functionality of this package has been merged into the package RydState, which also includes additional functionality, and is maintained at https://github.com/pairinteraction/rydstate
+
 # MQDT
 
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://pairinteraction.github.io/MQDT.jl/dev/)
